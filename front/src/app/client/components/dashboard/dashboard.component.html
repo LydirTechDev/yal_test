@@ -1,0 +1,114 @@
+<h4>Bienvenue chez Yalidine Express!</h4>
+<hr>
+<div class="row mt-4 mx-auto container-fluid">
+    <div class="col-xl-12">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex">
+                            <div class="flex-1 overflow-hidden">
+                                <p class="text-truncate font-size-14 mb-2">Mes paiements (En maintennace)</p>
+                                <h4 class="mb-0"> {{statistique.paiement > 0 ? statistique.paiement : 0 }} DA
+                                </h4>
+                            </div>
+                            <div class="text-primary ml-auto">
+                                <i mdbColor class="ri-coin-line text-success font-size-24"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex">
+                            <div class="flex-1 overflow-hidden">
+                                <p class="text-truncate font-size-14 mb-2">Colis en route</p>
+                                <h4 class="mb-0">{{statistique.enRoute > 0 ? statistique.enRoute : 0}}</h4>
+                            </div>
+                            <div class="text-primary ml-auto">
+                                <i class="fas fa-shipping-fast fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex">
+                            <div class="flex-1 overflow-hidden">
+                                <p class="text-truncate font-size-14 mb-2">Colis Prés expidié</p>
+                                <h4 class="mb-0">{{statistique.presExpidie > 0 ? statistique.presExpidie : 0}}</h4>
+                            </div>
+                            <div class="text-dark ml-auto">
+                            <i class="ri-time-line font-size-24"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+        <!-- end row -->
+
+    </div>
+
+</div>
+<div class="row mt-2 mx-auto container-fluid">
+    <div class="col-xl-12">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex">
+                            <div class="flex-1 overflow-hidden">
+                                <p class="text-truncate font-size-14 mb-2">Colis en tentative échoué</p>
+                                <h4 class="mb-0">{{statistique.tentativeEchoue > 0 ? statistique.tentativeEchoue : 0}}
+                                </h4>
+                            </div>
+                            <div class="text-primary ml-auto">
+                                <i class="ri-error-warning-line text-warning font-size-24"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex">
+                            <div class="flex-1 overflow-hidden">
+                                <p class="text-truncate font-size-14 mb-2">Colis en retour</p>
+                                <h4 class="mb-0">{{statistique.Retour > 0 ? statistique.Retour : 0}}</h4>
+                            </div>
+                            <div class="text-danger fa-flip-horizontal ml-auto">
+                                <i class="fas fa-shipping-fast text-danger font-size-24"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex">
+                            <div class="flex-1 overflow-hidden">
+                                <p class="text-truncate font-size-14 mb-2">Retour prés à retirer</p>
+                                <h4 class="mb-0"> {{statistique.colisAretire > 0 ? statistique.colisAretire : 0 }}
+                                </h4>
+                            </div>
+                            <div class="text-dark ml-auto">
+                                <i class="ri-logout-circle-line font-size-24"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- end row -->
+    </div>
+</div>

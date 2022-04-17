@@ -1,0 +1,117 @@
+<!-- card title-->
+<!-- !this.isloadingData -->
+<div class="container-fluid">
+    <div class="row">
+        <div class="mt-3">
+            <h4>Procéder aux paiements</h4>
+        </div>
+    </div>
+    <div class="row mt-5">
+        <!-- <app-service-list class="col-xl-3 col-lg-4 col-12" *ngIf="!(this.tarificationService.showServiceList | async)"> -->
+        <!-- [ngClass]="this.tarificationService.mxAutoToCard" -->
+        <div class="col-xl-9 col-lg-8 col-12 p-0 m-0 mx-auto">
+            <div class="card custumH">
+                <!-- [ngClass]="this.tarificationService.editPadingMarginCard | async" -->
+                <div class="card-body">
+                    <div *ngIf=" true; else spinner">
+                        <div class="row col-12 mt-4 pt-4 mr-0 ml-0">
+                            <div class="col-xl-5 col-sm-5 mx-auto">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="text-center">
+                                            <div class="media-body">
+                                                <h5 class="text-truncate text-dark">Clients</h5>
+                                            </div>
+                                        </div>
+                                        <hr class="my-4" />
+                                        <div class="row text-center">
+                                            <div class="row col-12">
+                                                <div class="col-7 text-right">
+                                                    <p>
+                                                        Clients pre à payé
+                                                    </p>
+                                                </div>
+                                                <div class="col-4 text-left">
+                                                    <span class="ml-1 text-success">{{nbClients}}</span>
+                                                </div>
+                                            </div>
+                                            <div class="row col-12">
+                                                <div class="col-7 text-right">
+                                                    <p>
+                                                        Totales Net clients
+                                                    </p>
+                                                </div>
+                                                <div class="col-5 text-left">
+                                                    <span class="ml-1 text-success">{{netClient | currency:' ':'symbol':'2.0-3'}}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-5 col-sm-5 mx-auto">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="text-center">
+                                            <div class="media-body">
+                                                <h5 class="text-truncate text-dark">Solde</h5>
+                                            </div>
+                                        </div>
+                                        <hr class="my-4" />
+                                        <div class="row text-center">
+                                            <div class="row col-12">
+                                                <div class="col-6 text-right">
+                                                    <p>
+                                                        Total recolté
+                                                    </p>
+                                                </div>
+                                                <div class="col-6 text-left">
+                                                    <span class="ml-1 text-success">{{totalRamasse | currency:' ':'symbol':'2.0-3'}} </span>
+                                                </div>
+                                            </div>
+                                            <div class="row col-12">
+                                                <div class="col-6 text-right">
+                                                    <p>
+                                                        Gain
+                                                    </p>
+                                                </div>
+                                                <div class="col-6 text-left">
+                                                    <span class="ml-1 text-success">{{gain | currency:' ':'symbol':'2.0-3'}} </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- this.tarificationService.showServiceList  -->
+                        <div class="row col-12 mr-0 ml-0 mt-3 mb-2" *ngIf="!( false )">
+                            <div class="mb-0 col-6 text-center mx-auto">
+                                <form [formGroup]="formData">
+                                    <div class="mb-3">
+                                        <ng-select  placeholder=" Selectionner un client" formControlName="client" (change)="selectClient()">
+                                            <ng-option  *ngFor="let client of listClients" [value]="client.id">
+                                                {{client.nomCommercial}}
+                                            </ng-option>
+                                        </ng-select>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <ng-template #spinner>
+        <div class="row col-12 mt-5 pt-5">
+            <div class="col-6 mt-5 pt-5  text-center mx-auto">
+                <div class="spinner-border text-primary text-center" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+                <span class="d-block text-primary">Chargement ...</span>
+            </div>
+        </div>
+    </ng-template>

@@ -1,0 +1,66 @@
+<div class="card">
+    <div class="card-body ">
+        <aw-wizard [navBarLayout]="'large-empty-symbols'">
+            <form [formGroup]="form" class="col-12 row" *ngIf="!prevalidate">
+                <aw-wizard-step *ngFor="let zone of zones; let i=index">
+                    <ng-template awWizardStepSymbol style="padding: 2px;">
+                        {{zone.codeZone.slice(0,1).concat(zone.codeZone.slice(zone.codeZone.length-2,zone.codeZone.length)).toLocaleUpperCase()}}
+                    </ng-template>
+                    <div class="row mt-3 ">
+                        <div class="form-group col-12 row mb-3 text-right">
+                            <label class="col-4 col-form-label"> Tarif tarif StopDesk
+                            </label>
+                            <input class="col-7 form-control" formControlName="tarifStopDesk"
+                                placeholder="Tarif tarif StopDesk">
+                        </div>
+                        <div class="form-group col-12 row mb-3 text-right">
+                            <label class="col-4 col-form-label"> tarif Domicile
+                            </label>
+                            <input class="col-7 form-control" formControlName="tarifDomicile"
+                                placeholder="tarif Domicile">
+                        </div>
+                    </div>
+                    <div class="row mt-3 ">
+                        <div formArrayName="poidTarif" class=" col-12 mt-4">
+                            <div *ngFor="let skill of poidTarif.controls; let i=index">
+                                <div [formGroupName]="i" class="row ">
+                                    <div class="form-group col-12 row mb-3 text-right">
+                                        <label class="col-4 col-form-label"> [ {{poids[i].min}} - {{ poids[i].max}} ] Kg
+                                        </label>
+                                        <input class="col-7 form-control" formControlName="tarif" placeholder="Tarif">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-1 text-center">
+                        <div class="col-12">
+                            <button class="btn-sm btn-outline-success w-100" (click)="addPoidTarif()"
+                                *ngIf="this.poids.length != this.poidTarif.length">ajouter la plage suivante</button>
+
+                        </div>
+                    </div>
+                    <ul class="list-inline wizard mb-0">
+                        <li class="next list-inline-item float-right"><button
+                                [disabled]="this.poids.length != this.poidTarif.length" class="btn btn-primary"
+                                *ngIf="!prevalidate" awNextStep (click)="test(zone)">Next</button>
+                        </li>
+                        <!-- <li class="next list-inline-item float-right"><button *ngIf="prevalidate"
+                                class="btn btn-success" (click)="save()">VALIDER</button>
+                        </li> -->
+                    </ul>
+                </aw-wizard-step>
+            </form>
+            <div class="col-12 row" *ngIf="prevalidate">
+                <div class="col-12 h4 text-center">Confirmé la creation du tarif <span class="text-muted">{{
+                        this.newService.codeTarif[0].nom }}</span> pour le service
+                    <span class="text-muted">{{this.newService.nom}}</span>
+                </div>
+                <div class="col-12 text-center m-2 p-2">
+                    <button *ngIf="prevalidate" class="btn btn-outline-danger" (click)="this.tarificationService.cancelCreateService('admin/tarifications')">Annuler</button>
+                    <button *ngIf="prevalidate" class="btn btn-success" (click)="save()">VALIDER</button>
+                </div>
+            </div>
+        </aw-wizard>
+    </div>
+</div>

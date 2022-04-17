@@ -1,0 +1,115 @@
+<!-- card title-->
+<!-- !this.isloadingData -->
+<div class="container-fluid">
+    <!-- <app-pagetitle title="Procéder aux paiements" [breadcrumbItems]="breadCrumbItems"></app-pagetitle> -->
+    <div class="row">
+        <!-- <app-service-list class="col-xl-3 col-lg-4 col-12" *ngIf="!(this.tarificationService.showServiceList | async)"> -->
+        <!-- [ngClass]="this.tarificationService.mxAutoToCard" -->
+        <div class="col-xl-10 col-lg-9 col-12 p-0 m-0 mx-auto">
+            <div class="card">
+                <!-- [ngClass]="this.tarificationService.editPadingMarginCard | async" -->
+                <div class="card-body">
+                    <!-- <div *ngIf="!this.isloadingData; else spinner"> -->
+                    <div class="row mx-auto">
+                        <div class="col-10 mt-2">
+                            <h5 class="text-uppercase">Client<span class="ml-1 font-size-18 text-muted"> {{': '+
+                                    clientInfo['nomCommercial'] + '--' + clientInfo['nomGerant']}}</span> </h5>
+                        </div>
+                        <div class="col-2 pt-0 mx-auto">
+                            <button type="button" class="btn btn-sm btn-outline-danger mt-0" (click)="cancel()"
+                                ngbTooltip="Configuer un code tarif" placement="left">
+                                <i class="ri-close-line align-middle font-weight-bold"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="col-12 text-center">
+                        <div class="row  mx-auto mt-1 shadow p-3 mb-1 bg-body rounded">
+                            <div class="col-10 mx-auto border border-success">
+                                <div class="row bg-success text-center">
+                                    <h5 class="my-1 bg-success w-100 text-white text-uppercase">Nét pour client</h5>
+                                </div>
+                                <div class="row mt-0 pt-0 text-center border-success border-top ">
+                                    <div class="col-12 text-center">
+                                        <h2 class="my-3 w-100 ">{{netPayerClient | currency:' ':'symbol':'2.0-3'}}</h2>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row  mx-auto mt-3 shadow p-3 bg-body rounded">
+                            <div class="col-10 mx-auto border border-secondary">
+                                <div class="row bg-secondary text-center">
+                                    <h5 class="my-1 bg-secondary w-100 text-white text-uppercase">Colis Liver</h5>
+                                </div>
+
+                                <div class="row mt-0 pt-0 text-center border-secondary border-top ">
+                                    <div class="col-4 my-1 border-right border-secondary text-uppercase">Domicile</div>
+                                    <div class="col-4 my-1 border-right border-secondary ">StopeDesk</div>
+                                    <div class="col-4 my-1 ">Totals</div>
+                                </div>
+                                <div class="row mt-0 pt-0 text-center border-secondary border-top ">
+                                    <div class="col-4 my-1 border-right border-secondary ">{{nbShipmentDomicile}}</div>
+                                    <div class="col-4 my-1 border-right border-secondary ">{{nbShipmentStopDesk}}</div>
+                                    <div class="col-4 my-1 ">{{totalShipmentLivrer}}</div>
+                                </div>
+                            </div>
+                            <div class="col-10 mx-auto border border-secondary">
+                                <div class="row bg-secondary text-center">
+                                    <h5 class="my-1 bg-secondary w-100 text-white text-uppercase">récolter</h5>
+                                </div>
+                                <div class="row mt-0 pt-0 text-center border-secondary border-top ">
+                                    <div class="col-12 text-center">
+                                        <h6 class="my-2 w-100 ">{{recolter | currency:' ':'symbol':'2.0-3'}}</h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row  mx-auto mt-1 shadow p-3 bg-body rounded">
+                            <div class="col-10 mx-auto border border-danger">
+                                <div class="row bg-danger text-center">
+                                    <h5 class="my-1 bg-danger w-100 text-white text-uppercase">Frais à payé</h5>
+                                </div>
+
+                                <div class="row mt-0 pt-0 text-center border-danger border-top ">
+                                    <div class="col-3 my-1 border-right border-danger ">Livraison domicile</div>
+                                    <div class="col-3 my-1 border-right border-danger ">Livraison stopeDesk</div>
+                                    <div class="col-3 my-1 border-right border-danger ">C.O.D</div>
+                                    <div class="col-3 my-1 ">Retoure</div>
+                                </div>
+                                <div class="row mt-0 pt-0 text-center border-danger border-top ">
+                                    <div class="col-3 my-1 border-right border-danger ">- {{totalTarifLivraisonDomicile
+                                        | currency:' ':'symbol':'2.0-3'}}</div>
+                                    <div class="col-3 my-1 border-right border-danger ">- {{totalTarifLivraisonStopDesk
+                                        | currency:' ':'symbol':'2.0-3'}}</div>
+                                    <div class="col-3 my-1 border-right border-danger ">-{{totalFraiCOD | currency:'
+                                        ':'symbol':'2.0-3'}}</div>
+                                    <div class="col-3 my-1 ">- {{ fraiRetoure | currency:' ':'symbol':'2.0-3'}}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- <div class="row mx-auto"></div> -->
+                        <!-- <div class="row mx-auto"></div> -->
+                    </div>
+                </div>
+                <div class="row mb-3 col-12 mr-0 ml-0">
+                    <div class="col-6 text-center mx-auto"> <button type="button"
+                            class="btn btn-info btn-rounded font-size-16" (click)="payeClient(clientInfo['id'])"> Payer le client</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #spinner>
+    <div class="row col-12 mt-5 pt-5">
+        <div class="col-6 mt-5 pt-5  text-center mx-auto">
+            <div class="spinner-border text-primary text-center" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+            <span class="d-block text-primary">Chargement ...</span>
+        </div>
+    </div>
+</ng-template>

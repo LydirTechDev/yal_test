@@ -1,0 +1,25 @@
+<div id="panel" class="col-12 col-md-8 mx-auto text-center" style="background:transparent;">
+    <form [formGroup]="formdata">
+        <h4 class="labtrack "><i class="bi bi-collection"></i>Transiter les sacs</h4>
+        <div class="form-groupe col-10 mx-auto d-flex m-0 ">
+
+            <input type="text" formControlName="tracking" class="form-control mr-1 mt-1 shadow"
+             placeholder="sac-111AAA"
+                autofocus>
+            <input type="submit" class="btn btn-info shadow px-4 mx-1" (click)="newSac()" value="ajouter">
+        </div>
+    </form>
+</div>
+<hr class="mx-auto mt-0">
+<div class=" text-dark">
+    <label class='m-3 p-2 bg-info text-white' *ngFor="let i of arr">{{i}}<i class="fas fa-times  mx-2 text-danger"
+            (click)="deletselected(i)"></i></label>
+</div>
+<div class="mx-auto text-center mt-5" *ngIf="count>0">
+    <button type="submit" class="btn btn-success shadow btn-lg  px-4 mx-1" (click)="transiterSacs()">Valider
+        la selection
+    </button>
+    <span class="my-0 text-danger">
+        <h2>{{count}}</h2>
+    </span>
+</div>

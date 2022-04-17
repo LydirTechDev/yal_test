@@ -1,0 +1,100 @@
+<div *ngIf="dataLoaded" class="d-flex justify-content-md-between">
+    <h4>Détails du colis <span class="font-weight-bold text-uppercase">{{detailColis[0].tracking }}</span></h4>
+    <h5 class="ml-auto text-uppercase font-weight-bold">{{detailColis[0].service.nom}}</h5>
+</div>
+<hr class="mt-0">
+
+
+<div class="row container-fluid" *ngIf="dataLoaded">
+    <div class="col-12 col-lg-8 mt-1 mx-auto">
+        <!-- Timeline -->
+        <ul class="timeline" style="z-index: -9999999;">
+            <li class="timeline-item bg-white shadow rounded ml-3 p-3  shadow" *ngFor="let d of detailColis[1]">
+                <div class="timeline-arrow"></div>
+                <div class="row w-100 col-12 my-0 py-0">
+                    <div class="col-12 col-md-4">
+                        <p class="font-weight-bold mb-0">{{d.status}}</p>
+                    </div>
+                    <div class="col-12 col-md-4 ">
+                        <p class=" text-left text-dark"><i class="fa fa-clock-o "></i>
+                            {{d.date | date:'short'}}
+                            <br><span *ngIf = "!isClient()">Par {{d.user}}</span> 
+                        </p>
+                    </div>
+                    <div class="col-12 col-md-4 ">
+                        <p class="font-weight-light ml-auto text-right "><span *ngIf = "!isClient()">{{d.station}}</span> {{d.adress}} </p>
+                    </div>
+                </div>
+
+
+            </li>
+
+        </ul><!-- End -->
+
+    </div>
+    <div class="col-12 col-lg-4 mt-4 d-flex bg-white shadow">
+        <div class="my-3">
+            <h5>Information du colis</h5>
+            <p><span style="font-size: 15px;" class="font-weight-bold">Pour: </span>
+                {{detailColis[0].nomDestinataire}}-{{detailColis[0].nomDestinataire}}
+                {{detailColis[0].raisonSociale}}
+            </p>
+            <p><span style="font-size: 15px;" class="font-weight-bold">Télé: </span> {{detailColis[0].telephone}}</p>
+            <p><span style="font-size: 15px;" class="font-weight-bold">Adresse: </span>
+                {{detailColis[0].commune.nomLatin}}/{{detailColis[0].commune.wilaya.nomLatin}}({{detailColis[0].adresseDestinataire}})
+            </p>
+            <div class="text-capitalize">
+                <p><span style="font-size: 15px;" class="font-weight-bold">Service:
+                        {{detailColis[0].service.nom}}</span>
+                </p>
+                <p><span style="font-size: 15px;" class="font-weight-bold">Designation:
+                    </span>{{detailColis[0].designationProduit}}</p>
+                <p><span style="font-size: 15px;" class="font-weight-bold">Prix: </span>{{detailColis[0].prixVente}} DA
+                </p>
+                <p><span style="font-size: 15px;" class="font-weight-bold">Tarifs de livraison:
+                    </span>{{detailColis[2]}} DA
+                </p>
+                <p><span style="font-size: 15px;" class="font-weight-bold">Recouvrement: </span>{{
+                    detailColis[0].livraisonGratuite ? detailColis[0].prixVente :detailColis[2] +
+                    detailColis[0].prixVente}} DA</p>
+                <p><span style="font-size: 15px;" class="font-weight-bold">Livraison gratuite:
+                    </span>{{trueFalse[detailColis[0].livraisonGratuite]}}</p>
+                <p><span style="font-size: 15px;" class="font-weight-bold">Livraison a domicile:
+                    </span>{{trueFalse[detailColis[0].livraisonDomicile]}}</p>
+                <p><span style="font-size: 15px;" class="font-weight-bold">Dimensions: </span>
+                    {{detailColis[0].poids}}Kg,({{detailColis[0].longueur}} m * {{detailColis[0].largeur}} m *
+                    {{detailColis[0].hauteur}} m)</p>
+                <p><span style="font-size: 15px;" class="font-weight-bold">#Commande:
+                    </span>{{detailColis[0].numCommande}}
+                </p>
+
+            </div>
+        </div>
+        <div class="ml-auto display-2">{{detailColis[0].commune.wilaya.codeWilaya}}
+
+        </div>
+    </div>
+</div>
+
+
+<!-- <div *ngFor="let d of detailColis[1]">
+                    <label><span style="font-size: 15px;" class="badge badge-light">{{d.status}}</span>
+                        le {{d.date |date:'short'}} Par {{d.user}}
+                        {{d.station}} {{d.adress}}</label>
+                </div>
+
+
+    <div class="d-flex justify-content-md-between">
+        <p class="font-weight-bold text-uppercase"><span style="font-size: 15px;" class="badge badge-secondary">Crée :
+            </span>
+            {{ detailColis[1][0].date | date:'short'}}</p>
+        <p class="font-weight-bold text-uppercase"><span style="font-size: 15px;" class="badge badge-success">
+                {{detailColis[1][2]?detailColis[1][2].status:detailColis[1][1].status}} : </span> {{
+            detailColis[1][1].date
+            |date:'short'}}
+        </p>
+        <p class="font-weight-bold text-uppercase"><span style="font-size: 15px;" class="badge badge-info">
+                {{detailColis[1][detailColis[1].length-1].status}} :</span>
+            {{ detailColis[1][detailColis[1].length-1].date | date:'short'}}
+        </p>
+    </div> -->

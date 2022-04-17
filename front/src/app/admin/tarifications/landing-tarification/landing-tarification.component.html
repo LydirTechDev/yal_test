@@ -1,0 +1,75 @@
+<!-- card title-->
+<div *ngIf="!this.isloadingData; else spinner">
+    <div class="row text-center">
+        <div class="col-12">
+            <div>
+                <h5>{{ cardTitle }}</h5>
+            </div>
+        </div>
+    </div>
+    <div class="row col-12 mt-4 pt-4 mr-0 ml-0">
+        <div class="col-xl-5 col-sm-5 mx-auto">
+            <div class="card">
+                <div class="card-body">
+                    <div class="text-center">
+                        <div class="media-body">
+                            <h5 class="text-truncate text-dark">Services</h5>
+                        </div>
+                    </div>
+                    <hr class="my-4" />
+                    <div class="row text-center">
+                        <div class="col-12">
+                            <p>
+                                Totales des services <span class="ml-1 text-success"> {{nbServices}}</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-5 col-sm-5 mx-auto">
+            <div class="card">
+                <div class="card-body">
+                    <div class="text-center">
+                        <div class="media-body">
+                            <h5 class="text-truncate text-dark">Codes tarifs</h5>
+                        </div>
+                    </div>
+                    <hr class="my-4" />
+                    <div class="row text-center">
+                        <div class="col-12">
+                            <p>
+                                Totales des code tarif <span class="ml-1 text-success">{{nbCodeTarif}}</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row col-12 mr-0 ml-0" *ngIf="!(this.tarificationService.showServiceList | async)">
+        <div class="mb-0 col-6 text-center  mx-auto"> <button type="button"
+                [disabled]="this.tarificationService.inCreatingNewService | async"
+                (click)="this.tarificationService.showListServices()"
+                class="btn btn-sm btn-outline-danger btn-rounded font-size-14">Liste des services</button>
+        </div>
+    </div>
+    <div class="row col-12 mr-0 ml-0 mt-3 mb-2" >
+        <div class="mb-0 col-6 text-center mx-auto">
+            <a href="javascript:void(0);" (click)="this.tarificationService.configureNewService() "
+                class="text-danger font-size-16">
+                Configurer nouveaux service
+            </a>
+        </div>
+    </div>
+</div>
+<ng-template #spinner>
+    <div class="row col-12 mt-5 pt-5">
+        <div class="col-6 mt-5 pt-5  text-center mx-auto">
+            <div class="spinner-border text-primary text-center" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+            <span class="d-block text-primary">Chargement ...</span>
+        </div>
+    </div>
+</ng-template>

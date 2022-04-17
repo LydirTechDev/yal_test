@@ -1,0 +1,71 @@
+<app-pagetitle title="detail de la wilaya {{wilayaForm.get('nomLatin').value}}" [breadcrumbItems]="breadCrumbItems"></app-pagetitle>
+
+<form [formGroup]="wilayaForm" class="form-group row col-12 mt-5">
+  <div class="col-8 border-secondary pt-3 mb-2 mx-auto">
+
+    <!--nom latin-->
+    <div class="form-group row mb-3">
+      <label class="col-md-4 col-form-label text-right" for="nomLatin">nom Latin*:</label>
+      <div class="col-md-7">
+        <input class="form-control" formControlName="nomLatin" type="text" placeholder="nomLatin"
+          [ngClass]="{'is-invalid': wilayaForm.controls['nomLatin'].invalid && (wilayaForm.controls['nomLatin'].dirty || wilayaForm.controls['nomLatin'].touched),'is-valid': wilayaForm.controls['nomLatin'].valid && (wilayaForm.controls['nomLatin'].dirty || wilayaForm.controls['nomLatin'].touched) }">
+        <div *ngIf="wilayaForm.controls['nomLatin'].invalid" class="invalid-feedback">
+          <span *ngIf="wilayaForm.controls['nomLatin'].errors.required">nomLatin requis</span>
+          <span *ngIf="wilayaForm.controls['nomLatin'].errors.minlength">longueur minimale 3 characters</span>
+          <span *ngIf="wilayaForm.controls['nomLatin'].errors.maxlength">longueur maximale 30 characters</span>
+        </div>
+      </div>
+    </div>
+
+    <!--nom Arabe-->
+    <div class="form-group row mb-3">
+      <label class="col-md-4 col-form-label text-right" for="nomArabe">nom Arabe*:</label>
+      <div class="col-md-7">
+        <input class="form-control" formControlName="nomArabe" type="text" placeholder="nomArabe"
+          [ngClass]="{'is-invalid': wilayaForm.controls['nomArabe'].invalid && (wilayaForm.controls['nomArabe'].dirty || wilayaForm.controls['nomArabe'].touched),'is-valid': wilayaForm.controls['nomArabe'].valid && (wilayaForm.controls['nomArabe'].dirty || wilayaForm.controls['nomArabe'].touched) }">
+        <div *ngIf="wilayaForm.controls['nomArabe'].invalid" class="invalid-feedback">
+          <span *ngIf="wilayaForm.controls['nomArabe'].errors.required">nomArabe requis</span>
+          <span *ngIf="wilayaForm.controls['nomArabe'].errors.minlength">longueur minimale 3 characters</span>
+          <span *ngIf="wilayaForm.controls['nomArabe'].errors.maxlength">longueur maximale 30 characters</span>
+        </div>
+      </div>
+    </div>
+
+    <!--code Wilaya-->
+    <div class="form-group row mb-3">
+      <label class="col-md-4 col-form-label text-right" for="codeWilaya">code Wilaya*:</label>
+      <div class="col-md-7">
+        <input class="form-control" formControlName="codeWilaya" type="text" placeholder="codeWilaya"
+          [ngClass]="{'is-invalid': wilayaForm.controls['codeWilaya'].invalid && (wilayaForm.controls['codeWilaya'].dirty || wilayaForm.controls['codeWilaya'].touched),'is-valid': wilayaForm.controls['codeWilaya'].valid && (wilayaForm.controls['codeWilaya'].dirty || wilayaForm.controls['codeWilaya'].touched) }">
+        <div *ngIf="wilayaForm.controls['codeWilaya'].invalid" class="invalid-feedback">
+          <span *ngIf="wilayaForm.controls['codeWilaya'].errors.required">codeWilaya requis</span>
+          <span *ngIf="wilayaForm.controls['codeWilaya'].errors.minlength">longueur minimale 2 characters</span>
+          <span *ngIf="wilayaForm.controls['codeWilaya'].errors.maxlength">longueur maximale 2 characters</span>
+        </div>
+      </div>
+    </div>
+
+    <!--agence de retour-->
+    <div class="form-group row mb-3 text-right">
+      <label class="col-md-4 col-form-label">Agence de retour *: </label>
+      <div class="col-sm-7 text-left">
+        <ng-select formControlName="agenceRetourId" placeholder=" Selectionner l'agence">
+          <ng-option *ngFor="let agence of listAgences" [value]="agence.id">
+            {{agence.nom }}
+          </ng-option>
+        </ng-select>
+        <span *ngIf="wilayaForm.controls['agenceRetourId'].invalid && wilayaForm.controls['agenceRetourId'].touched"
+        class="invalid-feedback-custom">Agence requise</span>
+      </div>
+    </div>
+
+  </div>
+  <div class="col-12 d-flex justify-content-center mx-auto mt-5 ">
+    <button class="btn btn-secondary" (click)="goBack()">Retour</button>
+    <button class="btn btn-warning" *ngIf="hidden" (click)="enableWilayaForm()">Modifier</button>
+    <button class="btn btn-success" *ngIf="!hidden" (click)="Confirm()"
+      [disabled]="!wilayaForm.dirty || wilayaForm.invalid">Valider</button>
+  </div>
+
+
+</form>

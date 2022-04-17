@@ -1,0 +1,47 @@
+<div class="row col-12 mt-5 pt-5" *ngIf="isloadingData">
+    <div class="col-6 mt-5 pt-5  text-center mx-auto">
+        <div class="spinner-border text-primary text-center" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+        <span class="d-block text-primary">Chargement ...</span>
+    </div>
+</div>
+<div class="row mt-4 pt-1">
+    <div class="col-4" *ngFor="let code of zone">
+        <div class=" card shadow-lg p-1 mb-3 bg-body rounded">
+            <div class="card-body">
+                <div class="text-center">
+                    <div class="media-body p-0 m-0">
+                        <h5 class="text-truncate text-dark text-capitalize"> {{code.codeZone}} </h5>
+                    </div>
+                </div>
+                <hr class="mx-1 mb-1" />
+                <div class="row m-0 text-center" *ngFor="let codeTarifZone of code.codeTarifsZones; let i=index">
+                    <div class="col-6 border-right border-light text-danger" *ngIf="i==0">LIV-D</div>
+                    <div class="col-6 border-left border-light text-danger" *ngIf="i==0">STOP-D</div>
+                </div>
+                <div class="row m-0 text-center" *ngFor="let codeTarifZone of code.codeTarifsZones; let i=index">
+                    <div class="col-6 border-right border-light" *ngIf="i==0"> <span class="text-muted">{{
+                            codeTarifZone.tarifDomicile }} DA</span></div>
+                    <div class="col-6 border-left border-light" *ngIf="i==0"> <span class="text-muted">
+                            {{codeTarifZone.tarifStopDesk}} DA</span></div>
+                </div>
+                <hr class="mx-3 my-1" />
+                <div class="row mx-1 mt-2 text-center">
+                    <div class="col-12 border-bottom border-light font-weight-bold">Tarif surpoids</div>
+                    <div class="col-6 border-right border-light text-danger">Poids</div>
+                    <div class="col-6 border-left border-light text-danger">Tarif</div>
+                </div>
+                <div class="row text-center" *ngFor="let codeTarifZone of code.codeTarifsZones; let i=index">
+                    <div class="col-6 border-right border-light border-top  py-1 px-0">[ {{ codeTarifZone.poids.min }} -> {{
+                        codeTarifZone.poids.max}} ]
+                    </div>
+                    <div class="col-6 border-left border-light border-top">{{codeTarifZone.tarifPoidsParKg}} <span
+                            class="text-muted">DA</span></div>
+                    <div class="col-12 border-top border-light font-weight-bold " *ngIf="i== code.codeTarifsZones.length -1 ">Délai</div>
+                    <div class="col-12  pb-0 mb-0"*ngIf="i == code.codeTarifsZones.length -1">{{codeTarifZone.delay}} Jour(s)</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

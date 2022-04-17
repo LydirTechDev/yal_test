@@ -1,0 +1,46 @@
+<div *ngIf="!this.isloadingData; else spinner">
+    <div class="row mx-auto">
+        <div class="col-10 mt-2">
+            <h5 class="text-uppercase">{{serviceData.nom}} <span class="ml-1 font-size-18 text-muted"> {{': '+
+                    selectedCodeTarifName}} </span> </h5>
+        </div>
+        <div class="col-2 pt-0 mx-auto">
+            <button type="button" *ngIf="showSelectList" class="btn btn-sm btn-danger mt-0"
+                (click)="this.tarificationService.configureNewCodeTarif(serviceData.nom)"
+                ngbTooltip="Configuer un code tarif" placement="left">
+                <i class="ri-add-line align-middle font-weight-bold"></i>
+            </button>
+            <button type="button" *ngIf="!showSelectList" class="btn btn-sm btn-outline-danger mt-0"
+                (click)="closeServiceDetail()">
+                <i class="ri-close-line align-middle font-weight-bold"></i>
+            </button>
+        </div>
+    </div>
+    <div class="row col-12 mt-3 pt-3" *ngIf="showSelectList">
+        <div class="col-4  mx-auto pt-2 mt-2">
+            <form [formGroup]="codeTarifForm">
+                <ng-select class="text-center" formControlName="codeTarifName" placeholder="Liste des code tarif"
+                    (change)="onSelectCodeTarif()">
+                    <ng-option  *ngFor="let codeTarif of serviceData.codeTarif" [value]="codeTarif.id">
+                        {{ codeTarif.nom }}
+                    </ng-option>
+                </ng-select>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-11 mx-auto" *ngIf="selectedCodeTarif != undefined">
+            <app-code-tarif-detail [zone]="selectedCodeTarif"> </app-code-tarif-detail>
+        </div>
+    </div>
+</div>
+<ng-template #spinner>
+    <div class="row col-12 mt-5 pt-5">
+        <div class="col-6 mt-5 pt-5  text-center mx-auto">
+            <div class="spinner-border text-primary text-center" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+            <span class="d-block text-primary">Chargement ...</span>
+        </div>
+    </div>
+</ng-template>

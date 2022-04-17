@@ -1,0 +1,304 @@
+<app-pagetitle title="Ajouter un coursier" [breadcrumbItems]="breadCrumbItems"> </app-pagetitle>
+<form [formGroup]="employeForm" class="form-group row col-12 ">
+  <div class="col-6 border-right border-secondary pt-3 mb-2">
+
+    <!-- Nom -->
+    <div class="form-group row mb-3">
+      <label class="col-md-4 col-form-label text-right" for="nom">Nom*:</label>
+      <div class="col-md-8">
+        <input class="form-control" formControlName="nom" type="text" placeholder="Nom"
+          [ngClass]="{'is-invalid': employeForm.controls['nom'].invalid && (employeForm.controls['nom'].dirty || employeForm.controls['nom'].touched),'is-valid': employeForm.controls['nom'].valid && (employeForm.controls['nom'].dirty || employeForm.controls['nom'].touched) }">
+        <div *ngIf="employeForm.controls['nom'].invalid" class="invalid-feedback">
+          <span *ngIf="employeForm.controls['nom'].errors.required">Nom requis</span>
+          <span *ngIf="employeForm.controls['nom'].errors.minlength">longueur minimale 3 characters</span>
+          <span *ngIf="employeForm.controls['nom'].errors.maxlength">longueur maximale 30 characters</span>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- prenom -->
+    <div class="form-group row mb-3">
+      <label class="col-md-4 col-form-label text-right" for="prenom">Prénom*:</label>
+      <div class="col-md-8">
+        <input class="form-control" formControlName="prenom" type="text" placeholder="Prénom"
+          [ngClass]="{'is-invalid': employeForm.controls['prenom'].invalid && (employeForm.controls['prenom'].dirty || employeForm.controls['prenom'].touched),'is-valid': employeForm.controls['prenom'].valid && (employeForm.controls['prenom'].dirty || employeForm.controls['prenom'].touched) }">
+        <div *ngIf="employeForm.controls['prenom'].invalid" class="invalid-feedback">
+          <span *ngIf="employeForm.controls['prenom'].errors.required">prénom requis</span>
+          <span *ngIf="employeForm.controls['prenom'].errors.minlength">longueur minimale 3 characters</span>
+          <span *ngIf="employeForm.controls['prenom'].errors.maxlength">longueur maximale 30 characters</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- genre -->
+    <div class="form-group row mb-3">
+      <label class="col-md-4 col-form-label text-right" for="genre">Genre*:</label>
+      <div class="col-md-8">
+        <ng-select name="genre" id="genre" formControlName="genre" placeholder="Genre">
+          <ng-option value="homme">Homme</ng-option>
+          <ng-option value="cdi">Femme</ng-option>
+        </ng-select>
+        <span *ngIf="employeForm.controls['genre'].invalid && employeForm.controls['genre'].touched"
+          class="invalid-feedback-custom  error">Genre requis</span>
+      </div>
+    </div>
+
+    <!-- groupeSanguin -->
+    <div class="form-group row mb-3">
+      <label class="col-md-4 col-form-label text-right" for="groupeSanguin">Groupe sanguin*:</label>
+      <div class="col-md-8">
+        <ng-select name="groupeSanguin" id="groupeSanguin" formControlName="groupeSanguin" placeholder="Group Sanguin">
+          <ng-option value="A+">A positif</ng-option>
+          <ng-option value="A-">A négatif</ng-option>
+          <ng-option value="B+">B positif</ng-option>
+          <ng-option value="B-">B négatif</ng-option>
+          <ng-option value="O+">O positif</ng-option>
+          <ng-option value="O-">O négatif</ng-option>
+          <ng-option value="AB">AB</ng-option>
+        </ng-select>
+        <span *ngIf="employeForm.controls['groupeSanguin'].invalid && employeForm.controls['groupeSanguin'].touched"
+          class="invalid-feedback-custom  error">Groupe sanguin requis</span>
+      </div>
+    </div>
+
+
+
+    <!-- dateNaissance -->
+    <div class="form-group row mb-3">
+      <label class="col-md-4 col-form-label text-right" for="dateNaissance">Date de naissance*:</label>
+      <div class="col-md-8">
+        <input class="form-control" formControlName="dateNaissance" type="date" placeholder="Date de naissance"
+          (change)="compare()"
+          [ngClass]="{'is-invalid': (dateNaissanceError || employeForm.controls['dateNaissance'].invalid) && (employeForm.controls['dateNaissance'].dirty || employeForm.controls['dateNaissance'].touched),'is-valid': employeForm.controls['dateNaissance'].valid && (employeForm.controls['dateNaissance'].dirty || employeForm.controls['dateNaissance'].touched) }">
+        <div *ngIf="employeForm.controls['dateNaissance'].invalid" class="invalid-feedback">
+          <span *ngIf="employeForm.controls['dateNaissance'].errors.required">Date naissance requise</span>
+        </div>
+        <span *ngIf="dateNaissanceError" class="text-danger error">Date de naissance supérieure à la date
+          actuelle</span>
+      </div>
+    </div>
+
+    <!-- lieuNaissance -->
+    <div class="form-group row mb-3">
+      <label class="col-md-4 col-form-label text-right" for="lieuNaissance">Lieu de naissance*:</label>
+      <div class="col-md-8">
+        <input class="form-control" formControlName="lieuNaissance" type="text" placeholder="lieuNaissance"
+          [ngClass]="{'is-invalid': employeForm.controls['lieuNaissance'].invalid && (employeForm.controls['lieuNaissance'].dirty || employeForm.controls['lieuNaissance'].touched),'is-valid': employeForm.controls['lieuNaissance'].valid && (employeForm.controls['lieuNaissance'].dirty || employeForm.controls['lieuNaissance'].touched) }">
+        <div *ngIf="employeForm.controls['lieuNaissance'].invalid" class="invalid-feedback">
+          <span *ngIf="employeForm.controls['lieuNaissance'].errors.required">lieu de naissance requis</span>
+          <span *ngIf="employeForm.controls['lieuNaissance'].errors.minlength">longueur minimale 5 characters</span>
+          <span *ngIf="employeForm.controls['lieuNaissance'].errors.maxlength">longueur maximale 50 characters</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- adresse -->
+    <div class="form-group row mb-3">
+      <label class="col-md-4 col-form-label text-right" for="adresse">Adresse*:</label>
+      <div class="col-md-8">
+        <input class="form-control" formControlName="adresse" type="text" placeholder="Adresse"
+          [ngClass]="{'is-invalid': employeForm.controls['adresse'].invalid && (employeForm.controls['adresse'].dirty || employeForm.controls['adresse'].touched),'is-valid': employeForm.controls['adresse'].valid && (employeForm.controls['adresse'].dirty || employeForm.controls['adresse'].touched) }">
+        <div *ngIf="employeForm.controls['adresse'].invalid" class="invalid-feedback">
+          <span *ngIf="employeForm.controls['adresse'].errors.required">adresse requis</span>
+          <span *ngIf="employeForm.controls['adresse'].errors.minlength">longueur minimale 10 characters</span>
+          <span *ngIf="employeForm.controls['adresse'].errors.maxlength">longueur maximale 100 characters</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- numTelephone -->
+    <div class="form-group row mb-3">
+      <label class="col-md-4 col-form-label text-right" for="numTelephone">Num de téléphone*:</label>
+      <div class="col-md-8">
+        <input class="form-control" formControlName="numTelephone" type="text" placeholder="00-00-00-00-00"
+          mask="00-00-00-00-00"
+          [ngClass]="{'is-invalid': employeForm.controls['numTelephone'].invalid && (employeForm.controls['numTelephone'].dirty || employeForm.controls['numTelephone'].touched),'is-valid': employeForm.controls['numTelephone'].valid && (employeForm.controls['numTelephone'].dirty || employeForm.controls['numTelephone'].touched) }">
+        <div *ngIf="employeForm.controls['numTelephone'].invalid" class="invalid-feedback">
+          <span *ngIf="employeForm.controls['numTelephone'].errors.required">Num Telephone requis</span>
+          <span *ngIf="employeForm.controls['numTelephone'].errors.minlength">longueur minimale 10 characters</span>
+          <span *ngIf="employeForm.controls['numTelephone'].errors.maxlength">longueur maximale 10 characters</span>
+        </div>
+      </div>
+    </div>
+
+
+
+    <!-- email -->
+    <div class="form-group row mb-3">
+      <label class="col-md-4 col-form-label text-right" for="email">Email*:</label>
+      <div class="col-md-8">
+        <input class="form-control" formControlName="email" type="email" placeholder="Email"
+          [ngClass]="{'is-invalid': employeForm.controls['email'].invalid && (employeForm.controls['email'].dirty || employeForm.controls['email'].touched),'is-valid': employeForm.controls['email'].valid && (employeForm.controls['email'].dirty || employeForm.controls['email'].touched) }">
+        <div *ngIf="employeForm.controls['email'].invalid" class="invalid-feedback">
+          <span *ngIf="employeForm.controls['email'].errors.required">email requis</span>
+          <span *ngIf="employeForm.controls['email'].errors.pattern">email incorrecte</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- password -->
+    <div class="form-group row mb-3">
+      <label class="col-md-4 col-form-label text-right" for="password">Password*:</label>
+      <div class="col-md-8">
+        <input class="form-control" formControlName="password" type="password" placeholder="********"
+          (keypress)="setValidity()"
+          [ngClass]="{'is-invalid': employeForm.controls['password'].invalid && (employeForm.controls['password'].dirty || employeForm.controls['password'].touched),'is-valid': employeForm.controls['password'].valid && (employeForm.controls['password'].dirty || employeForm.controls['password'].touched) }">
+        <div *ngIf="employeForm.controls['password'].invalid" class="invalid-feedback">
+          <span *ngIf="employeForm.controls['password'].errors.required">Mot de passe requis</span>
+          <span *ngIf="employeForm.controls['password'].errors.minlength">longueur minimale 6 characters</span>
+          <span *ngIf="employeForm.controls['password'].errors.maxlength">longueur maximale 25 characters</span>
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+
+  <div class="col-6 border-left pt-3 mb-2 ">
+    <!-- dateRecrutement -->
+    <div class="form-group row mb-3">
+      <label class="col-md-4 col-form-label text-right" for="dateRecrutement">Date de recrutement*:</label>
+      <div class="col-md-8">
+        <input class="form-control" formControlName="dateRecrutement" type="date" (change)="compare()"
+          [ngClass]="{'is-invalid': (dateRecrutementError || dateRecrutementError2 || employeForm.controls['dateRecrutement'].invalid) && (employeForm.controls['dateRecrutement'].dirty || employeForm.controls['dateRecrutement'].touched),'is-valid': employeForm.controls['dateRecrutement'].valid && (employeForm.controls['dateRecrutement'].dirty || employeForm.controls['dateRecrutement'].touched) }">
+        <div *ngIf="employeForm.controls['dateRecrutement'].invalid" class="invalid-feedback">
+          <span *ngIf="employeForm.controls['dateRecrutement'].errors.required">Date de recrutement requise</span>
+        </div>
+        <span *ngIf="dateRecrutementError" class="text-danger error">Date de recrutement supérieure à la date
+          actuelle<br></span>
+        <span *ngIf="dateRecrutementError2" class="text-danger error">Date de recrutement inférieure à la date de
+          naissance</span>
+      </div>
+    </div>
+
+    <!-- typeContrat -->
+    <div class="form-group row mb-3">
+      <label class="col-md-4 col-form-label text-right" for="typeContrat">Type de contrat*:</label>
+      <div class="col-md-8">
+        <ng-select name="typeContrat" id="typeContrat" formControlName="typeContrat" placeholder="Type de contrat">
+          <ng-option value="cdd">CDD</ng-option>
+          <ng-option value="cdi">CDI</ng-option>
+        </ng-select>
+        <span *ngIf="employeForm.controls['typeContrat'].invalid && employeForm.controls['typeContrat'].touched"
+          class="invalid-feedback-custom  error">Type de contrat requis</span>
+      </div>
+    </div>
+
+    <!-- nss -->
+    <div class="form-group row mb-3">
+      <label class="col-md-4 col-form-label text-right" for="nss">N° sécurité sociale*:</label>
+      <div class="col-md-8">
+        <input class="form-control" formControlName="nss" type="text" placeholder="N° sécurité sociale"
+          [ngClass]="{'is-invalid': employeForm.controls['nss'].invalid && (employeForm.controls['nss'].dirty || employeForm.controls['nss'].touched),'is-valid': employeForm.controls['nss'].valid && (employeForm.controls['nss'].dirty || employeForm.controls['nss'].touched) }">
+        <div *ngIf="employeForm.controls['nss'].invalid" class="invalid-feedback">
+          <span *ngIf="employeForm.controls['nss'].errors.required">Numéro de sécurité social</span>
+        </div>
+      </div>
+    </div>
+
+    <!--banque-->
+    <div class="form-group row mb-3 text-right">
+      <label class="col-md-4 col-form-label">banque*: </label>
+      <div class="col-sm-8 text-left">
+        <ng-select formControlName="banqueId" placeholder="Selectionner la banque">
+          <ng-option *ngFor="let banque of listBanque" [value]="banque.id">
+            {{banque.nom }}
+          </ng-option>
+        </ng-select>
+        <span *ngIf="employeForm.controls['banqueId'].invalid && employeForm.controls['banqueId'].touched"
+          class="invalid-feedback-custom  error">banque requise</span>
+      </div>
+    </div>
+    
+    <!-- numCompteBancaire -->
+    <div class="form-group row mb-3">
+      <label class="col-md-4 col-form-label text-right" for="numCompteBancaire">N° compte bancaire*:</label>
+      <div class="col-md-8">
+        <input class="form-control" formControlName="numCompteBancaire" type="text" placeholder="N° compte bancaire"
+          [ngClass]="{'is-invalid': employeForm.controls['numCompteBancaire'].invalid && (employeForm.controls['numCompteBancaire'].dirty || employeForm.controls['numCompteBancaire'].touched),'is-valid': employeForm.controls['numCompteBancaire'].valid && (employeForm.controls['numCompteBancaire'].dirty || employeForm.controls['numCompteBancaire'].touched) }">
+        <div *ngIf="employeForm.controls['numCompteBancaire'].invalid" class="invalid-feedback">
+          <span *ngIf="employeForm.controls['numCompteBancaire'].errors.required">Numéro compte bancaire requis</span>
+        </div>
+      </div>
+    </div>
+
+
+    <!--Agence-->
+    <div class="form-group row mb-3 text-right">
+      <label class="col-md-4 col-form-label">Agence *: </label>
+      <div class="col-sm-8 text-left">
+        <ng-select formControlName="agenceId" placeholder="Selectionner l'agence">
+          <ng-option *ngFor="let agence of listAgences" [value]="agence.id">
+            {{agence.nom }}
+          </ng-option>
+        </ng-select>
+        <span *ngIf="employeForm.controls['agenceId'].invalid && employeForm.controls['agenceId'].touched"
+          class="invalid-feedback-custom  error">Agence requise</span>
+      </div>
+    </div>
+
+    <!--departement-->
+    <div class="form-group row mb-3 text-right">
+      <label class="col-md-4 col-form-label">Département*: </label>
+      <div class="col-sm-8 text-left">
+        <ng-select formControlName="departementId" placeholder="Selectionner le département"
+          (change)="onChangeDepartement()">
+          <ng-option *ngFor="let departement of listDepartement" [value]="departement.id">
+            {{departement.nom }}
+          </ng-option>
+        </ng-select>
+        <span *ngIf="employeForm.controls['departementId'].invalid && employeForm.controls['departementId'].touched"
+          class="invalid-feedback-custom  error">departement requis</span>
+      </div>
+    </div>
+
+    <!--fonction-->
+    <div class="form-group row mb-3 text-right">
+      <label class="col-md-4 col-form-label">Fonction*: </label>
+      <div class="col-sm-8 text-left">
+        <ng-select formControlName="fonctionId" placeholder="Selectionner la fonction">
+          <ng-option *ngFor="let fonction of listFonction" [value]="fonction.id">
+            {{fonction.nom }}
+          </ng-option>
+        </ng-select>
+        <span *ngIf="employeForm.controls['fonctionId'].invalid && employeForm.controls['fonctionId'].touched"
+          class="invalid-feedback-custom  error">fonction requise</span>
+      </div>
+    </div>
+
+    <!-- typeUser -->
+    <div class="form-group row mb-3">
+      <label class="col-md-4 col-form-label text-right" for="typeUser">Type d'utilisateur*:</label>
+      <div class="col-md-8">
+        <ng-select name="typeUser" id="typeUser" formControlName="typeUser" placeholder="Type d'utilisateur">
+          <ng-option *ngFor="let typeUser of typeEmploye" [value]="typeUser.value">{{typeUser.text}}</ng-option>
+        </ng-select>
+        <span *ngIf="employeForm.controls['typeUser'].invalid && employeForm.controls['typeUser'].touched"
+          class="invalid-feedback-custom  error">Type d'utilisateur requis</span>
+      </div>
+    </div>
+
+    <!-- isActive -->
+    <div class="form-group row mb-3">
+      <label class="col-md-4 col-form-label text-right" for="isActive">Etat d'utilisateur*:</label>
+      <div class="col-md-8">
+        <ng-select name="isActive" id="isActive" formControlName="isActive" placeholder="Etat d'utilisateur">
+          <ng-option value="true">Actif</ng-option>
+          <ng-option value="false">Inactif</ng-option>
+        </ng-select>
+        <span *ngIf="employeForm.controls['isActive'].invalid && employeForm.controls['isActive'].touched"
+          class="invalid-feedback-custom  error">Type d'utilisateur requis</span>
+      </div>
+    </div>
+</div>
+
+
+
+  <div class="col-12 d-flex justify-content-center mx-auto mt-5 ">
+    <button class="btn btn-secondary" (click)="goBack()">Retour</button>
+    <button class="btn btn-warning" *ngIf="hidden" (click)="enableEmployeForm()">Modifier</button>
+    <button class="btn btn-success" *ngIf="!hidden" ngClass="disable"  (click)="Confirm()" [disabled]="employeForm.invalid || dateNaissanceError || dateRecrutementError || dateRecrutementError2 || !employeForm.dirty">Valider</button>
+  </div>
+
+</form>

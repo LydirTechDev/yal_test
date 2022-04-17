@@ -1,0 +1,16 @@
+<div class="container-fluid">
+    <app-pagetitle title="Parametrages tarifications" [breadcrumbItems]="breadCrumbItems"></app-pagetitle>
+    <div class="row">
+        <!-- <app-service-list class="col-xl-3 col-lg-4 col-12" *ngIf="!(this.tarificationService.showServiceList | async)"> -->
+            <app-service-list class="col-xl-3 col-md-3 col-lg-4 col-12" *ngIf="this.tarificationService.showServiceList | async">
+    
+        </app-service-list>
+        <div class="col-xl-9 col-lg-8 col-12 p-0 m-0" [ngClass]="this.tarificationService.mxAutoToCard">
+            <div class="card custumH">
+                <div class="card-body" [ngClass]="this.tarificationService.editPadingMarginCard | async">
+                    <router-outlet></router-outlet>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

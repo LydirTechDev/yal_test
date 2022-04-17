@@ -1,0 +1,184 @@
+<app-pagetitle [breadcrumbItems]="breadCrumbItems"> </app-pagetitle>
+<div class="row col-12 mb-3 ml-1 d-flex justify-content-between mt-2" style="margin-top: -24px">
+  <a href="javascript:void(0);" class="btn btn-outline-primary" (click)="ajouterClient()">
+    <i class="fas fa-plus-circle">
+      <span class="mt-1 font-weight-normal pl-1">Ajouter Client</span>
+    </i>
+  </a>
+
+  <button class="btn btn-outline-success" (click)="exportClient(searchClientTerm)">
+    <i class="fas fa-file-excel">
+      <span class="mt-1 font-weight-normal pl-1">Exporter</span>
+    </i>
+  </button>
+</div>
+
+
+
+
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body">
+
+        <div class="row mb-md-2">
+          <!-- Search -->
+          <div class="col-sm-12 col-md-12">
+            <div id="tickets-table_filter" class="dataTables_filter text-md-right">
+              <label class="d-inline-flex align-items-center">Recherche:
+                <input type="text" name="searchTerm" class="form-control form-control-sm ml-2"
+                  aria-controls="tickets-table" [(ngModel)]="searchClientTerm"
+                  (ngModelChange)="searchTermUpdate(searchClientTerm)" /></label>
+            </div>
+          </div>
+          <!-- End search -->
+        </div>
+
+        <!-- Table -->
+        <div class="table-responsive">
+          <table id="basic-datatable"
+            class="table table-centered dt-responsive nowrap no-footer dtr-inline table-hover hover">
+            <thead class="py-0">
+              <tr>
+                <th>N°</th>
+                <th>Nom commercial</th>
+                <th>Nom et prénom gérant</th>
+                <th>status</th>
+                <th class="pl-4">Carte / Contrat</th>
+              </tr>
+            </thead>
+            <tbody *ngIf="!isLoading; else spiner">
+
+              <tr *ngFor="let client of clientData; let i=index " class="hover">
+                <td (click)="detailClient(client.id)">
+                  <a class="text-dark font-weight-bold">
+                    {{ client.id }}
+                  </a>
+                </td>
+                <td (click)="detailClient(client.id)" class="text-capitalize">
+                  {{ client.nomCommercial }}
+                </td>
+                <td (click)="detailClient(client.id)">
+                  <span class="text-uppercase">{{ client.nomGerant }} </span>
+                  <span class="text-capitalize">{{ client.prenomGerant }}</span>
+                </td>
+
+                <td>
+                  <ui-switch checkedLabel="Actif" uncheckedLabel="Inactif" switchColor="#74788d"
+                    [checked]="client.user.isActive" size="small"
+                    (change)="ActiveDesactive(client.id, $event,metaData.currentPage,searchClientTerm)"></ui-switch>
+                </td>
+             
+                <td class="py-0  text-left">
+                      <button mdbBtn color="mdb-color" class=" btn-sm btn btn-info " (click)="printCarte(client.id)" mdbWavesEffect><i
+                          class="fas fa-print"></i></button>
+                  <button mdbBtn color="mdb-color" class=" btn-sm btn btn-primary " (click)="printContrat(client.id)"
+                    mdbWavesEffect><i class="fas fa-print"></i></button>
+                </td>
+              </tr>
+              <tr *ngIf="clientData.length <= 0">
+                <th colspan="7" class="text-center">
+                  <div class="text-center">
+                    <p class="m-0 p-0"><i class="ri-error-warning-line customIcone"> </i> Pas
+                      de clients ! </p>
+                  </div>
+                </th>
+              </tr>
+            </tbody>
+
+            <ng-template #spiner>
+              <tbody>
+                <tr>
+                  <th colspan="7" class="text-center">
+                    <div class="spinner-border text-primary m-1" role="status">
+                      <span class="sr-only">Loading...</span>
+                    </div>
+                    <span class="d-block">Chargement ...</span>
+                  </th>
+                </tr>
+              </tbody>
+            </ng-template>
+          </table>
+        </div>
+        <!-- End table -->
+
+        <div class="row justify-content-md-between align-items-md-center mt-2">
+          <div class="col-sm-12 col-md-5">
+            <div class="dataTables_info mb-2" id="tickets-table_info" role="status" aria-live="polite">
+              Total {{ metaData.totalItems }} clients
+            </div>
+          </div>
+          <!-- Pagination -->
+          <div class="col-sm-12 col-md-5">
+            <nav aria-label="...">
+              <ul class="pagination justify-content-end">
+                <!-- <li class="page-item">
+                                        <button class="page-link info">
+                                            total utilistaeur : {{ metaData.totalItems }}
+                                        </button>
+                                    </li> -->
+                <li class="page-item">
+                  <button class="page-link" [disabled]="metaLinks.previous.length <= 0"
+                    (click)="funcPaginate(metaLinks.previous)">
+                    <span aria-hidden="true">&laquo;</span>
+                    <span class="sr-only">Previous</span>
+                  </button>
+                </li>
+                <li class="page-item">
+                  <button class="page-link" *ngIf="metaData.currentPage - 2 > 0"
+                    (click)="funcPaginate('', metaData.currentPage - 2)">
+                    {{ metaData.currentPage - 2
+                    }}<span class="sr-only"></span>
+                  </button>
+                </li>
+                <li class="page-item">
+                  <button class="page-link" *ngIf="metaData.currentPage - 1 > 0"
+                    (click)="funcPaginate('', metaData.currentPage - 1)">
+                    {{ metaData.currentPage - 1
+                    }}<span class="sr-only"></span>
+                  </button>
+                </li>
+                <li class="page-item active">
+                  <button class="page-link" (click)="funcPaginate('', metaData.currentPage)">
+                    {{ metaData.currentPage
+                    }}<span class="sr-only">(current)</span>
+                  </button>
+                </li>
+                <li class="page-item">
+                  <button class="page-link" (click)="funcPaginate('', metaData.currentPage + 1)"
+                    *ngIf="metaData.currentPage + 1 <= metaData.totalPages">
+                    {{ metaData.currentPage + 1
+                    }}<span class="sr-only"></span>
+                  </button>
+                </li>
+                <li class="page-item">
+                  <button class="page-link" (click)="funcPaginate('', metaData.currentPage + 2)"
+                    *ngIf="metaData.currentPage + 2 < metaData.totalPages">
+                    {{ metaData.currentPage + 2
+                    }}<span class="sr-only"></span>
+                  </button>
+                </li>
+                <li class="page-item">
+                  <button class="page-link" *ngIf="
+                    metaLinks.next.length != 0 &&
+                    metaData.currentPage + 2 <= metaData.totalPages
+                  ">
+                    ...
+                  </button>
+                </li>
+                <li class="page-item">
+                  <button class="page-link" [disabled]="metaLinks.next.length <= 0"
+                    (click)="funcPaginate(metaLinks.next)">
+                    <span aria-hidden="true">&raquo;</span>
+                    <span class="sr-only">Next</span>
+                  </button>
+                </li>
+              </ul>
+            </nav>
+          </div>
+          <!-- End Pagination -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

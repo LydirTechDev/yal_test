@@ -1,0 +1,374 @@
+<div class="container-fluid">
+  <app-pagetitle [breadcrumbItems]="breadCrumbItems"></app-pagetitle>
+  <div class="row mb-3 ml-1" style="margin-top: -24px">
+    <a href="javascript:void(0);" class="btn btn-outline-danger" (click)="openModal(content)">
+      <i class="fas fa-plus-circle">
+        <span class="mt-1 font-weight-normal pl-1">Ajouter une Agence</span>
+      </i>
+    </a>
+  </div>
+                  <!-- <div class="custom-file col-3 mt-2 mr-auto">
+                    <input type="file" class="custom-file-input" id="customFile" (change)="addfile($event)" placeholder="Upload file"
+                        accept=".csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
+                    <label class="custom-file-label" for="customFile">Choisir un fichier des fonctions</label>
+                </div> -->
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <div class="row mb-md-2">
+            <!-- Search -->
+            <div class="col-sm-12 col-md-12">
+              <div id="tickets-table_filter" class="dataTables_filter text-md-right">
+                <label class="d-inline-flex align-items-center">Recherche:
+                  <input type="text" name="searchTerm" class="form-control form-control-sm ml-2"
+                    aria-controls="tickets-table" [(ngModel)]="searchAgenceTerm"
+                    (ngModelChange)="searchTermUpdate(searchAgenceTerm)" /></label>
+              </div>
+            </div>
+            <!-- End search -->
+          </div>
+          <!-- Table -->
+          <div class="table-responsive">
+            <table id="basic-datatable"
+              class="table table-centered dt-responsive nowrap no-footer dtr-inline table-hover">
+              <thead>
+                <tr>
+                  <th>N°</th>
+                  <th>Nom</th>
+                  <th>code agence</th>
+                  <th>Commune</th>
+                  <th>Type</th>
+                </tr>
+              </thead>
+              <tbody *ngIf="!isLoading; else spiner">
+
+                <tr *ngFor="let agence of agenceData; let i=index " (click)="showDetail(agence.id)" class="hover">
+                  <td>
+                    <a class="text-dark font-weight-bold">
+                      {{ agence.id }}
+                    </a>
+                  </td>
+
+                  <td>
+                    {{ agence.nom }}
+                  </td>
+                  <td>
+                    {{ agence.code }}
+                  </td>
+                  <td>
+                    {{ agence.commune.nomLatin }}
+                  </td>
+                  <td>
+                    {{ agence.type }}
+                  </td>
+                </tr>
+                <tr *ngIf="agenceData.length <= 0">
+                  <th colspan="7" class="text-center">
+                    <div class="text-center">
+                      <p class="m-0 p-0"><i class="ri-error-warning-line customIcone"> </i> Pas
+                        de d'agences ! </p>
+                    </div>
+                  </th>
+                </tr>
+              </tbody>
+
+              <ng-template #spiner>
+                <tbody>
+                  <tr>
+                    <th colspan="7" class="text-center">
+                      <div class="spinner-border text-primary m-1" role="status">
+                        <span class="sr-only">Loading...</span>
+                      </div>
+                      <span class="d-block">Chargement ...</span>
+                    </th>
+                  </tr>
+                </tbody>
+              </ng-template>
+            </table>
+          </div>
+          <!-- End table -->
+          <div class="row justify-content-md-between align-items-md-center mt-2">
+            <div class="col-sm-12 col-md-5">
+              <div class="dataTables_info mb-2" id="tickets-table_info" role="status" aria-live="polite">
+                Total {{ metaData.totalItems }} agences
+              </div>
+            </div>
+            <!-- Pagination -->
+            <div class="col-sm-12 col-md-5">
+              <nav aria-label="...">
+                <ul class="pagination justify-content-end">
+                  <!-- <li class="page-item">
+                                        <button class="page-link info">
+                                            total utilistaeur : {{ metaData.totalItems }}
+                                        </button>
+                                    </li> -->
+                  <li class="page-item">
+                    <button class="page-link" [disabled]="metaLinks.previous.length <= 0"
+                      (click)="funcPaginate(metaLinks.previous)">
+                      <span aria-hidden="true">&laquo;</span>
+                      <span class="sr-only">Previous</span>
+                    </button>
+                  </li>
+                  <li class="page-item">
+                    <button class="page-link" *ngIf="metaData.currentPage - 2 > 0"
+                      (click)="funcPaginate('', metaData.currentPage - 2)">
+                      {{ metaData.currentPage - 2
+                      }}<span class="sr-only"></span>
+                    </button>
+                  </li>
+                  <li class="page-item">
+                    <button class="page-link" *ngIf="metaData.currentPage - 1 > 0"
+                      (click)="funcPaginate('', metaData.currentPage - 1)">
+                      {{ metaData.currentPage - 1
+                      }}<span class="sr-only"></span>
+                    </button>
+                  </li>
+                  <li class="page-item active">
+                    <button class="page-link" (click)="funcPaginate('', metaData.currentPage)">
+                      {{ metaData.currentPage
+                      }}<span class="sr-only">(current)</span>
+                    </button>
+                  </li>
+                  <li class="page-item">
+                    <button class="page-link" (click)="funcPaginate('', metaData.currentPage + 1)"
+                      *ngIf="metaData.currentPage + 1 <= metaData.totalPages">
+                      {{ metaData.currentPage + 1
+                      }}<span class="sr-only"></span>
+                    </button>
+                  </li>
+                  <li class="page-item">
+                    <button class="page-link" (click)="funcPaginate('', metaData.currentPage + 2)"
+                      *ngIf="metaData.currentPage + 2 < metaData.totalPages">
+                      {{ metaData.currentPage + 2
+                      }}<span class="sr-only"></span>
+                    </button>
+                  </li>
+                  <li class="page-item">
+                    <button class="page-link" *ngIf="
+                    metaLinks.next.length != 0 &&
+                    metaData.currentPage + 2 <= metaData.totalPages
+                  ">
+                      ...
+                    </button>
+                  </li>
+                  <li class="page-item">
+                    <button class="page-link" [disabled]="metaLinks.next.length <= 0"
+                      (click)="funcPaginate(metaLinks.next)">
+                      <span aria-hidden="true">&raquo;</span>
+                      <span class="sr-only">Next</span>
+                    </button>
+                  </li>
+                </ul>
+              </nav>
+            </div>
+            <!-- End Pagination -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Contacts model  -->
+<ng-template #content role="document" let-modal="close">
+  <div class="modal-header">
+    <h5 class="modal-title">Ajouter une Agence</h5>
+    <button type="button" class="close" aria-label="Close" (click)="modal('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body p-3">
+    <aw-wizard [navBarLayout]="'large-empty-symbols'">
+      <form class="needs-validation col-12" [formGroup]="agenceForm">
+        <!-- Step One -->
+        <aw-wizard-step stepTitle="Information de l'agence">
+          <ng-template awWizardStepSymbol>1</ng-template>
+
+          <div class="row mt-2">
+            <label class="col-sm-4 col-form-label  text-right"> Wilaya : </label>
+            <div class="col-sm-7">
+              <ng-select formControlName="wilaya" placeholder="Selectionne la commune" (change)="onChangWilaya()">
+                <ng-option *ngFor="let wilaya of wilayaList" [value]="wilaya.id">
+                  {{ wilaya.nomLatin }}
+                </ng-option>
+              </ng-select>
+            </div>
+          </div>
+
+          <div class="row mt-2">
+            <label class="col-sm-4 col-form-label  text-right"> Commune: </label>
+            <div class="col-sm-7">
+              <ng-select formControlName="communeId" placeholder="Selectionne la commune" (change)="onChangCommune()">
+                <ng-option *ngFor="let commune of communesList" [value]="commune.id">
+                  {{ commune.nomLatin }}
+                </ng-option>
+              </ng-select>
+            </div>
+          </div>
+
+          <div class="row mt-2">
+            <label class="col-sm-4 col-form-label  text-right"> Type de l'agence:</label>
+            <div class="col-sm-7">
+              <ng-select [items]="typeAgences" formControlName="type" bindLabel="type" bindValue="name"
+                placeholder="Selectionner le type d'gance">
+
+              </ng-select>
+            </div>
+          </div>
+
+          <div class="row mt-2">
+            <label class="col-sm-4 col-form-label  text-right"> Nom de l'agence:</label>
+            <div class="col-sm-7">
+              <input type="text" class="form-control" id="nom" placeholder="Entrer Nom de l'agence" formControlName="nom"
+                [ngClass]="{ 'is-invalid': submitted && form.nom.errors }" />
+              <div *ngIf="submitted && form.nom.errors" class="invalid-feedback">
+                <span *ngIf="form.nom.errors.required">Name is mendatory.</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="row mt-2">
+            <label class="col-sm-4 col-form-label  text-right"> adresse :</label>
+            <div class="col-sm-7">
+              <input type="text" class="form-control" id="adresse" placeholder="Entrer adresse de l'agence"
+                formControlName="adresse" [ngClass]="{ 'is-invalid': submitted && form.adresse.errors }" />
+              <div *ngIf="submitted && form.adresse.errors" class="invalid-feedback">
+                <span *ngIf="form.adresse.errors.required">Name is mendatory.</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="row mt-2">
+            <label class="col-sm-4 col-form-label  text-right"> N° du registre du commerce :</label>
+            <div class="col-sm-7">
+              <input type="text" class="form-control" id="nrc" placeholder="Entrer N° du registre du commerce"
+                formControlName="nrc" [ngClass]="{ 'is-invalid': submitted && form.nrc.errors }" />
+              <div *ngIf="submitted && form.nrc.errors" class="invalid-feedback">
+                <span *ngIf="form.nrc.errors.required">Name is mendatory.</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="row mt-2">
+            <label class="col-sm-4 col-form-label  text-right"> N° d'identification fiscal :</label>
+            <div class="col-sm-7">
+              <input type="text" class="form-control" id="nif" placeholder="Entrer NIF" formControlName="nif"
+                [ngClass]="{ 'is-invalid': submitted && form.nif.errors }" />
+              <div *ngIf="submitted && form.nif.errors" class="invalid-feedback">
+                <span *ngIf="form.nif.errors.required">Name is mendatory.</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="row mt-2">
+            <label class="col-sm-4 col-form-label  text-right"> N° d'Identification Statistique :</label>
+            <div class="col-sm-7">
+              <input type="text" class="form-control" id="nis" placeholder="Entrer NIS" formControlName="nis"
+                [ngClass]="{ 'is-invalid': submitted && form.nis.errors }" />
+              <div *ngIf="submitted && form.nis.errors" class="invalid-feedback">
+                <span *ngIf="form.nis.errors.required">Name is mendatory.</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="row mt-2">
+            <label class="col-sm-4 col-form-label  text-right"> N° Ai :</label>
+            <div class="col-sm-7">
+              <input type="text" class="form-control" id="nAI" placeholder="Entrer nAI" formControlName="nAI"
+                [ngClass]="{ 'is-invalid': submitted && form.nAI.errors }" />
+              <div *ngIf="submitted && form.nAI.errors" class="invalid-feedback">
+                <span *ngIf="form.nAI.errors.required">Name is mendatory.</span>
+              </div>
+            </div>
+          </div>
+
+          <ul class="list-inline wizard mb-0 pg-2 mt-2">
+            <li class="next list-inline-item float-right">
+              <button class="btn btn-primary " awNextStep *ngIf="validateFirstStep">Suivant</button>
+            </li>
+          </ul>
+        </aw-wizard-step>
+
+        <!-- Confirme Step -->
+        <aw-wizard-step stepTitle="Confirm Detail">
+          <ng-template awWizardStepSymbol>2</ng-template>
+          <div class="p-3 text-left">
+
+            <div class="row pb-1">
+              <div class="col-12">
+                <label class="mr-2">Wilaya de l'Agence: </label>
+                <label for="wilaya">{{wilayaAgence}}</label>
+              </div>
+            </div>
+
+            <div class="row pb-1">
+              <div class="col-12">
+                <label class="mr-2">Commune de l'Agence: </label>
+                <label for="communeId">{{communeAgence}}</label>
+              </div>
+            </div>
+
+            <div class="row pb-1">
+              <div class="col-12">
+                <label class="mr-2">Nom de l'Agence: </label>
+                <label for="nom">{{this.agenceForm.get('nom').value}}</label>
+              </div>
+            </div>
+            <div class="row pb-1">
+              <div class="col-12">
+                <label class="mr-2">Adresse de l'Agence: </label>
+                <label for="adresse">{{this.agenceForm.get('adresse').value}}</label>
+              </div>
+            </div>
+            <div class="row pb-1">
+              <div class="col-12">
+                <label class="mr-2">N° du registre du commerce: </label>
+                <label for="nrc">{{this.agenceForm.get('nrc').value}}</label>
+              </div>
+            </div>
+
+            <div class="row pb-1">
+              <div class="col-12">
+                <label class="mr-2">N° d'identification fiscal: </label>
+                <label for="nif">{{this.agenceForm.get('nif').value}}</label>
+              </div>
+            </div>
+
+            <div class="row pb-1">
+              <div class="col-12">
+                <label class="mr-2">N° d'Identification Statistique: </label>
+                <label for="nis">{{this.agenceForm.get('nis').value}}</label>
+              </div>
+            </div>
+
+            <div class="row pb-1">
+              <div class="col-12">
+                <label class="mr-2">N° d'Identification Statistique: </label>
+                <label for="nAI">{{this.agenceForm.get('nAI').value}}</label>
+              </div>
+            </div>
+
+            <ng-template #nonLivrable>
+              <label class="mr-2">Commune No Livrable <i class="fas fa-ban text-danger"></i></label>
+            </ng-template>
+          </div>
+          <ul class="list-inline wizard mb-0">
+            <li class="previous list-inline-item">
+              <button class="btn btn-primary" awPreviousStep>Previous</button>
+            </li>
+          </ul>
+          <div class="text-center">
+            <button class="btn btn-outline-primary" type="submit" (click)="createAgence()" *ngIf="!btnSpinner">
+              Valider
+            </button>
+            <button class="btn btn-outline-primary" type="button" disabled *ngIf="btnSpinner">
+              <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+              Ajout en cours
+            </button>
+          </div>
+        </aw-wizard-step>
+      </form>
+    </aw-wizard>
+  </div>
+</ng-template>

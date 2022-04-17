@@ -1,0 +1,40 @@
+<div>
+    <div class="row mb-3 col-12 align-center text-center">
+        <h4 class="labtrack mt-1 mr-2"><i class="bi bi-collection "></i>Créer sac du trajet retour vers wilaya </h4>
+        <form [formGroup]="formWilayaSelected" class="col-6 col-sm-4 col-md-3 text-center">
+            <ng-select formControlName="wilayaSelected" placeholder=" Entrer la wilaya destination"
+             [clearable]="false" (change)="getColiVersWilya($event)" 
+             [readonly]="selected.length>0" appendTo="body">
+                <ng-option *ngFor="let wilaya of wilaya" [value]="wilaya.id">{{ wilaya.code}} {{ wilaya.nomLatin }}
+                </ng-option>
+            </ng-select>
+        </form>
+    </div>
+
+    <hr class=" mx-auto">
+    <div class="col-12 col-md-8  mx-auto text-center" style="background:transparent;"
+        *ngIf="listeColisPresRetourVersWilaya.length > 0">
+
+        <form [formGroup]="formdata">
+            <div class="form-groupe col-12 col-md-10 mx-auto d-flex m-0 ">
+                <input type="text" formControlName="tracking" class="form-control mr-1 mt-1 shadow" placeholder="11111111"
+                    autofocus>
+                <input type="submit" class="btn btn-info shadow px-4 mx-1" (click)="fillSac()" value="ajouter">
+            </div>
+        </form>
+        <hr class=" mx-auto">
+    </div>
+    <div class=" text-dark">
+        <label class='m-3 p-2 bg-info text-white' *ngFor="let i of selected">{{i}}
+            <i class="fas fa-times  mx-2 text-danger" (click)="deletselected(i)"></i>
+        </label>
+    </div>
+    <div class="mx-auto text-center mt-5" *ngIf="selected.length > 0">
+        <button type="submit" class="btn btn-success shadow btn-lg  px-4 mx-1" (click)="createSac()">Créer le sac
+        </button>
+    </div>
+    <p class="text-center mx-auto mt-1 display-1" *ngIf = "listeColisPresRetourVersWilaya.length > 0">
+        {{count}}
+    </p>
+
+</div>

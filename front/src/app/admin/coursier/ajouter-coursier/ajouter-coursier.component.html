@@ -1,0 +1,242 @@
+<app-pagetitle title="Ajouter un coursier" [breadcrumbItems]="breadCrumbItems"> </app-pagetitle>
+<form [formGroup]="coursierForm" class="form-group row col-12 ">
+  <div class="col-6 border-right border-secondary pt-3 mb-2">
+
+    <!-- Nom -->
+    <div class="form-group row mb-3">
+      <label class="col-md-4 col-form-label text-right" for="nom">Nom*:</label>
+      <div class="col-md-8">
+        <input class="form-control" formControlName="nom" type="text" placeholder="Nom"
+          [ngClass]="{'is-invalid': coursierForm.controls['nom'].invalid && (coursierForm.controls['nom'].dirty || coursierForm.controls['nom'].touched),'is-valid': coursierForm.controls['nom'].valid && (coursierForm.controls['nom'].dirty || coursierForm.controls['nom'].touched) }">
+        <div *ngIf="coursierForm.controls['nom'].invalid" class="invalid-feedback">
+          <span *ngIf="coursierForm.controls['nom'].errors.required">Nom requis</span>
+          <span *ngIf="coursierForm.controls['nom'].errors.minlength">longueur minimale 3 characters</span>
+          <span *ngIf="coursierForm.controls['nom'].errors.maxlength">longueur maximale 30 characters</span>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- prenom -->
+    <div class="form-group row mb-3">
+      <label class="col-md-4 col-form-label text-right" for="prenom">Prénom*:</label>
+      <div class="col-md-8">
+        <input class="form-control" formControlName="prenom" type="text" placeholder="Prénom"
+          [ngClass]="{'is-invalid': coursierForm.controls['prenom'].invalid && (coursierForm.controls['prenom'].dirty || coursierForm.controls['prenom'].touched),'is-valid': coursierForm.controls['prenom'].valid && (coursierForm.controls['prenom'].dirty || coursierForm.controls['prenom'].touched) }">
+        <div *ngIf="coursierForm.controls['prenom'].invalid" class="invalid-feedback">
+          <span *ngIf="coursierForm.controls['prenom'].errors.required">prénom requis</span>
+          <span *ngIf="coursierForm.controls['prenom'].errors.minlength">longueur minimale 3 characters</span>
+          <span *ngIf="coursierForm.controls['prenom'].errors.maxlength">longueur maximale 30 characters</span>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- dateNaissance -->
+    <div class="form-group row mb-3">
+      <label class="col-md-4 col-form-label text-right" for="dateNaissance">Date de naissance*:</label>
+      <div class="col-md-8">
+        <input class="form-control" formControlName="dateNaissance" type="date" placeholder="Date de naissance" (change)="compare()"
+        [ngClass]="{'is-invalid': (dateNaissanceError || coursierForm.controls['dateNaissance'].invalid) && (coursierForm.controls['dateNaissance'].dirty || coursierForm.controls['dateNaissance'].touched),'is-valid': coursierForm.controls['dateNaissance'].valid && (coursierForm.controls['dateNaissance'].dirty || coursierForm.controls['dateNaissance'].touched) }">
+        <div *ngIf="coursierForm.controls['dateNaissance'].invalid" class="invalid-feedback">
+          <span *ngIf="coursierForm.controls['dateNaissance'].errors.required">Date naissance requise</span>
+        </div>
+        <span *ngIf="dateNaissanceError" class="text-danger error">Date de naissance supérieure à la date actuelle</span>
+      </div>
+    </div>
+
+    <!-- lieuNaissance -->
+    <div class="form-group row mb-3">
+      <label class="col-md-4 col-form-label text-right" for="lieuNaissance">Lieu de naissance*:</label>
+      <div class="col-md-8">
+        <input class="form-control" formControlName="lieuNaissance" type="text" placeholder="lieuNaissance"
+          [ngClass]="{'is-invalid': coursierForm.controls['lieuNaissance'].invalid && (coursierForm.controls['lieuNaissance'].dirty || coursierForm.controls['lieuNaissance'].touched),'is-valid': coursierForm.controls['lieuNaissance'].valid && (coursierForm.controls['lieuNaissance'].dirty || coursierForm.controls['lieuNaissance'].touched) }">
+        <div *ngIf="coursierForm.controls['lieuNaissance'].invalid" class="invalid-feedback">
+          <span *ngIf="coursierForm.controls['lieuNaissance'].errors.required">lieu de naissance requis</span>
+          <span *ngIf="coursierForm.controls['lieuNaissance'].errors.minlength">longueur minimale 5 characters</span>
+          <span *ngIf="coursierForm.controls['lieuNaissance'].errors.maxlength">longueur maximale 50 characters</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- adresse -->
+    <div class="form-group row mb-3">
+      <label class="col-md-4 col-form-label text-right" for="adresse">Adresse*:</label>
+      <div class="col-md-8">
+        <input class="form-control" formControlName="adresse" type="text" placeholder="Adresse"
+          [ngClass]="{'is-invalid': coursierForm.controls['adresse'].invalid && (coursierForm.controls['adresse'].dirty || coursierForm.controls['adresse'].touched),'is-valid': coursierForm.controls['adresse'].valid && (coursierForm.controls['adresse'].dirty || coursierForm.controls['adresse'].touched) }">
+        <div *ngIf="coursierForm.controls['adresse'].invalid" class="invalid-feedback">
+          <span *ngIf="coursierForm.controls['adresse'].errors.required">adresse requis</span>
+          <span *ngIf="coursierForm.controls['adresse'].errors.minlength">longueur minimale 10 characters</span>
+          <span *ngIf="coursierForm.controls['adresse'].errors.maxlength">longueur maximale 100 characters</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- numTelephone -->
+    <div class="form-group row mb-3">
+      <label class="col-md-4 col-form-label text-right" for="numTelephone">Num de téléphone*:</label>
+      <div class="col-md-8">
+        <input class="form-control" formControlName="numTelephone" type="text" placeholder="00-00-00-00-00" mask="00-00-00-00-00"
+          [ngClass]="{'is-invalid': coursierForm.controls['numTelephone'].invalid && (coursierForm.controls['numTelephone'].dirty || coursierForm.controls['numTelephone'].touched),'is-valid': coursierForm.controls['numTelephone'].valid && (coursierForm.controls['numTelephone'].dirty || coursierForm.controls['numTelephone'].touched) }">
+        <div *ngIf="coursierForm.controls['numTelephone'].invalid" class="invalid-feedback">
+          <span *ngIf="coursierForm.controls['numTelephone'].errors.required">Num Telephone requis</span>
+          <span *ngIf="coursierForm.controls['numTelephone'].errors.minlength">longueur minimale 10 characters</span>
+          <span *ngIf="coursierForm.controls['numTelephone'].errors.maxlength">longueur maximale 10 characters</span>
+        </div>
+      </div>
+    </div>
+
+
+
+    <!-- email -->
+    <div class="form-group row mb-3">
+      <label class="col-md-4 col-form-label text-right" for="email">Email*:</label>
+      <div class="col-md-8">
+        <input class="form-control" formControlName="email" type="email" placeholder="Email"
+          [ngClass]="{'is-invalid': coursierForm.controls['email'].invalid && (coursierForm.controls['email'].dirty || coursierForm.controls['email'].touched),'is-valid': coursierForm.controls['email'].valid && (coursierForm.controls['email'].dirty || coursierForm.controls['email'].touched) }">
+        <div *ngIf="coursierForm.controls['email'].invalid" class="invalid-feedback">
+          <span *ngIf="coursierForm.controls['email'].errors.required">email requis</span>
+          <span *ngIf="coursierForm.controls['email'].errors.pattern">email incorrecte</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- password -->
+    <div class="form-group row mb-3">
+      <label class="col-md-4 col-form-label text-right" for="password">Password*:</label>
+      <div class="col-md-8">
+        <input class="form-control" formControlName="password" type="password" placeholder="Password"
+          [ngClass]="{'is-invalid': coursierForm.controls['password'].invalid && (coursierForm.controls['password'].dirty || coursierForm.controls['password'].touched),'is-valid': coursierForm.controls['password'].valid && (coursierForm.controls['password'].dirty || coursierForm.controls['password'].touched) }">
+        <div *ngIf="coursierForm.controls['password'].invalid" class="invalid-feedback">
+          <span *ngIf="coursierForm.controls['password'].errors.required">Mot de passe requis</span>
+          <span *ngIf="coursierForm.controls['password'].errors.minlength">longueur minimale 6 characters</span>
+          <span *ngIf="coursierForm.controls['password'].errors.maxlength">longueur maximale 25 characters</span>
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+
+  <div class="col-6 border-left pt-3 mb-2 ">
+
+    <!-- dateRecrutement -->
+    <div class="form-group row mb-3">
+      <label class="col-md-4 col-form-label text-right" for="dateRecrutement">Date de recrutement*:</label>
+      <div class="col-md-8">
+        <input class="form-control" formControlName="dateRecrutement" type="date" (change)="compare()"
+        [ngClass]="{'is-invalid': (dateRecrutementError || dateRecrutementError2 || coursierForm.controls['dateRecrutement'].invalid) && (coursierForm.controls['dateRecrutement'].dirty || coursierForm.controls['dateRecrutement'].touched),'is-valid': coursierForm.controls['dateRecrutement'].valid && (coursierForm.controls['dateRecrutement'].dirty || coursierForm.controls['dateRecrutement'].touched) }">
+        <div *ngIf="coursierForm.controls['dateRecrutement'].invalid" class="invalid-feedback">
+          <span *ngIf="coursierForm.controls['dateRecrutement'].errors.required">Date de recrutement requise</span>
+        </div>
+        <span *ngIf="dateRecrutementError" class="text-danger error">Date de recrutement supérieure à la date actuelle<br></span>
+        <span *ngIf="dateRecrutementError2" class="text-danger error">Date de recrutement inférieure à la date de naissance</span>
+      </div>
+    </div>
+
+    <!-- typeContrat -->
+    <div class="form-group row mb-3">
+      <label class="col-md-4 col-form-label text-right" for="typeContrat">Type de contrat*:</label>
+      <div class="col-md-8">
+        <ng-select name="typeContrat" id="typeContrat" formControlName="typeContrat" placeholder="Type de contrat">
+          <ng-option value="cdd">CDD</ng-option>
+          <ng-option value="cdi">CDI</ng-option>
+        </ng-select>
+        <span *ngIf="coursierForm.controls['typeContrat'].invalid && coursierForm.controls['typeContrat'].touched"
+          class="invalid-feedback-custom  error">Type de contrat requis</span>
+      </div>
+    </div>
+
+    <!-- montantRamassage -->
+    <div class="form-group row mb-3">
+      <label class="col-md-4 col-form-label text-right" for="montantRamassage">Montant ramassage*:</label>
+      <div class="col-md-8">
+        <input class="form-control" formControlName="montantRamassage" type="number" min="0"
+          placeholder="Montant de ramassage"
+          [ngClass]="{'is-invalid': coursierForm.controls['montantRamassage'].invalid && (coursierForm.controls['montantRamassage'].dirty || coursierForm.controls['montantRamassage'].touched),'is-valid': coursierForm.controls['montantRamassage'].valid && (coursierForm.controls['montantRamassage'].dirty || coursierForm.controls['montantRamassage'].touched) }">
+        <div *ngIf="coursierForm.controls['montantRamassage'].invalid" class="invalid-feedback">
+          <span *ngIf="coursierForm.controls['montantRamassage'].errors.required">Montant ramassage requis</span>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- montantLivraison -->
+    <div class="form-group row mb-3">
+      <label class="col-md-4 col-form-label text-right" for="montantLivraison">Montant de Livraison*:</label>
+      <div class="col-md-8">
+        <input class="form-control" formControlName="montantLivraison" type="number" min="0"
+          placeholder="Montant de Livraison"
+          [ngClass]="{'is-invalid': coursierForm.controls['montantLivraison'].invalid && (coursierForm.controls['montantLivraison'].dirty || coursierForm.controls['montantLivraison'].touched),'is-valid': coursierForm.controls['montantLivraison'].valid && (coursierForm.controls['montantLivraison'].dirty || coursierForm.controls['montantLivraison'].touched) }">
+        <div *ngIf="coursierForm.controls['montantLivraison'].invalid" class="invalid-feedback">
+          <span *ngIf="coursierForm.controls['montantLivraison'].errors.required">Montant livraison requis</span>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- MarqueVehicule -->
+    <div class="form-group row mb-3">
+      <label class="col-md-4 col-form-label text-right" for="MarqueVehicule">Marque de vehicule*:</label>
+      <div class="col-md-8">
+        <input class="form-control" formControlName="MarqueVehicule" type="text" placeholder="Marque de vehicule"
+          [ngClass]="{'is-invalid': coursierForm.controls['MarqueVehicule'].invalid && (coursierForm.controls['MarqueVehicule'].dirty || coursierForm.controls['MarqueVehicule'].touched),'is-valid': coursierForm.controls['MarqueVehicule'].valid && (coursierForm.controls['MarqueVehicule'].dirty || coursierForm.controls['MarqueVehicule'].touched) }">
+        <div *ngIf="coursierForm.controls['MarqueVehicule'].invalid" class="invalid-feedback">
+          <span *ngIf="coursierForm.controls['MarqueVehicule'].errors.required">Marque Vehicule requise</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- immatriculationVehicule -->
+    <div class="form-group row mb-3">
+      <label class="col-md-4 col-form-label text-right" for="immatriculationVehicule">Immatriculation *:</label>
+      <div class="col-md-8">
+        <input class="form-control" formControlName="immatriculationVehicule" type="text"
+          placeholder="Immatriculation de vehicule"
+          [ngClass]="{'is-invalid': coursierForm.controls['immatriculationVehicule'].invalid && (coursierForm.controls['immatriculationVehicule'].dirty || coursierForm.controls['immatriculationVehicule'].touched),'is-valid': coursierForm.controls['immatriculationVehicule'].valid && (coursierForm.controls['immatriculationVehicule'].dirty || coursierForm.controls['immatriculationVehicule'].touched) }">
+        <div *ngIf="coursierForm.controls['immatriculationVehicule'].invalid" class="invalid-feedback">
+          <span *ngIf="coursierForm.controls['immatriculationVehicule'].errors.required">Immatriculation Vehicule
+            requis</span>
+        </div>
+      </div>
+    </div>
+
+    <!--agence-->
+    <div class="form-group row mb-3 text-right">
+      <label class="col-md-4 col-form-label">Agence *: </label>
+      <div class="col-sm-8 text-left">
+        <ng-select formControlName="agenceId" placeholder="Selectionner l'agence">
+          <ng-option *ngFor="let agence of listAgences" [value]="agence.id">
+            {{agence.nom }}
+          </ng-option>
+        </ng-select>
+        <span *ngIf="coursierForm.controls['agenceId'].invalid && coursierForm.controls['agenceId'].touched"
+        class="invalid-feedback-custom  error">Agence requise</span>
+      </div>
+    </div>
+
+
+        <!-- isActive -->
+        <div class="form-group row mb-3">
+          <label class="col-md-4 col-form-label text-right" for="isActive">Etat d'utilisateur*:</label>
+          <div class="col-md-8">
+            <ng-select name="isActive" id="isActive" formControlName="isActive" placeholder="Etat d'utilisateur">
+              <ng-option value="true">Actif</ng-option>
+              <ng-option value="false">Inactif</ng-option>
+            </ng-select>
+            <span *ngIf="coursierForm.controls['isActive'].invalid && coursierForm.controls['isActive'].touched"
+              class="invalid-feedback-custom  error">Type d'utilisateur requis</span>
+          </div>
+        </div>
+
+
+
+
+  </div>
+
+  <div class="col-12 d-flex justify-content-center mx-auto  ">
+    <button class="btn btn-secondary" (click)="goBack()">Retour</button>
+    <button class="btn btn-success" (click)="Confirm()" ngClass="disable" [disabled]="coursierForm.invalid || dateNaissanceError || dateRecrutementError || dateRecrutementError2" >Valider</button>
+  </div>
+</form>

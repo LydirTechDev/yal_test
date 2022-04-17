@@ -1,0 +1,62 @@
+<app-pagetitle title="Detail de la rotation N°{{rotationForm.get('numero').value}}" [breadcrumbItems]="breadCrumbItems"></app-pagetitle>
+<p></p>
+
+<form [formGroup]="rotationForm" class="form-group row col-12 mt-4">
+  <div class="col-6 border-secondary pt-3 mb-2 mx-auto">
+
+    <!--wilaya depart-->
+    <div class="form-group row mb-3 text-right">
+      <label class="col-md-4 col-form-label"> Wilaya de départ*: </label>
+      <div class="col-sm-8 text-left">
+        <ng-select formControlName="wilayaDepartId" placeholder=" Selectionner la wilaya de depart">
+          <ng-option *ngFor="let wilaya of listWilaya" [value]="wilaya.id">
+            {{ wilaya.codeWilaya }} {{ wilaya.nomLatin }}
+          </ng-option>
+        </ng-select>
+        <span *ngIf="rotationForm.controls['wilayaDepartId'].invalid && rotationForm.controls['wilayaDepartId'].touched"
+          class="invalid-feedback-custom">Wilaya requise</span>
+        <span *ngIf="rotationForm.controls['wilayaDepartId'].valid && rotationForm.controls['wilayaDepartId'].touched"
+          class="valid-feedback-custom">Wilaya valide</span>
+      </div>
+    </div>
+
+    <!--wilaya destination-->
+    <div class="form-group row mb-3 text-right">
+      <label class="col-md-4 col-form-label"> Wilaya de destination*: </label>
+      <div class="col-sm-8 text-left">
+        <ng-select formControlName="wilayaDestinationId" placeholder=" Selectionner la wilaya" >
+          <ng-option *ngFor="let wilaya of listWilaya" [value]="wilaya.id">
+            {{ wilaya.codeWilaya }} {{ wilaya.nomLatin }}
+          </ng-option>
+        </ng-select>
+        <span *ngIf="rotationForm.controls['wilayaDestinationId'].invalid && rotationForm.controls['wilayaDestinationId'].touched"
+          class="invalid-feedback-custom">Wilaya requise</span>
+        <span *ngIf="rotationForm.controls['wilayaDestinationId'].valid && rotationForm.controls['wilayaDestinationId'].touched"
+          class="valid-feedback-custom">Wilaya valide</span>
+      </div>
+    </div>
+
+    <!--Zones-->
+    <div class="form-group row mb-3 text-right">
+      <label class="col-md-4 col-form-label"> Zone*: </label>
+      <div class="col-sm-8 text-left">
+        <ng-select formControlName="zoneId" placeholder=" Selectionner la zone">
+          <ng-option *ngFor="let zone of listZone" [value]="zone.id">
+            {{ zone.codeZone }}
+          </ng-option>
+        </ng-select>
+        <span *ngIf="rotationForm.controls['zoneId'].invalid && rotationForm.controls['zoneId'].touched"
+          class="invalid-feedback-custom">Zone requise</span>
+        <span *ngIf="rotationForm.controls['zoneId'].valid && rotationForm.controls['zoneId'].touched"
+          class="valid-feedback-custom">Zone valide</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 d-flex justify-content-center mx-auto mt-5 ">
+    <button class="btn btn-secondary" (click)="goBack()">Retour</button>
+    <button class="btn btn-warning" *ngIf="hidden" (click)="enableRotationForm()">Modifier</button>
+    <button class="btn btn-success" *ngIf="!hidden" (click)="Confirm()" [disabled]="!rotationForm.dirty || rotationForm.invalid">Valider</button>
+  </div>
+
+</form>

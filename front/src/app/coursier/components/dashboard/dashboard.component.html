@@ -1,0 +1,111 @@
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+            <h4 class="mb-sm-0">Dashboard</h4>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xl-12">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex">
+                            <div class="flex-1 overflow-hidden">
+                                <p class="text-truncate font-size-14 mb-2">Montant à payer</p>
+                                <h4 class="mb-0 "> {{statistique.montant > 0 ? statistique.montant : 0 }} DA
+                                </h4>
+                            </div>
+                            <div class="text-primary ml-auto">
+                                <i class="ri-coin-line text-success font-size-24"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex">
+                            <div class="flex-1 overflow-hidden">
+                                <p class="text-truncate font-size-14 mb-2">Colis en ma possession</p>
+                                <h4 class="mb-0">{{statistique.total > 0 ? statistique.total : 0}}</h4>
+                            </div>
+                            <div class="text-primary ml-auto">
+                                <i class="ri-stack-line font-size-24"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex">
+                            <div class="flex-1 overflow-hidden">
+                                <p class="text-truncate font-size-14 mb-2">Colis en attente de recevoir</p>
+                                <h4 class="mb-0">{{statistique.enAttente > 0 ? statistique.enAttente : 0}}</h4>
+                            </div>
+                            <div class="text-primary ml-auto">
+                                <i class="ri-notification-3-line font-size-24"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- end row -->
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex">
+                            <div class="flex-1 overflow-hidden">
+                                <p class="text-truncate font-size-14 mb-2">Colis livrés</p>
+                                <h4 class="mb-0">{{statistique.livre > 0 ? statistique.livre : 0}}</h4>
+                            </div>
+                            <div class="text-primary ml-auto">
+                                <i class="ri-check-double-line text-success font-size-24"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex">
+                            <div class="flex-1 overflow-hidden">
+                                <p class="text-truncate font-size-14 mb-2">Colis échangé</p>
+                                <h4 class="mb-0 "> {{statistique.echange > 0 ? statistique.echange : 0}}
+                                </h4>
+                            </div>
+                            <div class="text-primary ml-auto">
+                                <i class="ri-exchange-line text-muted font-size-24"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!---->
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex">
+                            <div class="flex-1 overflow-hidden">
+                                <p class="text-truncate font-size-14 mb-2">Colis echec</p>
+                                <h4 class="mb-0">{{statistique.echec > 0 ? statistique.echec : 0}}</h4>
+                            </div>
+                            <div class="text-primary ml-auto">
+                                <i class="ri-spam-3-line text-warning font-size-24"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

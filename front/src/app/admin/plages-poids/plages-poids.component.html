@@ -1,0 +1,7 @@
+<div class="card-body border-top">
+    <div>
+        <h5 class="font-size-14 mb-4">Price</h5>
+        <ng5-slider [(value)]="pricevalue" [(highValue)]="max" [options]="priceoption"
+            (valueChange)="valueChange($event,true)" (highValueChange)="valueChange($event,false)"></ng5-slider>
+    </div>
+</div>

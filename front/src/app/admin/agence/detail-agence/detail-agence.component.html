@@ -1,0 +1,147 @@
+<app-pagetitle title="Detail de l'agence {{agenceForm.get('nom').value}}" [breadcrumbItems]="breadCrumbItems"></app-pagetitle>
+
+<form [formGroup]="agenceForm" class="form-group row col-12 mt-5">
+  <div class="col-6 border-right border-secondary pt-3 mb-2">
+
+    <!-- Nom -->
+    <div class="form-group row mb-3">
+      <label class="col-md-3 col-form-label text-right" for="nom">Nom*:</label>
+      <div class="col-md-9">
+        <input class="form-control" formControlName="nom" type="text" placeholder="Nom"
+          [ngClass]="{'is-invalid': agenceForm.controls['nom'].invalid && (agenceForm.controls['nom'].dirty || agenceForm.controls['nom'].touched),'is-valid': agenceForm.controls['nom'].valid && (agenceForm.controls['nom'].dirty || agenceForm.controls['nom'].touched) }">
+        <div *ngIf="agenceForm.controls['nom'].invalid" class="invalid-feedback">
+          <span *ngIf="agenceForm.controls['nom'].errors.required">Nom requis</span>
+          <span *ngIf="agenceForm.controls['nom'].errors.minlength">longueur minimale 3 characters</span>
+          <span *ngIf="agenceForm.controls['nom'].errors.maxlength">longueur maximale 30 characters</span>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- nrc -->
+    <div class="form-group row mb-3 ">
+      <label class="col-md-3 col-form-label text-right">Nrc*:</label>
+      <div class="col-md-9">
+        <input class="form-control" formControlName="nrc" placeholder="nrc"
+          [ngClass]="{'is-invalid': agenceForm.controls['nrc'].invalid && (agenceForm.controls['nrc'].dirty || agenceForm.controls['nrc'].touched),'is-valid': agenceForm.controls['nrc'].valid && (agenceForm.controls['nrc'].dirty || agenceForm.controls['nrc'].touched) }">
+        <div *ngIf="agenceForm.controls['nrc'].invalid" class="invalid-feedback">
+          <span *ngIf="agenceForm.controls['nrc'].errors.required">nrc requis</span>
+          <span *ngIf="agenceForm.controls['nrc'].errors.minlength"> la longueur est de 14 characters</span>
+          <span *ngIf="agenceForm.controls['nrc'].errors.maxlength"> la longueur est de 14 characters</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Nif -->
+    <div class="form-group row mb-3 ">
+      <label class="col-md-3 col-form-label text-right">Nif*:</label>
+      <div class="col-md-9">
+        <div class="input-group">
+          <input class="form-control" formControlName="nif" placeholder="nif"
+            [ngClass]="{'is-invalid': agenceForm.controls['nif'].invalid && (agenceForm.controls['nif'].dirty || agenceForm.controls['nif'].touched),'is-valid': agenceForm.controls['nif'].valid && (agenceForm.controls['nif'].dirty || agenceForm.controls['nif'].touched) }">
+          <div *ngIf="agenceForm.controls['nif'].invalid" class="invalid-feedback">
+            <span *ngIf="agenceForm.controls['nif'].errors.required">nif requis</span>
+            <span *ngIf="agenceForm.controls['nif'].errors.minlength">longueur est de 16 characters.</span>
+            <span *ngIf="agenceForm.controls['nif'].errors.maxlength">longueur est de 16 characters.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Nis -->
+    <div class="form-group row mb-3 ">
+      <label class="col-md-3 col-form-label text-right">Nis*:</label>
+      <div class="col-md-9">
+        <div class="input-group">
+          <input class="form-control" formControlName="nis" placeholder="Numéro d’Identification Statistique "
+            [ngClass]="{'is-invalid': agenceForm.controls['nis'].invalid && (agenceForm.controls['nis'].dirty || agenceForm.controls['nis'].touched),'is-valid': agenceForm.controls['nis'].valid && (agenceForm.controls['nis'].dirty || agenceForm.controls['nis'].touched) }">
+          <div *ngIf="agenceForm.controls['nis'].invalid" class="invalid-feedback">
+            <span *ngIf="agenceForm.controls['nis'].errors.required">Nis requis</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- nAI -->
+    <div class="form-group row mb-3 ">
+      <label class="col-md-3 col-form-label text-right">nAI*:</label>
+      <div class="col-md-9">
+        <div class="input-group">
+          <input class="form-control" formControlName="nAi" placeholder="nAi "
+            [ngClass]="{'is-invalid': agenceForm.controls['nAi'].invalid && (agenceForm.controls['nAi'].dirty || agenceForm.controls['nAi'].touched),'is-valid': agenceForm.controls['nAi'].valid && (agenceForm.controls['nAi'].dirty || agenceForm.controls['nAi'].touched) }">
+          <div *ngIf="agenceForm.controls['nAi'].invalid" class="invalid-feedback">
+            <span *ngIf="agenceForm.controls['nAi'].errors.required">nAi requis</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="col-6 border-left pt-3 mb-2">
+
+    <!--wilaya-->
+    <div class="form-group row mb-3 text-right">
+      <label class="col-md-3 col-form-label"> Wilaya*: </label>
+      <div class="col-sm-9 text-left">
+        <ng-select formControlName="wilayaId" placeholder=" Selectionner la wilaya" (change)=" onChangWilaya()">
+          <ng-option *ngFor="let wilaya of listWilaya" [value]="wilaya.id">
+            {{ wilaya.codeWilaya }} {{ wilaya.nomLatin }}
+          </ng-option>
+        </ng-select>
+        <span *ngIf="agenceForm.controls['wilayaId'].invalid && agenceForm.controls['wilayaId'].touched"
+          class="invalid-feedback-custom">Wilaya requise</span>
+        <span *ngIf="agenceForm.controls['wilayaId'].valid && agenceForm.controls['wilayaId'].touched"
+          class="valid-feedback-custom">Wilaya valide</span>
+      </div>
+    </div>
+
+    <!--commune-->
+    <div class="form-group row mb-3 text-right">
+      <label class="col-md-3 col-form-label"> Commune*: </label>
+      <div class="col-sm-9 text-left">
+        <ng-select formControlName="communeId" placeholder="Selectionner la commune" (change)="onChangCommune()">
+          <ng-option *ngFor="let commune of listCommune" [value]="commune.id">
+            {{ commune.codePostal }} {{ commune.nomLatin }}
+          </ng-option>
+        </ng-select>
+        <span *ngIf="agenceForm.controls['communeId'].invalid && agenceForm.controls['communeId'].touched"
+          class="invalid-feedback-custom">Commune requise</span>
+        <span *ngIf="agenceForm.controls['communeId'].valid && agenceForm.controls['communeId'].touched"
+          class="valid-feedback-custom">Commune valide</span>
+      </div>
+    </div>
+
+
+
+    <!-- adresse -->
+    <div class="form-group row mb-3 text-right">
+      <label class="col-md-3 col-form-label">Adresse*:</label>
+      <div class="col-md-9 text-left">
+        <input class="form-control" formControlName="adresse" placeholder="agenceForm adresse ex: wilaya, commune, rue n°"
+          type="text" mask="00-00-00-00-00"
+          [ngClass]="{'is-invalid': agenceForm.controls['adresse'].invalid && (agenceForm.controls['adresse'].dirty || agenceForm.controls['adresse'].touched),'is-valid': agenceForm.controls['adresse'].valid && (agenceForm.controls['adresse'].dirty || agenceForm.controls['adresse'].touched) }">
+        <div *ngIf="agenceForm.controls['adresse'].invalid" class="invalid-feedback">
+          <span *ngIf="agenceForm.controls['adresse'].errors.required">Adresse requis</span>
+          <span *ngIf="agenceForm.controls['adresse'].errors.minlength">longueur minimale 10 characters</span>
+          <span *ngIf="agenceForm.controls['adresse'].errors.maxlength">longueur maximale 90 characters</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Type -->
+    <div class="form-group row mb-3 text-right">
+      <label class="col-md-3 col-form-label"> Type de l'agence:</label>
+      <div class="col-sm-9 text-left">
+        <ng-select [items]="typeAgences" formControlName="type" bindLabel="type" bindValue="name"
+          placeholder="Selectionner le type d'agence">
+        </ng-select>
+      </div>
+    </div>
+  </div>
+  <div class="col-12 d-flex justify-content-center mx-auto mt-5 ">
+    <button class="btn btn-secondary" (click)="goBack()">Retour</button>
+    <button class="btn btn-warning" *ngIf="hidden" (click)="enableAgenceForm()">Modifier</button>
+    <button class="btn btn-success" *ngIf="!hidden" (click)="Confirm()" [disabled]="!agenceForm.dirty || agenceForm.invalid" >Valider</button>
+  </div>
+</form>

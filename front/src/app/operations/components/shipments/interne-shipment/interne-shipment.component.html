@@ -1,0 +1,265 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="mt-3">
+            <h4>Colis internes </h4>
+        </div>
+        <div class="ml-auto">
+            <button type="button" mdbBtn class="btn btn-md btn-outline-info waves-effect waves-light "
+             (click)="openModal(content)"><i class="fas fa-plus mr-2"></i> Crée Colis interne</button>
+            <!-- (click) = "openAddOnePackageSlipModal()" -->
+        </div>
+    </div>
+    <hr>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row mb-md-2">
+                        <!-- Search -->
+                        <div class="col-sm-12 col-md-12">
+                            <div id="tickets-table_filter" class="dataTables_filter text-md-right">
+                                <label class="d-inline-flex align-items-center">Recherche:
+                                    <input type="text" name="searchTerm" class="form-control form-control-sm ml-2"
+                                        aria-controls="tickets-table" [(ngModel)]="searchColisTerm"
+                                        (ngModelChange)="searchTermUpdateColisInterne(searchColisTerm)" /></label>
+                            </div>
+                        </div>
+                        <!-- End search -->
+                    </div>
+                    <!-- Table -->
+                    <div class="table-responsive">
+                        <table id="basic-datatable" class="table table-centered dt-responsive nowrap 
+                        no-footer dtr-inline table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>N° tracking</th>
+                                    <th>Nom</th>
+                                    <th>Prenom</th>
+                                    <th>Designation</th>
+                                    <th>Imprimer</th>
+                                </tr>
+                            </thead>
+                            <tbody *ngIf="!isLoading; else spiner">
+                                <tr *ngFor="let colis of colisData; let i=index ">
+                                    <td>{{colis.tracking}}</td>
+                                    <td>{{colis.nom}}</td>
+                                    <td>{{colis.prenom}}</td>
+                                    <td>{{colis.designationProduit}}</td>
+                                    <td class="py-0">
+                                    <button mdbBtn color="mdb-color"  class=" btn-sm btn " 
+                                    (click)="print(colis.id)" mdbWavesEffect><i class="fas fa-print"></i></button>
+                                    </td>
+                                </tr>
+                                <tr *ngIf="colisData.length <= 0">
+                                    <th colspan="7" class="text-center">
+                                        <div class="text-center">
+                                            <p class="m-0 p-0"><i class="ri-error-warning-line customIcone"> </i> Pas
+                                                de colis internes ! </p>
+                                        </div>
+                                    </th>
+                                </tr>
+                            </tbody>
+    
+                            <ng-template #spiner>
+                                <tbody>
+                                    <tr>
+                                        <th colspan="7" class="text-center">
+                                            <div class="spinner-border text-primary m-1" role="status">
+                                                <span class="sr-only">Loading...</span>
+                                            </div>
+                                            <span class="d-block">Chargement ...</span>
+                                        </th>
+                                    </tr>
+                                </tbody>
+                            </ng-template>
+                        </table>
+                    </div>
+                    <!-- End table -->
+                    <div class="row justify-content-md-between align-items-md-center mt-2">
+                        <div class="col-sm-12 col-md-5">
+                            <div class="dataTables_info mb-2" id="tickets-table_info" role="status" aria-live="polite">
+                                Total {{ metaData.totalItems }} colis
+                            </div>
+                        </div>
+                        <!-- Pagination -->
+                        <div class="col-sm-12 col-md-5">
+                            <nav aria-label="...">
+                                <ul class="pagination justify-content-end">
+                                    <!-- <li class="page-item">
+                                            <button class="page-link info">
+                                                total utilistaeur : {{ metaData.totalItems }}
+                                            </button>
+                                        </li> -->
+                                    <li class="page-item">
+                                        <button class="page-link" [disabled]="metaLinks.previous.length <= 0"
+                                            (click)="funcPaginateColisInterne(metaLinks.previous)">
+                                            <span aria-hidden="true">&laquo;</span>
+                                            <span class="sr-only">Previous</span>
+                                        </button>
+                                    </li>
+                                    <li class="page-item">
+                                        <button class="page-link" *ngIf="metaData.currentPage - 2 > 0"
+                                            (click)="funcPaginateColisInterne('', metaData.currentPage - 2)">
+                                            {{ metaData.currentPage - 2
+                                            }}<span class="sr-only"></span>
+                                        </button>
+                                    </li>
+                                    <li class="page-item">
+                                        <button class="page-link" *ngIf="metaData.currentPage - 1 > 0"
+                                            (click)="funcPaginateColisInterne('', metaData.currentPage - 1)">
+                                            {{ metaData.currentPage - 1
+                                            }}<span class="sr-only"></span>
+                                        </button>
+                                    </li>
+                                    <li class="page-item active">
+                                        <button class="page-link" (click)="funcPaginateColisInterne('', metaData.currentPage)">
+                                            {{ metaData.currentPage
+                                            }}<span class="sr-only">(current)</span>
+                                        </button>
+                                    </li>
+                                    <li class="page-item">
+                                        <button class="page-link" (click)="funcPaginateColisInterne('', metaData.currentPage + 1)"
+                                            *ngIf="metaData.currentPage + 1 <= metaData.totalPages">
+                                            {{ metaData.currentPage + 1
+                                            }}<span class="sr-only"></span>
+                                        </button>
+                                    </li>
+                                    <li class="page-item">
+                                        <button class="page-link" (click)="funcPaginateColisInterne('', metaData.currentPage + 2)"
+                                            *ngIf="metaData.currentPage + 2 < metaData.totalPages">
+                                            {{ metaData.currentPage + 2
+                                            }}<span class="sr-only"></span>
+                                        </button>
+                                    </li>
+                                    <li class="page-item">
+                                        <button class="page-link" *ngIf="
+                        metaLinks.next.length != 0 &&
+                        metaData.currentPage + 2 <= metaData.totalPages
+                      ">
+                                            ...
+                                        </button>
+                                    </li>
+                                    <li class="page-item">
+                                        <button class="page-link" [disabled]="metaLinks.next.length <= 0"
+                                            (click)="funcPaginateColisInterne(metaLinks.next)">
+                                            <span aria-hidden="true">&raquo;</span>
+                                            <span class="sr-only">Next</span>
+                                        </button>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                        <!-- End Pagination -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <ng-template #content role="document" let-modal="close" class="modal-lg">
+        <div class="modal-header">
+            <h5 class="modal-title">Ajouter une wilaya</h5>
+            <button type="button" class="close" aria-label="Close" (click)="closeModal()">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+            <div class="modal-body p-3">
+                <div class="text-left">
+                    <form class="needs-validation" [formGroup]="shippmentForm" class="form col-12">
+                        <!--wilaya-->
+                        <div class="form-group row mb-3 text-right">
+                            <label class="col-md-3 col-form-label"> Wilaya*: </label>
+                            <div class="col-sm-9 text-left">
+                                <ng-select formControlName="wilayaId" placeholder=" Selectionner la wilaya" (change)="onChangeWilaya()">
+                                    <ng-option *ngFor="let wilaya of wilayasData" [value]="wilaya.id">
+                                        {{ wilaya.codeWilaya }} {{ wilaya.nomLatin }}
+                                    </ng-option>
+                                </ng-select>
+                                <span *ngIf="shippmentForm.controls['wilayaId'].invalid && shippmentForm.controls['wilayaId'].touched"
+                                    class="invalid-feedback-custom">Wilaya requise</span>
+                                <span *ngIf="shippmentForm.controls['wilayaId'].valid && shippmentForm.controls['wilayaId'].touched"
+                                    class="valid-feedback-custom">Wilaya valide</span>
+                            </div>
+                        </div>
+                        
+                        <!--commune-->
+                        <div class="form-group row mb-3 text-right">
+                            <label class="col-md-3 col-form-label"> Commune*: </label>
+                            <div class="col-sm-9 text-left">
+                                <ng-select formControlName="communeId" placeholder="Selectionner la commune" (change)="onChangeCommune()">
+                                    <ng-option *ngFor="let commune of communesData" [value]="commune.id">
+                                        {{ commune.codePostal }} {{ commune.nomLatin }}
+                                    </ng-option>
+                                </ng-select>
+                                <span *ngIf="shippmentForm.controls['communeId'].invalid && shippmentForm.controls['communeId'].touched"
+                                    class="invalid-feedback-custom">Commune requise</span>
+                                <span *ngIf="shippmentForm.controls['communeId'].valid && shippmentForm.controls['communeId'].touched"
+                                    class="valid-feedback-custom">Commune valide</span>
+                            </div>
+                        </div>
+                        <!--agence-->
+                        <div class="form-group row mb-3 text-right">
+                            <label class="col-md-3 col-form-label"> Agence*: </label>
+                            <div class="col-sm-9 text-left">
+                                <ng-select formControlName="agenceId" placeholder="Selectionner l'agence" (change)="onChangeAgence()">
+                                    <ng-option *ngFor="let agence of agencesData" [value]="agence.id">
+                                        {{ agence.nom }}
+                                    </ng-option>
+                                </ng-select>
+                                <span *ngIf="shippmentForm.controls['agenceId'].invalid && shippmentForm.controls['agenceId'].touched"
+                                    class="invalid-feedback-custom">Agence requise</span>
+                                <span *ngIf="shippmentForm.controls['agenceId'].valid && shippmentForm.controls['agenceId'].touched"
+                                    class="valid-feedback-custom">Agence valide</span>
+                            </div>
+                        </div>
+                        <!--user-->
+                        <div class="form-group row mb-3 text-right">
+                            <label class="col-md-3 col-form-label"> Destinataire*: </label>
+                            <div class="col-sm-9 text-left">
+                                <ng-select formControlName="userId" placeholder="Selectionner l'user">
+                                    <ng-option *ngFor="let user of usersData" [value]="user.id">
+                                        {{ user.nom }} {{user.prenom}}
+                                    </ng-option>
+                                </ng-select>
+                                <span *ngIf="shippmentForm.controls['userId'].invalid && shippmentForm.controls['userId'].touched"
+                                    class="invalid-feedback-custom">Destinataire requie</span>
+                                <span *ngIf="shippmentForm.controls['userId'].valid && shippmentForm.controls['userId'].touched"
+                                    class="valid-feedback-custom">Destinataire valide</span>
+                            </div>
+                        </div>
+                        <!-- Designation -->
+                        <div class="form-group row mb-3 ">
+                            <label class="col-md-3 col-form-label text-right">Désignations*:</label>
+                            <div class="col-md-9">
+                                <input class="form-control" formControlName="designation" placeholder="Désignation Produit "
+                                    [ngClass]="{'is-invalid': shippmentForm.controls['designation'].invalid && (shippmentForm.controls['designation'].dirty || shippmentForm.controls['designation'].touched),'is-valid': shippmentForm.controls['designation'].valid && (shippmentForm.controls['designation'].dirty || shippmentForm.controls['designation'].touched) }">
+                                <div *ngIf="shippmentForm.controls['designation'].invalid" class="invalid-feedback">
+                                    <span *ngIf="shippmentForm.controls['designation'].errors.required">Designation produit
+                                        requise</span>
+                                    <span *ngIf="shippmentForm.controls['designation'].errors.minlength">longueur minimale 3
+                                        characters</span>
+                                    <span *ngIf="shippmentForm.controls['designation'].errors.maxlength">longueur maximale
+                                        50
+                                        characters</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-4">
+                        
+                            <div class="col-8 text-right ml-auto">
+                                <button class="btn btn-md btn-danger waves-effect waves-light"  (click)="closeModal()">
+                                    <i class="ri-close-line align-middle me-2"></i>
+                                    Annuler
+                                </button>
+                                <button class="btn btn-md btn-success waves-effect waves-light" [disabled]="!formValid()"
+                                    (click)="createShipment()">
+                                    <i class="ri-check-line align-middle me-2"></i>
+                                    Valider
+                                </button>
+                            </div>
+                        </div>
+                        </form>
+                    </div>
+                </div>
+        </ng-template>

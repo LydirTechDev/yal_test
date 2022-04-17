@@ -1,0 +1,28 @@
+/* You can add global styles to this file, and also import other style files */
+
+/* Importing Bootstrap SCSS file. */
+// @import '~bootstrap/scss/bootstrap';
+// @import 'src/assets/scss/custom/pages/_authentication.scss';
+// @import 'src/assets/scss/custom/fonts/_fonts.scss';
+
+
+.btn:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+
+.btn.btn-link {
+  padding: 5px;
+  margin: 5px;
+}
+.ng-select .ng-dropdown-panel .ng-option.ng-option-marked{
+  background-color: red !important;
+}
+.ng-select-multiple > .ng-has-value > .ng-value-container > .ng-value > .ng-value-label {
+  background-color: red ;
+  color: aliceblue;
+}
+.ng-select-multiple > .ng-has-value > .ng-value-container > .ng-value > .ng-value-icon{
+  background-color: rgb(255, 142, 142);
+}

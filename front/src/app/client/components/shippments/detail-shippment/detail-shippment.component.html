@@ -1,0 +1,263 @@
+<div class="container-fluid">
+  <div class="row mb-2 p-0">
+    <div class="mb-2 mt-2">
+      <h5>Detail colis N°: {{numCommande}} </h5>
+    </div>
+    <div *ngIf="formEdited" class="ml-auto">
+      <button (click)="updateShipment(shipmenId)" type="button" mdbBtn
+        class="btn btn-md btn-outline-success waves-effect waves-light ">
+        <i class="fas fa-check mr-2"></i> Valider les changement</button>
+    </div>
+  </div>
+
+  <hr class="pt-2 pb-2 m-0">
+
+  <div class="card">
+    <div class="row m-0 p-0">
+      <form [formGroup]="shippmentForm" class="form col-12">
+
+        <!-- PART 1 -->
+        <div class="col-12">
+          <!-- Type de livraison-->
+          <div class="col-12 p-2 mt-3">
+            <div class="row">
+              <p class="legend mx-auto"><span>Type de livraison</span></p>
+            </div>
+            <div class="row">
+              <div class="col-4">
+                <div class="row">
+                  <label class="col-6 col-form-label  text-right" for="livraisonStopDesck">Lvarison Stop Desck
+                    :</label>
+                  <div class="col-6 mt-1 ">
+                    <ui-switch uncheckedLabel="Non" checkedLabel="Oui" formControlName="livraisonStopDesck"
+                      (valueChange)="onChangeShippmentTypeDesk($event)">
+                    </ui-switch>
+                  </div>
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="row">
+                  <label class="col-6 col-form-label  text-right" for="livraisonDomicile">livraison domicile
+                    :</label>
+                  <div class="col-6 mt-1 ">
+                    <ui-switch uncheckedLabel="Non" checkedLabel="Oui" formControlName="livraisonDomicile"
+                      (valueChange)="onChangeShippmentTypeHome($event)">
+                    </ui-switch>
+                  </div>
+                </div>
+              </div>
+              <!-- Livraison Gratuite-->
+              <div class="col-4">
+                <div class="row">
+                  <label class="col-6 col-form-label  text-right" for="livraisonGratuite"> Livraison
+                    gratuite :</label>
+                  <div class="col-6 mt-1 ">
+                    <ui-switch uncheckedLabel="Non" checkedLabel="Oui" formControlName="livraisonGratuite">
+                    </ui-switch>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <hr class="pb-2 pt-2 m-0">
+
+        <!-- PART 2 -->
+        <div class="row ">
+          <div class="col-12 mt-2">
+            <div class="row m-0 p-0">
+              <p class="legend mx-auto"><span>Type de livraison</span></p>
+            </div>
+          </div>
+          <div class="col-6 border-right border-secondary pt-3 mb-2">
+            <!-- Raison sociale -->
+            <div class="form-group row mb-3 ">
+              <label class="col-md-3 col-form-label text-right" for="raisonSociale">Raison sociale : </label>
+              <div class="col-md-9">
+                <input class="form-control" formControlName="raisonSociale" type="text" placeholder="Raison sociale"
+                  [ngClass]="{'is-invalid': shippmentForm.controls['raisonSociale'].invalid && (shippmentForm.controls['raisonSociale'].dirty || shippmentForm.controls['raisonSociale'].touched),'is-valid': shippmentForm.controls['raisonSociale'].valid && (shippmentForm.controls['raisonSociale'].dirty || shippmentForm.controls['raisonSociale'].touched) }">
+                <div *ngIf="shippmentForm.controls['raisonSociale'].invalid" class="invalid-feedback">
+                  <span *ngIf="shippmentForm.controls['raisonSociale'].errors.minlength">longueur minimale 3
+                    characters </span>
+                  <span *ngIf="shippmentForm.controls['raisonSociale'].errors.maxlength">Longuer maximale 50
+                    characters</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Nom -->
+            <div class="form-group row mb-3">
+              <label class="col-md-3 col-form-label text-right" for="nom">Nom*:</label>
+              <div class="col-md-9">
+                <input class="form-control" formControlName="nom" type="text" placeholder="Nom"
+                  [ngClass]="{'is-invalid': shippmentForm.controls['nom'].invalid && (shippmentForm.controls['nom'].dirty || shippmentForm.controls['nom'].touched),'is-valid': shippmentForm.controls['nom'].valid && (shippmentForm.controls['nom'].dirty || shippmentForm.controls['nom'].touched) }">
+                <div *ngIf="shippmentForm.controls['nom'].invalid" class="invalid-feedback">
+                  <span *ngIf="shippmentForm.controls['nom'].errors.required">Nom requie</span>
+                  <span *ngIf="shippmentForm.controls['nom'].errors.minlength">longueur minimale 3
+                    characters
+                    characters or more.</span>
+                  <span *ngIf="shippmentForm.controls['nom'].errors.maxlength">Longuer maximale 50
+                    characters</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Prenom -->
+            <div class="form-group row mb-3 ">
+              <label class="col-md-3 col-form-label text-right">Prénom*:</label>
+              <div class="col-md-9">
+                <input class="form-control" formControlName="prenom" placeholder="Prénom"
+                  [ngClass]="{'is-invalid': shippmentForm.controls['prenom'].invalid && (shippmentForm.controls['prenom'].dirty || shippmentForm.controls['prenom'].touched),'is-valid': shippmentForm.controls['prenom'].valid && (shippmentForm.controls['prenom'].dirty || shippmentForm.controls['prenom'].touched) }">
+                <div *ngIf="shippmentForm.controls['prenom'].invalid" class="invalid-feedback">
+                  <span *ngIf="shippmentForm.controls['prenom'].errors.required">Prénom requie</span>
+                  <span *ngIf="shippmentForm.controls['prenom'].errors.minlength">longueur minimale 3
+                    characters</span>
+                  <span *ngIf="shippmentForm.controls['prenom'].errors.maxlength">Longuer maximale 50
+                    characters</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Telephone -->
+            <div class="form-group row mb-3 text-right">
+              <label class="col-md-3 col-form-label">Téléphone*:</label>
+              <div class="col-md-9 text-left">
+                <input class="form-control" formControlName="telephone" placeholder="00-00-00-00-00" type="text"
+                  mask="00-00-00-00-00"
+                  [ngClass]="{'is-invalid': shippmentForm.controls['telephone'].invalid && (shippmentForm.controls['telephone'].dirty || shippmentForm.controls['telephone'].touched),'is-valid': shippmentForm.controls['telephone'].valid && (shippmentForm.controls['telephone'].dirty || shippmentForm.controls['telephone'].touched) }">
+                <div *ngIf="shippmentForm.controls['telephone'].invalid" class="invalid-feedback">
+                  <span *ngIf="shippmentForm.controls['telephone'].errors.required">Téléphone requie</span>
+                  <span *ngIf="shippmentForm.controls['telephone'].errors.minlength">longueur autoriser 10
+                    characters</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Designation -->
+            <div class="form-group row mb-3 ">
+              <label class="col-md-3 col-form-label text-right">Désignations*:</label>
+              <div class="col-md-9">
+                <input class="form-control" formControlName="designationProduit" placeholder="Désignation Produit "
+                  [ngClass]="{'is-invalid': shippmentForm.controls['designationProduit'].invalid && (shippmentForm.controls['designationProduit'].dirty || shippmentForm.controls['designationProduit'].touched),'is-valid': shippmentForm.controls['designationProduit'].valid && (shippmentForm.controls['designationProduit'].dirty || shippmentForm.controls['designationProduit'].touched) }">
+                <div *ngIf="shippmentForm.controls['designationProduit'].invalid" class="invalid-feedback">
+                  <span *ngIf="shippmentForm.controls['designationProduit'].errors.required">Designation produit
+                    requise</span>
+                  <span *ngIf="shippmentForm.controls['designationProduit'].errors.minlength">longueur minimale 3
+                    characters</span>
+                  <span *ngIf="shippmentForm.controls['designationProduit'].errors.maxlength">longueur maximale 50
+                    characters</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Prix Produit-->
+            <div class="form-group row mb-3 ">
+              <label class="col-md-3 col-form-label text-right">Prix du produit*:</label>
+              <div class="col-md-9">
+                <div class="input-group">
+                  <input class="form-control" formControlName="prixVente" placeholder="Prix de vante du Produit "
+                    [ngClass]="{'is-invalid': shippmentForm.controls['prixVente'].invalid && (shippmentForm.controls['prixVente'].dirty || shippmentForm.controls['prixVente'].touched),'is-valid': shippmentForm.controls['prixVente'].valid && (shippmentForm.controls['prixVente'].dirty || shippmentForm.controls['prixVente'].touched) }">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text" id="validationTooltipUsernamePrepend">DA</span>
+                  </div>
+                  <div *ngIf="shippmentForm.controls['prixVente'].invalid" class="invalid-feedback">
+                    <span *ngIf="shippmentForm.controls['prixVente'].errors.required">prixVente requie</span>
+                    <span *ngIf="shippmentForm.controls['prixVente'].errors.minlength">longueur minimale 3
+                      characters.</span>
+                    <span *ngIf="shippmentForm.controls['prixVente'].errors.maxlength">longueur maximale 50
+                      characters.</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-6 border-left pt-3 mb-2">
+            <!-- wilaya -->
+            <div class="form-group row mb-3 text-right">
+              <label class="col-md-3 col-form-label"> Wilaya*: </label>
+              <div class="col-sm-9 text-left">
+                <ng-select formControlName="wilayaId" placeholder=" Selectionner la wilaya" (change)="onChangeWilaya()">
+                  <ng-option *ngFor="let wilaya of wilayasData" [value]="wilaya.id">
+                    {{ wilaya.codeWilaya }} {{ wilaya.nomLatin }}
+                  </ng-option>
+                </ng-select>
+                <span *ngIf="shippmentForm.controls['wilayaId'].invalid && shippmentForm.controls['wilayaId'].touched"
+                  class="invalid-feedback-custom">Wilaya requise</span>
+                <span *ngIf="shippmentForm.controls['wilayaId'].valid && shippmentForm.controls['wilayaId'].touched"
+                  class="valid-feedback-custom">Wilaya valide</span>
+              </div>
+            </div>
+
+            <!--commune-->
+            <div class="form-group row mb-3 text-right">
+              <label class="col-md-3 col-form-label"> Commune*: </label>
+              <div class="col-sm-9 text-left">
+                <ng-select formControlName="communeId" placeholder="Selectionner la commune">
+                  <ng-option *ngFor="let commune of communesData" [value]="commune.id">
+                    {{ commune.codePostal }} {{ commune.nomLatin }}
+                  </ng-option>
+                </ng-select>
+                <span *ngIf="shippmentForm.controls['communeId'].invalid && shippmentForm.controls['communeId'].touched"
+                  class="invalid-feedback-custom">Commune requise</span>
+                <span *ngIf="shippmentForm.controls['communeId'].valid && shippmentForm.controls['communeId'].touched"
+                  class="valid-feedback-custom">Commune valide</span>
+              </div>
+            </div>
+
+            <!-- Adresse -->
+            <!--Domicile || stop desck-->
+            <div *ngIf="shippmentForm.controls['livraisonDomicile'].value" class="form-group row mb-3 text-right">
+              <label class="col-md-3 col-form-label">Adresse*:</label>
+              <div class="col-md-9 text-left">
+                <input class="form-control" formControlName="adresse" placeholder="Adresse"
+                  [ngClass]="{'is-invalid': shippmentForm.controls['adresse'].invalid && (shippmentForm.controls['adresse'].dirty || shippmentForm.controls['adresse'].touched),'is-valid': shippmentForm.controls['adresse'].valid && (shippmentForm.controls['adresse'].dirty || shippmentForm.controls['adresse'].touched) }">
+                <div *ngIf="shippmentForm.controls['adresse'].invalid" class="invalid-feedback">
+                  <span *ngIf="shippmentForm.controls['adresse'].errors.required">Adresse requise</span>
+                  <span *ngIf="shippmentForm.controls['adresse'].errors.minlength">longueur minimale 3 characters
+                  </span>
+                  <span *ngIf="shippmentForm.controls['adresse'].errors.maxlength">longueur maximale 50
+                    characters </span>
+                </div>
+              </div>
+            </div>
+            <!-- Service -->
+            <div class="form-group row mb-3 text-right">
+              <label class="col-md-3 col-form-label"> Service*: </label>
+              <div class="col-sm-9 text-left">
+                <ng-select formControlName="serviceId" placeholder="Selectionner le service">
+                  <ng-option *ngFor="let service of serviceData" [value]="service.service_id">
+                    {{ service.service_nom }}
+                  </ng-option>
+                </ng-select>
+                <span *ngIf="shippmentForm.controls['serviceId'].invalid && shippmentForm.controls['serviceId'].touched"
+                  class="invalid-feedback-custom">Service requie</span>
+                <span *ngIf="shippmentForm.controls['serviceId'].valid && shippmentForm.controls['serviceId'].touched"
+                  class="valid-feedback-custom">Service valide</span>
+              </div>
+            </div>
+
+            <!-- N° Commande-->
+            <div class="form-group row mb-3 ">
+              <label class="col-md-3 col-form-label text-right">N° Commande*:</label>
+              <div class="col-md-9">
+                <input class="form-control" formControlName="numCommande" placeholder="N° Commande "
+                  [ngClass]="{'is-invalid': shippmentForm.controls['numCommande'].invalid && (shippmentForm.controls['numCommande'].dirty || shippmentForm.controls['numCommande'].touched),'is-valid': shippmentForm.controls['numCommande'].valid && (shippmentForm.controls['numCommande'].dirty || shippmentForm.controls['numCommande'].touched) }">
+                <div *ngIf="shippmentForm.controls['numCommande'].invalid" class="invalid-feedback">
+                  <span *ngIf="shippmentForm.controls['numCommande'].errors.required">Numéro de commande requie</span>
+                  <span *ngIf="shippmentForm.controls['numCommande'].errors.minlength">longueur minimale 3
+                    characters</span>
+                  <span *ngIf="shippmentForm.controls['numCommande'].errors.maxlength">longueur maximale 50
+                    characters</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+
+</div>

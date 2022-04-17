@@ -1,0 +1,121 @@
+<app-pagetitle title="detail de la commune {{communeForm.get('nomLatin').value}}" [breadcrumbItems]="breadCrumbItems"></app-pagetitle>
+
+<form [formGroup]="communeForm" class="form-group row col-12 mt-3">
+  <div class="row col-12  mb-4">
+    <div class="row col-3 pt-1">
+      <label class="col-7 col-form-label text-right">
+        Livrable ? :</label>
+      <div class="col-5">
+        <ui-switch checkedLabel="oui" uncheckedLabel="Non" switchColor="#74788d" formControlName="livrable"
+          (valueChange)="changeValueOfLivrable()">
+        </ui-switch>
+      </div>
+    </div>
+
+    <div [hidden]='!communeLivrable' class="row col-9">
+      <div class="row col-4 pt-1">
+        <label class="col-7 col-form-label text-right">
+          Domicile:</label>
+        <div class="col-5">
+          <ui-switch checkedLabel="oui" uncheckedLabel="Non" switchColor="#74788d" formControlName="livraisonDomicile" (valueChange)="changeValueDomicile()">
+          </ui-switch>
+        </div>
+      </div>
+
+      <div class="row col-4 pt-1">
+        <label class="col-7 col-form-label text-right">
+          Stop Desk :</label>
+        <div class="col-5">
+          <ui-switch checkedLabel="oui" uncheckedLabel="Non" switchColor="#74788d" formControlName="livraisonStopDesck" (valueChange)="changeValueStopDesck()">
+          </ui-switch>
+        </div>
+      </div>
+
+      <div class="row col-4 pt-1">
+        <label class="col-7 col-form-label text-right">
+          Stockage :</label>
+        <div class="col-5">
+          <ui-switch checkedLabel="oui" uncheckedLabel="Non" switchColor="#74788d" formControlName="stockage">
+          </ui-switch>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-8 border-secondary pt-3 mb-2 mx-auto">
+    <!--wilaya de la commune-->
+    <div class="form-group row mb-3 text-right">
+      <label class="col-md-4 col-form-label">Wilaya *: </label>
+      <div class="col-sm-7 text-left">
+        <ng-select formControlName="wilayaId" placeholder=" Selectionner la wilaya">
+          <ng-option *ngFor="let wilaya of listWilaya" [value]="wilaya.id">
+            {{ wilaya.codeWilaya }} {{ wilaya.nomLatin }}
+          </ng-option>
+        </ng-select>
+      </div>
+    </div>
+
+    <!--nom latin-->
+    <div class="form-group row mb-3">
+      <label class="col-md-4 col-form-label text-right" for="nomLatin">nom Latin*:</label>
+      <div class="col-md-7">
+        <input class="form-control" formControlName="nomLatin" type="text" placeholder="nomLatin"
+          [ngClass]="{'is-invalid': communeForm.controls['nomLatin'].invalid && (communeForm.controls['nomLatin'].dirty || communeForm.controls['nomLatin'].touched),'is-valid': communeForm.controls['nomLatin'].valid && (communeForm.controls['nomLatin'].dirty || communeForm.controls['nomLatin'].touched) }">
+        <div *ngIf="communeForm.controls['nomLatin'].invalid" class="invalid-feedback">
+          <span *ngIf="communeForm.controls['nomLatin'].errors.required">nomLatin requis</span>
+          <span *ngIf="communeForm.controls['nomLatin'].errors.minlength">longueur minimale 3 characters</span>
+          <span *ngIf="communeForm.controls['nomLatin'].errors.maxlength">longueur maximale 30 characters</span>
+        </div>
+      </div>
+    </div>
+
+    <!--nom Arabe-->
+    <div class="form-group row mb-3">
+      <label class="col-md-4 col-form-label text-right" for="nomArabe">nom Arabe*:</label>
+      <div class="col-md-7">
+        <input class="form-control" formControlName="nomArabe" type="text" placeholder="nomArabe"
+          [ngClass]="{'is-invalid': communeForm.controls['nomArabe'].invalid && (communeForm.controls['nomArabe'].dirty || communeForm.controls['nomArabe'].touched),'is-valid': communeForm.controls['nomArabe'].valid && (communeForm.controls['nomArabe'].dirty || communeForm.controls['nomArabe'].touched) }">
+        <div *ngIf="communeForm.controls['nomArabe'].invalid" class="invalid-feedback">
+          <span *ngIf="communeForm.controls['nomArabe'].errors.required">nomArabe requis</span>
+          <span *ngIf="communeForm.controls['nomArabe'].errors.minlength">longueur minimale 3 characters</span>
+          <span *ngIf="communeForm.controls['nomArabe'].errors.maxlength">longueur maximale 30 characters</span>
+        </div>
+      </div>
+    </div>
+
+    <!--code postal-->
+    <div class="form-group row mb-3">
+      <label class="col-md-4 col-form-label text-right" for="codePostal">code postal*:</label>
+      <div class="col-md-7">
+        <input class="form-control" formControlName="codePostal" type="text" placeholder="codePostal"
+          [ngClass]="{'is-invalid': communeForm.controls['codePostal'].invalid && (communeForm.controls['codePostal'].dirty || communeForm.controls['codePostal'].touched),'is-valid': communeForm.controls['codePostal'].valid && (communeForm.controls['codePostal'].dirty || communeForm.controls['codePostal'].touched) }">
+        <div *ngIf="communeForm.controls['codePostal'].invalid" class="invalid-feedback">
+          <span *ngIf="communeForm.controls['codePostal'].errors.required">codePostal requis</span>
+          <span *ngIf="communeForm.controls['codePostal'].errors.minlength">longueur minimale 3 characters</span>
+          <span *ngIf="communeForm.controls['codePostal'].errors.maxlength">longueur maximale 30 characters</span>
+        </div>
+      </div>
+    </div>
+
+
+
+    <!--journe de laivraison-->
+    <div [hidden]='!communeLivrable' class="row mt-2">
+      <label for="journeeLivraisons" class="col-sm-4 col-form-label text-right">Journée de
+        livraisons :</label>
+      <div class="col-sm-7 mt-1">
+        <ng-select [items]="journeeSemaine" [multiple]="true" formControlName="journeeLivraison" bindLabel="nom"
+          bindValue="journee" clearAllText="Clear" labelForId="state" [closeOnSelect]="false"></ng-select>
+      </div>
+    </div>
+
+
+    <div class="col-12 d-flex justify-content-center mx-auto mt-5 ">
+      <button class="btn btn-secondary" (click)="goBack()">Retour</button>
+      <button class="btn btn-warning" *ngIf="hidden" (click)="enableCommuneForm()">Modifier</button>
+      <button class="btn btn-success" *ngIf="!hidden" [disabled]="communeForm.invalid || !communeForm.dirty" (click)="Confirm()">Valider</button>
+    </div>
+
+  </div>
+
+</form>

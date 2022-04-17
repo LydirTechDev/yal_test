@@ -1,0 +1,42 @@
+<div>
+    <div class="row mb-3 col-12 align-center text-center">
+        <h4 class="labtrack mt-1 mr-2"><i class="bi bi-collection "></i> Affecter les colis au coursier:</h4>
+        <form [formGroup]="formCoursierSelected" class="col-3">
+            <ng-select formControlName="coursierSelected" placeholder="Choisir un coursier" [clearable]="false"
+                [readonly]="selected.length>0" appendTo="body">
+                <ng-option *ngFor="let coursier of coursiers" [value]="coursier.id">{{ coursier.nom}} {{ coursier.prenom
+                    }}
+                </ng-option>
+            </ng-select>
+        </form>
+    </div>
+
+    <hr class="mx-auto">
+    <div class="col-12 col-md-8 mx-auto text-center" style="background:transparent;"
+        *ngIf="listeShipmentsPresLivraison.length > 0 && formCoursierSelected.value['coursierSelected'] != undefined">
+        <form [formGroup]="formdata">
+            <div class="form-groupe col-10 mx-auto d-flex m-0 ">
+                <input type="text" formControlName="tracking" class="form-control-lg formTracking mr-1 shadow"
+                    placeholder="11111111" autofocus />
+                <input type="submit" class="btn btn-info rounded shadow px-4 mx-1" 
+                (click)="assignedToCoursier()" value="ajouter">
+            </div>
+        </form>
+        <hr class="mx-auto mt-0">
+    </div>
+    <div class="text-dark">
+        <label class='m-3 p-2 bg-info text-white' *ngFor="let i of selected">{{i}}
+          <i class="fas fa-times  mx-2 text-danger" (click)="deletselected(i)"></i>
+        </label>
+    </div>
+    <div class="mx-auto text-center mt-5" *ngIf="selected.length > 0">
+        <button type="submit" class="btn btn-success shadow btn-lg  px-4 mx-1" (click)="validateList()">Valider la
+            selection
+        </button>
+    </div>
+    <p *ngIf="nbrShipmentPresLivraison > 0 && formCoursierSelected.value['coursierSelected'] != undefined"
+        class="text-center text-muted mx-auto mt-1 display-2">
+        {{count}}
+    </p>
+
+</div>

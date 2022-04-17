@@ -1,0 +1,23 @@
+h5 {
+  display: flex;
+  flex-direction: row;
+}
+
+h5:before,
+h5:after {
+  content: "";
+  flex: 1 1;
+  border-bottom: 1px solid rgb(175, 175, 175);
+  margin: auto;
+}
+
+
+.disable{
+  cursor:no-drop ;
+}
+
+.error{
+  font-size: 12px;
+  color: red;
+}
+

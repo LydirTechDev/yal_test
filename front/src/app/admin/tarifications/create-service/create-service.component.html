@@ -1,0 +1,86 @@
+<!-- <div class="col-12 p-0 m-0">
+    <ngb-progressbar [striped]="true" height="3px" [value]="progressConfigService" [type]="progressConfigServiceColor">
+    </ngb-progressbar>
+</div> -->
+<div class="card-body pt-2 mt-2">
+    <div class="row mb-0 pb-0">
+        <div class="col-12">
+            <h5>{{ cardTitle }}</h5>
+        </div>
+    </div>
+    <div class="row mt-0 pt-0">
+        <div class="col-6 mx-auto mt-0 pt-0">
+            <aw-wizard [navBarLayout]="'large-empty-symbols'">
+                <aw-wizard-step stepTitle={{nameStep}}>
+                    <ng-template awWizardStepSymbol>{{ numStep }}</ng-template>
+                </aw-wizard-step>
+            </aw-wizard>
+        </div>
+    </div>
+    <div class="row" *ngIf="numStep =='1'">
+        <div class="col-6 mx-auto">
+            <form class="needs-validation" [formGroup]="serviceNameForm">
+                <div class="form-group position-relative">
+                    <!--  -->
+                    <input type="text" class="form-control" formControlName="serviceName"
+                        (ngModelChange)="validateServiceNameForm(this.serviceNameForm.controls['serviceName'].value)"
+                        placeholder="Nom du service" value="e-commerce" [ngClass]="statusForm">
+                    <div *ngIf="this.serviceNameForm.controls['serviceName'].errors || validating"
+                        class="invalid-feedback">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="row mt-1" *ngIf="numStep =='1'">
+        <div class="col-6 mx-auto" *ngIf="this.serviceNameForm.get('serviceName').valid && validating">
+            <div class="row col-12 mx-auto pl-1 ml-1">
+                <div class="col-10 text-left pl-0 ml-0">
+                    <h6> Enregistrer ?: <u><small class="text-muted font-size-12">{{
+                                this.serviceNameForm.controls['serviceName'].value}}</small></u></h6>
+                </div>
+                <div class="col-2 text-right pr-0 mr-0">
+                    <i type="button" class="fas fa-save font-size-22 text-info" ngbTooltip="Enregister" placement="left"
+                        (click)="saveNewServiceName()"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- move to create code tarif componenet -->
+    <div class="row" *ngIf="numStep =='2'">
+        <div class="col-6 mx-auto">
+            <form class="needs-validation" [formGroup]="codeTarifForm">
+                <div class="form-group position-relative">
+                    <!--  -->
+                    <input type="text" class="form-control" formControlName="codeTarifName"
+                        (ngModelChange)="validateServiceCodeTarifForm(this.codeTarifForm.controls['codeTarifName'].value)"
+                        placeholder="Nom du Code Tarif" value="e-commerce" [ngClass]="statusForm">
+                    <div *ngIf="this.codeTarifForm.controls['codeTarifName'].errors" class="invalid-feedback">
+                        <span *ngIf="this.codeTarifForm.controls['codeTarifName'].errors.required">Nom code tarfi
+                            requie.</span>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="row mt-1" *ngIf="numStep =='2'">
+        <div class="col-6 mx-auto" *ngIf="this.codeTarifForm.get('codeTarifName').valid && validating">
+            <div class="row col-12 mx-auto pl-1 ml-1">
+                <div class="col-10 text-left pl-0 ml-0">
+                    <h6> Enregistrer ?: <u><small class="text-muted font-size-12">{{
+                                this.codeTarifForm.controls['codeTarifName'].value}}</small></u></h6>
+                </div>
+                <div class="col-2 text-right pr-0 mr-0">
+                    <i type="button" class="fas fa-save font-size-22 text-info" ngbTooltip="Enregister" placement="left"
+                        (click)="saveNewCodeTarif()"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-1" *ngIf="numStep =='3'">
+        <div class="col-12">
+            <app-create-code-tarif [zones]="zones" [newService]="createdService"></app-create-code-tarif>
+        </div>
+    </div>
+</div>
+<!-- <button (click)="cancelCreateService()">annuler</button> -->

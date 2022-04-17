@@ -1,0 +1,523 @@
+<app-pagetitle title="Ajouter un client" [breadcrumbItems]="breadCrumbItems"> </app-pagetitle>
+<aw-wizard [navBarLayout]="'large-empty-symbols'">
+  <form class="needs-validation col-12" [formGroup]="clientForm">
+
+
+    <!-- Step 1 -->
+    <aw-wizard-step stepTitle="Information sur la boutique" class="row col-12 form-group mt-4">
+      <ng-template *ngIf="!validateFirstStep()" awWizardStepSymbol>1</ng-template>
+      <ng-template *ngIf="validateFirstStep()" awWizardStepSymbol><span><i class="fa fa-check"
+            aria-hidden="true"></i></span></ng-template>
+
+      <div class="col-6 border-right border-secondary pt-3 mb-2">
+
+        <!-- nomGerant -->
+        <div class="form-group row mb-3">
+          <label class="col-md-4 col-form-label text-right" for="nomGerant">Nom gérant*:</label>
+          <div class="col-md-8">
+            <input class="form-control" formControlName="nomGerant" type="text" placeholder="Nom Gérant"
+              [ngClass]="{'is-invalid': clientForm.controls['nomGerant'].invalid && (clientForm.controls['nomGerant'].dirty || clientForm.controls['nomGerant'].touched),'is-valid': clientForm.controls['nomGerant'].valid && (clientForm.controls['nomGerant'].dirty || clientForm.controls['nomGerant'].touched) }">
+            <div *ngIf="clientForm.controls['nomGerant'].invalid" class="invalid-feedback">
+              <span *ngIf="clientForm.controls['nomGerant'].errors.required">NomGerant requis</span>
+              <span *ngIf="clientForm.controls['nomGerant'].errors.minlength">longueur minimale 3 characters</span>
+              <span *ngIf="clientForm.controls['nomGerant'].errors.maxlength">longueur maximale 30 characters</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- prenomGerant -->
+        <div class="form-group row mb-3">
+          <label class="col-md-4 col-form-label text-right" for="prenomGerant">Prénom gérant*:</label>
+          <div class="col-md-8">
+            <input class="form-control" formControlName="prenomGerant" type="text" placeholder="Prénom Gérant"
+              [ngClass]="{'is-invalid': clientForm.controls['prenomGerant'].invalid && (clientForm.controls['prenomGerant'].dirty || clientForm.controls['prenomGerant'].touched),'is-valid': clientForm.controls['prenomGerant'].valid && (clientForm.controls['prenomGerant'].dirty || clientForm.controls['prenomGerant'].touched) }">
+            <div *ngIf="clientForm.controls['prenomGerant'].invalid" class="invalid-feedback">
+              <span *ngIf="clientForm.controls['prenomGerant'].errors.required">prénom gérant requis</span>
+              <span *ngIf="clientForm.controls['prenomGerant'].errors.minlength">longueur minimale 3 characters</span>
+              <span *ngIf="clientForm.controls['prenomGerant'].errors.maxlength">longueur maximale 30 characters</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- raisonSociale -->
+        <div class="form-group row mb-3">
+          <label class="col-md-4 col-form-label text-right" for="raisonSociale">Raison sociale*:</label>
+          <div class="col-md-8">
+            <input class="form-control" formControlName="raisonSociale" type="text" placeholder="Raison sociale"
+              [ngClass]="{'is-invalid': clientForm.controls['raisonSociale'].invalid && (clientForm.controls['raisonSociale'].dirty || clientForm.controls['raisonSociale'].touched),'is-valid': clientForm.controls['raisonSociale'].valid && (clientForm.controls['raisonSociale'].dirty || clientForm.controls['raisonSociale'].touched) }">
+            <div *ngIf="clientForm.controls['raisonSociale'].invalid" class="invalid-feedback">
+              <span *ngIf="clientForm.controls['raisonSociale'].errors.required">raison Social requis</span>
+              <span *ngIf="clientForm.controls['raisonSociale'].errors.minlength">longueur minimale 3 characters</span>
+              <span *ngIf="clientForm.controls['raisonSociale'].errors.maxlength">longueur maximale 30 characters</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- nomCommercial -->
+        <div class="form-group row mb-3">
+          <label class="col-md-4 col-form-label text-right" for="nomCommercial">Nom commercial*:</label>
+          <div class="col-md-8">
+            <input class="form-control" formControlName="nomCommercial" type="text" placeholder="nom Commercial"
+              [ngClass]="{'is-invalid': clientForm.controls['nomCommercial'].invalid && (clientForm.controls['nomCommercial'].dirty || clientForm.controls['nomCommercial'].touched),'is-valid': clientForm.controls['nomCommercial'].valid && (clientForm.controls['nomCommercial'].dirty || clientForm.controls['nomCommercial'].touched) }">
+            <div *ngIf="clientForm.controls['nomCommercial'].invalid" class="invalid-feedback">
+              <span *ngIf="clientForm.controls['nomCommercial'].errors.required">nom commercial requis</span>
+              <span *ngIf="clientForm.controls['nomCommercial'].errors.minlength">longueur minimale 3 characters</span>
+              <span *ngIf="clientForm.controls['nomCommercial'].errors.maxlength">longueur maximale 30 characters</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- telephone -->
+        <div class="form-group row mb-3">
+          <label class="col-md-4 col-form-label text-right" for="telephone">Num de téléphone*:</label>
+          <div class="col-md-8">
+            <input class="form-control" formControlName="telephone" type="text" placeholder="00-00-00-00-00"
+              mask="00-00-00-00-00"
+              [ngClass]="{'is-invalid': clientForm.controls['telephone'].invalid && (clientForm.controls['telephone'].dirty || clientForm.controls['telephone'].touched),'is-valid': clientForm.controls['telephone'].valid && (clientForm.controls['telephone'].dirty || clientForm.controls['telephone'].touched) }">
+            <div *ngIf="clientForm.controls['telephone'].invalid" class="invalid-feedback">
+              <span *ngIf="clientForm.controls['telephone'].errors.required">Num Telephone requis</span>
+              <span *ngIf="clientForm.controls['telephone'].errors.minlength">longueur minimale 10 characters</span>
+              <span *ngIf="clientForm.controls['telephone'].errors.maxlength">longueur maximale 10 characters</span>
+            </div>
+          </div>
+        </div>
+
+
+
+        <!-- email -->
+        <div class="form-group row mb-3">
+          <label class="col-md-4 col-form-label text-right" for="email">Email*:</label>
+          <div class="col-md-8">
+            <input class="form-control" formControlName="email" type="email" placeholder="Email"
+              [ngClass]="{'is-invalid': clientForm.controls['email'].invalid && (clientForm.controls['email'].dirty || clientForm.controls['email'].touched),'is-valid': clientForm.controls['email'].valid && (clientForm.controls['email'].dirty || clientForm.controls['email'].touched) }">
+            <div *ngIf="clientForm.controls['email'].invalid" class="invalid-feedback">
+              <span *ngIf="clientForm.controls['email'].errors.required">email requis</span>
+              <span *ngIf="clientForm.controls['email'].errors.pattern">email incorrecte</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- password -->
+        <div class="form-group row mb-3">
+          <label class="col-md-4 col-form-label text-right" for="password">Password*:</label>
+          <div class="col-md-8">
+            <input class="form-control" formControlName="password" type="password" placeholder="Password"
+              [ngClass]="{'is-invalid': clientForm.controls['password'].invalid && (clientForm.controls['password'].dirty || clientForm.controls['password'].touched),'is-valid': clientForm.controls['password'].valid && (clientForm.controls['password'].dirty || clientForm.controls['password'].touched) }">
+            <div *ngIf="clientForm.controls['password'].invalid" class="invalid-feedback">
+              <span *ngIf="clientForm.controls['password'].errors.required">Mot de passe requis</span>
+              <span *ngIf="clientForm.controls['password'].errors.minlength">longueur minimale 6 characters</span>
+              <span *ngIf="clientForm.controls['password'].errors.maxlength">longueur maximale 25 characters</span>
+            </div>
+          </div>
+        </div>
+
+
+      </div>
+
+      <div class="col-6 border-left pt-3 mb-2 ">
+
+        <!--wilaya-->
+        <div class="form-group row mb-3 text-right">
+          <label class="col-md-4 col-form-label"> Wilaya de résidence*: </label>
+          <div class="col-sm-8 text-left">
+            <ng-select formControlName="wilayaResidenceId" placeholder=" Selectionner la wilaya"
+              (change)=" onChangWilayaResidence()">
+              <ng-option *ngFor="let wilaya of listWilaya" [value]="wilaya.id">
+                {{ wilaya.codeWilaya }} {{ wilaya.nomLatin }}
+              </ng-option>
+            </ng-select>
+            <span
+              *ngIf="clientForm.controls['wilayaResidenceId'].invalid && clientForm.controls['wilayaResidenceId'].touched"
+              class="invalid-feedback-custom error">Wilaya requise</span>
+          </div>
+        </div>
+
+        <!--commune-->
+        <div class="form-group row mb-3 text-right">
+          <label class="col-md-4 col-form-label"> Commune de résidence*: </label>
+          <div class="col-sm-8 text-left">
+            <ng-select formControlName="communeResidenceId" placeholder="Selectionner la commune">
+              <ng-option *ngFor="let commune of listCommuneResidence" [value]="commune.id">
+                {{ commune.codePostal }} {{ commune.nomLatin }}
+              </ng-option>
+            </ng-select>
+            <span
+              *ngIf="clientForm.controls['communeResidenceId'].invalid && clientForm.controls['communeResidenceId'].touched"
+              class="invalid-feedback-custom error">Commune requise</span>
+          </div>
+        </div>
+
+        <!-- adresse -->
+        <div class="form-group row mb-3">
+          <label class="col-md-4 col-form-label text-right" for="adresse">Adresse*:</label>
+          <div class="col-md-8">
+            <input class="form-control" formControlName="adresse" type="text" placeholder="Adresse"
+              [ngClass]="{'is-invalid': clientForm.controls['adresse'].invalid && (clientForm.controls['adresse'].dirty || clientForm.controls['adresse'].touched),'is-valid': clientForm.controls['adresse'].valid && (clientForm.controls['adresse'].dirty || clientForm.controls['adresse'].touched) }">
+            <div *ngIf="clientForm.controls['adresse'].invalid" class="invalid-feedback">
+              <span *ngIf="clientForm.controls['adresse'].errors.required">adresse requis</span>
+              <span *ngIf="clientForm.controls['adresse'].errors.minlength">longueur minimale 10 characters</span>
+              <span *ngIf="clientForm.controls['adresse'].errors.maxlength">longueur maximale 100 characters</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- nrc -->
+        <div class="form-group row mb-3 ">
+          <label class="col-md-4 col-form-label text-right">N° registre de commerce*:</label>
+          <div class="col-md-8">
+            <input class="form-control" formControlName="nrc" placeholder="Numéro de registre de commerce"
+              [ngClass]="{'is-invalid': clientForm.controls['nrc'].invalid && (clientForm.controls['nrc'].dirty || clientForm.controls['nrc'].touched),'is-valid': clientForm.controls['nrc'].valid && (clientForm.controls['nrc'].dirty || clientForm.controls['nrc'].touched) }">
+            <div *ngIf="clientForm.controls['nrc'].invalid" class="invalid-feedback">
+              <span *ngIf="clientForm.controls['nrc'].errors.required">nrc requis</span>
+              <span *ngIf="clientForm.controls['nrc'].errors.minlength"> la longueur est de 14 characters</span>
+              <span *ngIf="clientForm.controls['nrc'].errors.maxlength"> la longueur est de 14 characters</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Nif -->
+        <div class="form-group row mb-3 ">
+          <label class="col-md-4 col-form-label text-right">N° identfication fiscal*:</label>
+          <div class="col-md-8">
+            <div class="input-group">
+              <input class="form-control" formControlName="nif" placeholder="Numéro d’Identification fiscal "
+                [ngClass]="{'is-invalid': clientForm.controls['nif'].invalid && (clientForm.controls['nif'].dirty || clientForm.controls['nif'].touched),'is-valid': clientForm.controls['nif'].valid && (clientForm.controls['nif'].dirty || clientForm.controls['nif'].touched) }">
+              <div *ngIf="clientForm.controls['nif'].invalid" class="invalid-feedback">
+                <span *ngIf="clientForm.controls['nif'].errors.required">nif requis</span>
+                <span *ngIf="clientForm.controls['nif'].errors.minlength">longueur est de 16 characters.</span>
+                <span *ngIf="clientForm.controls['nif'].errors.maxlength">longueur est de 16 characters.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Nis -->
+        <div class="form-group row mb-3 ">
+          <label class="col-md-4 col-form-label text-right">N° identification stat*:</label>
+          <div class="col-md-8">
+            <div class="input-group">
+              <input class="form-control" formControlName="nis" placeholder="Numéro d’Identification Statistique "
+                [ngClass]="{'is-invalid': clientForm.controls['nis'].invalid && (clientForm.controls['nis'].dirty || clientForm.controls['nis'].touched),'is-valid': clientForm.controls['nis'].valid && (clientForm.controls['nis'].dirty || clientForm.controls['nis'].touched) }">
+              <div *ngIf="clientForm.controls['nis'].invalid" class="invalid-feedback">
+                <span *ngIf="clientForm.controls['nis'].errors.required">Nis requis</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- isActive -->
+        <div class="form-group row mb-3">
+          <label class="col-md-4 col-form-label text-right" for="isActive">Etat d'utilisateur*:</label>
+          <div class="col-md-8">
+            <ng-select name="isActive" id="isActive" formControlName="isActive" placeholder="Etat d'utilisateur">
+              <ng-option value="true">Actif</ng-option>
+              <ng-option value="false">Inactif</ng-option>
+            </ng-select>
+            <span *ngIf="clientForm.controls['isActive'].invalid && clientForm.controls['isActive'].touched"
+              class="invalid-feedback-custom  error">Etat d'utilisateur requis</span>
+
+          </div>
+        </div>
+
+
+      </div>
+
+      <ul class="list-inline wizard mb-0 pg-2 mt-2 col-12">
+        <li class="next list-inline-item float-right">
+          <button class="btn btn-primary" ngClass="disable" awNextStep [disabled]="!validateFirstStep()">
+            Suivant<i class="ri-arrow-right-line align-middle ms-2"></i>
+          </button>
+        </li>
+      </ul>
+
+
+
+    </aw-wizard-step>
+
+    <!-- step 2 -->
+    <aw-wizard-step stepTitle="Informations sur la livraison" class="row col-12 form-group mt-4">
+      <ng-template *ngIf="!validateSecondtStep()" awWizardStepSymbol>2</ng-template>
+      <ng-template *ngIf="validateSecondtStep()" awWizardStepSymbol><span><i class="fa fa-check"
+            aria-hidden="true"></i></span></ng-template>
+
+      <div class="col-6 border-right border-secondary pt-3 mb-2">
+
+        <!-- nbEnvoiMin -->
+        <div class="form-group row mb-3">
+          <label class="col-md-4 col-form-label text-right" for="nbEnvoiMin">Nombre d'envoi min*:</label>
+          <div class="col-md-8">
+            <input class="form-control" formControlName="nbEnvoiMin" type="number" min="0"
+              placeholder="Nombre d'envoi min"
+              [ngClass]="{'is-invalid': clientForm.controls['nbEnvoiMin'].invalid && (clientForm.controls['nbEnvoiMin'].dirty || clientForm.controls['nbEnvoiMin'].touched),'is-valid': clientForm.controls['nbEnvoiMin'].valid && (clientForm.controls['nbEnvoiMin'].dirty || clientForm.controls['nbEnvoiMin'].touched) }">
+            <div *ngIf="clientForm.controls['nbEnvoiMin'].invalid" class="invalid-feedback">
+              <span *ngIf="clientForm.controls['nbEnvoiMin'].errors.required">Nombre d'envoi min requis</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- nbEnvoiMax -->
+        <div class="form-group row mb-3">
+          <label class="col-md-4 col-form-label text-right" for="nbEnvoiMax">Nombre d'envoi max*:</label>
+          <div class="col-md-8">
+            <input class="form-control" formControlName="nbEnvoiMax" type="number" min="0"
+              placeholder="Nombre d'envoi max"
+              [ngClass]="{'is-invalid': clientForm.controls['nbEnvoiMax'].invalid && (clientForm.controls['nbEnvoiMax'].dirty || clientForm.controls['nbEnvoiMax'].touched),'is-valid': clientForm.controls['nbEnvoiMax'].valid && (clientForm.controls['nbEnvoiMax'].dirty || clientForm.controls['nbEnvoiMax'].touched) }">
+            <div *ngIf="clientForm.controls['nbEnvoiMax'].invalid" class="invalid-feedback">
+              <span *ngIf="clientForm.controls['nbEnvoiMax'].errors.required">Nombre d'envoi max requis</span>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- nbTentative -->
+        <div class="form-group row mb-3">
+          <label class="col-md-4 col-form-label text-right" for="nbTentative">Nombre tentative*:</label>
+          <div class="col-md-8">
+            <input class="form-control" readonly formControlName="nbTentative" type="number" min="0"
+              placeholder="Nombre de tentative"
+              [ngClass]="{'is-invalid': clientForm.controls['nbTentative'].invalid && (clientForm.controls['nbTentative'].dirty || clientForm.controls['nbTentative'].touched),'is-valid': clientForm.controls['nbTentative'].valid && (clientForm.controls['nbTentative'].dirty || clientForm.controls['nbTentative'].touched) }">
+            <div *ngIf="clientForm.controls['nbTentative'].invalid" class="invalid-feedback">
+              <span *ngIf="clientForm.controls['nbTentative'].errors.required">Nombre tentative requis</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- poidsBase -->
+        <div class="form-group row mb-3">
+          <label class="col-md-4 col-form-label text-right" for="poidsBase">Poids de base*:</label>
+          <div class="col-md-8">
+            <input class="form-control" formControlName="poidsBase" type="number" min="0" placeholder="Poids de base"
+              [ngClass]="{'is-invalid': clientForm.controls['poidsBase'].invalid && (clientForm.controls['poidsBase'].dirty || clientForm.controls['poidsBase'].touched),'is-valid': clientForm.controls['poidsBase'].valid && (clientForm.controls['poidsBase'].dirty || clientForm.controls['poidsBase'].touched) }">
+            <div *ngIf="clientForm.controls['poidsBase'].invalid" class="invalid-feedback">
+              <span *ngIf="clientForm.controls['poidsBase'].errors.required">Poids de base requis</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- tauxCOD -->
+        <div class="form-group row mb-3">
+          <label class="col-md-4 col-form-label text-right" for="tauxCOD">Taux COD*:</label>
+          <div class="col-md-8">
+            <ng-select name="tauxCOD" formControlName="tauxCOD" placeholder="Taux COD">
+              <ng-option value="0.25">0.25</ng-option>
+              <ng-option value="0.5">0.5</ng-option>
+              <ng-option value="0.75">0.75</ng-option>
+              <ng-option value="1">1</ng-option>
+              <ng-option value="1.25">1.25</ng-option>
+              <ng-option value="1.5">1.5</ng-option>
+            </ng-select>
+            <span *ngIf="clientForm.controls['tauxCOD'].invalid && clientForm.controls['tauxCOD'].touched"
+              class="invalid-feedback-custom  error">Taux COD requis</span>
+          </div>
+        </div>
+
+        <!-- tarifRetour -->
+        <div class="form-group row mb-3">
+          <label class="col-md-4 col-form-label text-right" for="tarifRetour">Tarif retour*:</label>
+          <div class="col-md-8">
+            <input class="form-control" formControlName="tarifRetour" type="number" min="0" placeholder="Tarif retour"
+              [ngClass]="{'is-invalid': clientForm.controls['tarifRetour'].invalid && (clientForm.controls['tarifRetour'].dirty || clientForm.controls['tarifRetour'].touched),'is-valid': clientForm.controls['tarifRetour'].valid && (clientForm.controls['tarifRetour'].dirty || clientForm.controls['tarifRetour'].touched) }">
+            <div *ngIf="clientForm.controls['tarifRetour'].invalid" class="invalid-feedback">
+              <span *ngIf="clientForm.controls['tarifRetour'].errors.required">Tarif retour requis</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="col-6 border-left pt-3 mb-2 ">
+        <!-- moyenPayement -->
+        <div class="form-group row mb-3">
+          <label class="col-md-4 col-form-label text-right" for="moyenPayement">Moyen paiement*:</label>
+          <div class="col-md-8">
+            <ng-select name="moyenPayement" id="moyenPayement" formControlName="moyenPayement"
+              placeholder="Moyen paiement">
+              <ng-option value="cheque">Cheque</ng-option>
+              <ng-option value="virement">Virement</ng-option>
+              <ng-option value="espece">Espèce</ng-option>
+
+            </ng-select>
+            <span *ngIf="clientForm.controls['moyenPayement'].invalid && clientForm.controls['moyenPayement'].touched"
+              class="invalid-feedback-custom  error">Moyen paiement requis</span>
+
+          </div>
+        </div>
+
+
+
+
+
+        <!--journe de Paiement-->
+        <div class="form-group row mb-3">
+          <label for="jourPayement" class="col-sm-4 col-form-label text-right">Journées de
+            Paiement :</label>
+          <div class="col-sm-8 mt-1">
+            <ng-select [items]="journeeSemaine" placeholder="Sélectionner les jours de paiement" [multiple]="true"
+              formControlName="jourPayement" bindLabel="nom" bindValue="journee" clearAllText="Clear" labelForId="state"
+              [closeOnSelect]="false"></ng-select>
+            <span *ngIf="clientForm.controls['jourPayement'].invalid && clientForm.controls['jourPayement'].touched"
+              class="invalid-feedback-custom error">jour de paiement requis</span>
+          </div>
+        </div>
+        <!--journe de Paiement-->
+        <div class="form-group row mb-3">
+          <label for="delaiPaiement" class="col-sm-4 col-form-label text-right">Journées de
+            Paiement :</label>
+          <div class="col-sm-8 mt-1">
+            <ng-select [items]="delaiPaiement" placeholder="Sélectionner le delai de paiement" [multiple]="false"
+              formControlName="delaiPaiement" bindLabel="delai" bindValue="delai" clearAllText="Clear" labelForId="state"
+              [closeOnSelect]="false"></ng-select>
+            <span *ngIf="clientForm.controls['delaiPaiement'].invalid && clientForm.controls['delaiPaiement'].touched"
+              class="invalid-feedback-custom error">jour de paiement requis</span>
+          </div>
+        </div>
+        <!--wilaya-->
+        <div class="form-group row mb-3 text-right">
+          <label class="col-md-4 col-form-label"> Wilaya de départ*: </label>
+          <div class="col-sm-8 text-left">
+            <ng-select formControlName="wilayaDepartId" placeholder=" Selectionner la wilaya"
+              (change)=" onChangWilayaDepart()">
+              <ng-option *ngFor="let wilaya of listWilaya" [value]="wilaya.id">
+                {{ wilaya.codeWilaya }} {{ wilaya.nomLatin }}
+              </ng-option>
+            </ng-select>
+            <span *ngIf="clientForm.controls['wilayaDepartId'].invalid && clientForm.controls['wilayaDepartId'].touched"
+              class="invalid-feedback-custom error">Wilaya requise</span>
+          </div>
+        </div>
+
+        <!--commune-->
+        <div class="form-group row mb-3 text-right">
+          <label class="col-md-4 col-form-label"> Commune de départ*: </label>
+          <div class="col-sm-8 text-left">
+            <ng-select formControlName="communeDepartId" placeholder="Selectionner la commune">
+              <ng-option *ngFor="let commune of listCommuneDepart" [value]="commune.id">
+                {{ commune.codePostal }} {{ commune.nomLatin }}
+              </ng-option>
+            </ng-select>
+            <span
+              *ngIf="clientForm.controls['communeDepartId'].invalid && clientForm.controls['communeDepartId'].touched"
+              class="invalid-feedback-custom error">Commune requise</span>
+          </div>
+        </div>
+
+        <!--agence-->
+        <div class="form-group row mb-3 text-right">
+          <label class="col-md-4 col-form-label"> agence de retour*: </label>
+          <div class="col-sm-8 text-left">
+            <ng-select formControlName="caisseAgenceId" placeholder="Selectionner la agence">
+              <ng-option *ngFor="let agence of listAgence" [value]="agence.id">
+                {{ agence.nom}}
+              </ng-option>
+            </ng-select>
+            <span *ngIf="clientForm.controls['caisseAgenceId'].invalid && clientForm.controls['caisseAgenceId'].touched"
+              class="invalid-feedback-custom error">agence requise</span>
+          </div>
+        </div>
+
+        <!--caisseAgence-->
+        <div class="form-group row mb-3 text-right">
+          <label class="col-md-4 col-form-label"> agence de paiement*: </label>
+          <div class="col-sm-8 text-left">
+            <ng-select formControlName="agenceRetourId" placeholder="Selectionner la agence">
+              <ng-option *ngFor="let agence of listAgence" [value]="agence.id">
+                {{ agence.nom}}
+              </ng-option>
+            </ng-select>
+            <span *ngIf="clientForm.controls['agenceRetourId'].invalid && clientForm.controls['agenceRetourId'].touched"
+              class="invalid-feedback-custom error">agence requise</span>
+          </div>
+        </div>
+
+      </div>
+
+
+      <div class="div col-12 row d-flex justify-content-end">
+        <ul class="list-inline wizard mb-0 pg-2 mt-2 ">
+          <li class="next list-inline-item ">
+            <button class="btn btn-danger" awPreviousStep>
+              <i class="ri-arrow-left-line align-middle ms-2"></i> Précédent
+            </button>
+          </li>
+        </ul>
+
+        <ul class="list-inline wizard mb-0 pg-2 mt-2 ">
+          <li class="next list-inline-item ">
+            <button class="btn btn-primary" (keydown.enter)="$event.preventDefault()" awNextStep ngClass="disable"
+              [disabled]="!validateSecondtStep()">
+              Suivant <i class="ri-arrow-right-line align-middle ms-2"></i>
+            </button>
+          </li>
+        </ul>
+      </div>
+
+    </aw-wizard-step>
+
+
+    <!-- step3 -->
+    <aw-wizard-step stepTitle="Type de tarifs">
+      <ng-template *ngIf="!validateThirdtStep()" awWizardStepSymbol>3</ng-template>
+      <ng-template *ngIf="validateThirdtStep()" awWizardStepSymbol><span><i class="fa fa-check"
+            aria-hidden="true"></i></span></ng-template>
+
+      <div formArrayName="typeTarif" class="mt-4">
+        <div *ngFor="let skill of typeTarif.controls; let i=index">
+          <div [formGroupName]="i" class="row col-12">
+
+            <div class="col-6 border-right border-secondary pt-3 mb-2">
+
+              <!--service-->
+              <div class="form-group row mb-3 text-right">
+                <label class="col-4 col-form-label"> service*: </label>
+                <div class="col-7 text-left">
+                  <ng-select formControlName="serviceId" placeholder=" Selectionner le service"
+                    (change)="onChangeService(i)">
+                    <ng-option *ngFor="let service of listService; let i=index" [value]="service.id">
+                      {{ service.nom}}
+                    </ng-option>
+                  </ng-select>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-5 border-left pt-3 mb-2">
+
+              <!--code Tarif-->
+              <div class="form-group row mb-3 text-right">
+                <label class="col-3 col-form-label"> Tarif*: </label>
+                <div class="col-9 text-left">
+                  <ng-select formControlName="codeTarifId" placeholder=" Selectionner le tarif">
+                    <ng-option *ngFor="let codeTarif of listCodeTarif[i]" [value]="codeTarif.id">
+                      {{ codeTarif.nom}}
+                    </ng-option>
+                  </ng-select>
+                </div>
+              </div>
+
+            </div>
+            <div class="form-group pt-3 mb-2">
+              <button [hidden]="typeTarif.length==1" class="btn btn-sm btn-outline-danger "
+                (click)="removeTypeTarif(i)"><i class="fa fa-times" aria-hidden="true"></i></button>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 d-flex justify-content-center mx-auto mt-2 ">
+          <button class="btn btn-sm btn-outline-danger mr-4 " (click)="resetTypeTarif()"><i class="fa fa-undo"
+              aria-hidden="true"></i></button>
+          <button class="btn btn-sm btn-outline-primary mr-4 " (click)="addTypeTarif()"><i class="fa fa-plus"
+              aria-hidden="true"></i></button>
+        </div>
+      </div>
+
+      <div class="col-12 d-flex justify-content-end mx-auto mt-5 ">
+        <button class="btn  btn-danger" awPreviousStep> <i class="ri-arrow-left-line align-middle ms-2"></i>
+          Précédent</button>
+        <button class="btn btn-success"
+          [disabled]="!validateThirdtStep() || !validateFirstStep() || !validateSecondtStep()" ngClass="disable"
+          (click)=" Confirm() ">Valider <i class="fa fa-check-circle" aria-hidden="true"></i>
+        </button>
+      </div>
+
+    </aw-wizard-step>
+  </form>
+</aw-wizard>

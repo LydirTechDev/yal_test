@@ -1,0 +1,77 @@
+<div class="container-fluid">
+    <h3>Mes colis à livrer</h3>
+    <div class="row ">
+        <div class="col-md-12 row mx-auto">
+            <div class="form-groupe col-12 col-md-6 mt-1 mr-auto">
+                <input type="text" class="form-control" [(ngModel)]="searchText" (keyup)="searchShipment()"
+                    id="search-input" mdbInput placeholder="Recherche">
+            </div>
+        </div>
+        <hr class="w-100">
+    </div>
+    <div class="row col-12 d-flex ">
+        <table mdbTable class="table-sm mx-auto w-100">
+            <tbody #row>
+                <tr mdbTableCol *ngFor="let el of shipments; let i = index">
+                    <td>
+                        <div
+                            class="media align-items-lg-center bg-white flex-column mx-auto col-12 col-md-8 flex-lg-row p-3 shadow">
+                            <div class="col-12 col-sm-6 media-body order-1 order-md-1">
+                                <h5 class="mt-0 font-weight-bold mb-2">{{el.tracking}}
+                                </h5>
+                                <p class="font-italic text-muted mb-0 small">{{el.designationProduit}}.
+                                </p>
+                                <div class="d-flex align-items-center justify-content-between mt-1">
+                                    <h6 class="font-weight-bold my-2">{{el.commune.nomLatin}} /
+                                        {{el.telephone}}</h6>
+                                    <p class="font-italic text-muted mb-0 small">{{el.adresse}}</p>
+                                    <ul class="list-inline small">
+                                        <li class="list-inline-item m-0">
+                                            <i class="fa fa-user mr-1"></i>
+                                            {{el.nom}}
+                                            {{el.prenom}}
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class=" col-12 col-sm-4 order-2 order-md-2 ml-auto">
+                                <!-- <button mdbBtn color="primary" class="waves-light" mdbWavesEffect class="btn-success btn-sm btn"><i
+                                                                      class="fas fa-check-double"></i> Livré</button> -->
+                                <div>
+                                    <button mdbBtn class="waves-light" mdbWavesEffect
+                                        class="text-left btn-dark-green btn-sm btn w-100"
+                                        (click)="setStatusShipmentLivre(el.tracking)"><i class="fas fa-check"></i>Colis
+                                        livré</button>
+                                </div>
+                                <div>
+                                    <button mdbBtn class="waves-light" mdbWavesEffect
+                                        class="text-left btn-danger btn-sm btn w-100"
+                                        (click)="setShipmentLivraisonNonAccomplie(content, el.tracking)"><i
+                                            class="fas fa-exclamation-triangle"></i> Livraison non
+                                        accomplie</button>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<ng-template #content role="document" let-modal="close">
+    <div class="text-center mx-auto py-2">
+        <label for="" class="text-left">En alerte</label>
+        <div *ngFor="let sts of listTantaiveEchouer">
+            <button mdbBtn class="waves-light" mdbWavesEffect class="btn-yellow btn-md btn w-100"
+                (click)="setEnTantativeEc(sts)"> {{sts}} </button>
+        </div>
+        <hr>
+        <label for="" class="text-left">Echec livraison</label>
+        <div *ngFor="let sts of listTantaivesEchec">
+            <button mdbBtn color="danger" class="waves-light" mdbWavesEffect class="btn-danger btn-md btn w-100"
+                (click)="SetEchecLivraison(sts)"> {{sts}} </button>
+        </div>
+    </div>
+</ng-template>

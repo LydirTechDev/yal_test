@@ -1,0 +1,14 @@
+.form-control {
+    height: 50px;
+	border-radius: 1;
+	border: 1px solid #dae0e5;
+    font-size: 1.8rem;
+}
+.form-control::placeholder {
+	color: rgb(197, 191, 191);
+	font-size: 1.8rem;
+}
+.form-control:focus {
+	box-shadow: 0 0 2pt 0.1pt rgb(55, 172, 250);
+    outline-width: 0px;
+}

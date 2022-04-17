@@ -1,0 +1,146 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="mt-3">
+            <h4>Libérer un paiment</h4>
+        </div>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex">
+                        <div class="flex-1 overflow-hidden">
+                            <p class="text-truncate font-size-14 mb-2">Nombre des colis</p>
+                            <h4 class="mb-0">{{nbrColis}} Colis</h4>
+                        </div>
+                        <div class="text-primary ml-auto">
+                            <i class="ri-stack-line font-size-24"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex">
+                        <div class="flex-1 overflow-hidden">
+                            <p class="text-truncate font-size-14 mb-2">Total ramassé</p>
+                            <h4 class="mb-0 "> {{totalRamasse}} DA
+                            </h4>
+                        </div>
+                        <div class="text-primary ml-auto">
+                            <i class="ri-coins-fill text-secondary font-size-24"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex">
+                        <div class="flex-1 overflow-hidden">
+                            <p class="text-truncate font-size-14 mb-2">Gain</p>
+                            <h4 class="mb-0">{{gain}} DA</h4>
+                        </div>
+                        <div class="text-primary ml-auto">
+                            <i class="fas fa-donate text-success font-size-24"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex">
+                        <div class="flex-1 overflow-hidden">
+                            <p class="text-truncate font-size-14 mb-2">Net client</p>
+                            <h4 class="mb-0">{{netClient}} DA</h4>
+                        </div>
+                        <div class="text-primary ml-auto">
+                            <i class="ri-hand-coin-fill text-danger font-size-24"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- end row -->
+    <hr>
+    <form [formGroup]="formData">
+
+        <div class="row mt-5 d-flex justify-content-around">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header bg-white">
+                        <h5 class="text-dark">Par client</h5>
+                        <p class="text-muted">Choisir un client</p>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <ng-select placeholder=" Selectionner un client" formControlName="client">
+                                <ng-option *ngFor="let client of listClients" [value]="client.id">
+                                    {{client.nomCommercial}}
+                                </ng-option>
+                            </ng-select>
+                        </div>
+
+                        <button mdbBtn mdbWavesEffect class="btn-primary btn-md relative waves-light mx-auto"
+                        (click) = 'libererParClient()'>
+                            <i class="fas fa-check-double mr-1"></i> Libérer
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header bg-white">
+                        <h5 class="text-dark">Par ID récolte</h5>
+                        <p class="text-muted">Choisir Id récolte</p>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <ng-select placeholder=" Selectionner une récolte" formControlName="recolte">
+                                <ng-option  *ngFor="let recolte of listRecolte" [value]="recolte">
+                                    {{recolte}}
+                                </ng-option>
+                            </ng-select>
+                        </div>
+
+                        <button mdbBtn mdbWavesEffect class="btn-primary btn-md relative waves-light mx-auto"
+                        (click) = 'libererParIdRecolte()'>
+                            <i class="fas fa-check-double mr-1"></i> Libérer
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header bg-white">
+                        <h5 class="text-dark">Par date de récolte</h5>
+                        <p class="text-muted">Choisir une date</p>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <ng-select placeholder=" Selectionner une date" formControlName="dateRecolte">
+                                <ng-option  *ngFor="let date of listDateRecolte" [value]="date">
+                                    {{date}}
+                                </ng-option>
+                            </ng-select>
+                        </div>
+
+                        <button mdbBtn mdbWavesEffect class="btn-primary btn-md relative waves-light mx-auto" 
+                        (click) = 'libererParDateRecolte()'>
+                            <i class="fas fa-check-double mr-1"></i> Libérer
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+</div>

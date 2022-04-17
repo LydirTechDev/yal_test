@@ -1,0 +1,384 @@
+<div class="container-fluid">
+    <app-pagetitle [breadcrumbItems]="breadCrumbItems"></app-pagetitle>
+    <div class="row mb-3 ml-1" style="margin-top: -24px">
+        <a href="javascript:void(0);" class="btn btn-outline-danger" (click)="openModal(content)">
+            <i class="fas fa-plus-circle">
+                <span class="mt-1 font-weight-normal pl-1">Ajouter Commune</span>
+            </i>
+        </a>
+            <div class="custom-file col-3 mt-2 mr-auto">
+                <input type="file" class="custom-file-input" id="customFile" (change)="addfile($event)" placeholder="Upload file"
+                    accept=".csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
+                <label class="custom-file-label" for="customFile">Choisir un fichier des commune</label>
+            </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row mb-md-2">
+                    <!-- Search -->
+                    <div class="col-sm-12 col-md-12">
+                        <div id="tickets-table_filter" class="dataTables_filter text-md-right">
+                            <label class="d-inline-flex align-items-center">Recherche:
+                                <input type="text" name="searchTerm" class="form-control form-control-sm ml-2"
+                                    aria-controls="tickets-table" [(ngModel)]="searchCommuneTerm"
+                                    (ngModelChange)="searchTermUpdate(searchCommuneTerm)" /></label>
+                        </div>
+                    </div>
+                    <!-- End search -->
+                </div>
+                <!-- Table -->
+                <div class="table-responsive">
+                    <table id="basic-datatable"
+                        class="table table-centered dt-responsive nowrap no-footer dtr-inline table-hover">
+                        <thead>
+                            <tr>
+                                <th>N°</th>
+                                <th>Wilaya</th>
+                                <th>Code postal</th>
+                                <th>Nom Latin</th>
+                                <th colspan="2" class="text-center">Type livraison</th>
+                                <th>Journée de livraison</th>
+                            </tr>
+                        </thead>
+                        <tbody *ngIf="!isLoading; else spiner">
+
+                            <tr *ngFor="let commune of communeData; let i=index " (click)="detailCommune(commune.id)"
+                                class="hover">
+                                <td>
+                                    <a class="text-dark font-weight-bold">
+                                        {{ commune.id }}
+                                    </a>
+                                </td>
+
+                                <td>
+                                    {{ commune.wilaya.nomLatin }}
+                                </td>
+                                <td>
+                                    {{ commune.codePostal }}
+                                </td>
+                                <td>
+                                    {{ commune.nomLatin }}
+                                </td>
+                                <td class="text-center">
+                                    <span *ngIf="!commune.livraisonStopDesck" class="badge badge-pill badge-danger"> No
+                                        - Stop Desk </span>
+                                    <span *ngIf="commune.livraisonStopDesck" class="badge badge-pill badge-success">
+                                        Stop Desk </span>
+                                </td>
+                                <td class="text-center">
+                                    <span *ngIf="!commune.livraisonDomicile" class="badge badge-pill badge-danger"> No -
+                                        Domicile </span>
+                                    <span *ngIf="commune.livraisonDomicile" class="badge badge-pill badge-success"> à
+                                        Domicile </span>
+                                </td>
+                                <td>
+                                    {{ commune.journeeLivraison }}
+                                </td>
+                            </tr>
+                            <tr *ngIf="communeData.length <= 0">
+                                <th colspan="7" class="text-center">
+                                    <div class="text-center">
+                                        <p class="m-0 p-0"><i class="ri-error-warning-line customIcone"> </i> Pas
+                                            de communes ! </p>
+                                    </div>
+                                </th>
+                            </tr>
+                        </tbody>
+
+                        <ng-template #spiner>
+                            <tbody>
+                                <tr>
+                                    <th colspan="7" class="text-center">
+                                        <div class="spinner-border text-primary m-1" role="status">
+                                            <span class="sr-only">Loading...</span>
+                                        </div>
+                                        <span class="d-block">Chargement ...</span>
+                                    </th>
+                                </tr>
+                            </tbody>
+                        </ng-template>
+                    </table>
+                </div>
+                <!-- End table -->
+                <div class="row justify-content-md-between align-items-md-center mt-2">
+                    <div class="col-sm-12 col-md-5">
+                        <div class="dataTables_info mb-2" id="tickets-table_info" role="status" aria-live="polite">
+                            Total {{ metaData.totalItems }} communes
+                        </div>
+                    </div>
+                    <!-- Pagination -->
+                    <div class="col-sm-12 col-md-5">
+                        <nav aria-label="...">
+                            <ul class="pagination justify-content-end">
+                                <!-- <li class="page-item">
+                                        <button class="page-link info">
+                                            total utilistaeur : {{ metaData.totalItems }}
+                                        </button>
+                                    </li> -->
+                                <li class="page-item">
+                                    <button class="page-link" [disabled]="metaLinks.previous.length <= 0"
+                                        (click)="funcPaginate(metaLinks.previous)">
+                                        <span aria-hidden="true">&laquo;</span>
+                                        <span class="sr-only">Previous</span>
+                                    </button>
+                                </li>
+                                <li class="page-item">
+                                    <button class="page-link" *ngIf="metaData.currentPage - 2 > 0"
+                                        (click)="funcPaginate('', metaData.currentPage - 2)">
+                                        {{ metaData.currentPage - 2
+                                        }}<span class="sr-only"></span>
+                                    </button>
+                                </li>
+                                <li class="page-item">
+                                    <button class="page-link" *ngIf="metaData.currentPage - 1 > 0"
+                                        (click)="funcPaginate('', metaData.currentPage - 1)">
+                                        {{ metaData.currentPage - 1
+                                        }}<span class="sr-only"></span>
+                                    </button>
+                                </li>
+                                <li class="page-item active">
+                                    <button class="page-link" (click)="funcPaginate('', metaData.currentPage)">
+                                        {{ metaData.currentPage
+                                        }}<span class="sr-only">(current)</span>
+                                    </button>
+                                </li>
+                                <li class="page-item">
+                                    <button class="page-link" (click)="funcPaginate('', metaData.currentPage + 1)"
+                                        *ngIf="metaData.currentPage + 1 <= metaData.totalPages">
+                                        {{ metaData.currentPage + 1
+                                        }}<span class="sr-only"></span>
+                                    </button>
+                                </li>
+                                <li class="page-item">
+                                    <button class="page-link" (click)="funcPaginate('', metaData.currentPage + 2)"
+                                        *ngIf="metaData.currentPage + 2 < metaData.totalPages">
+                                        {{ metaData.currentPage + 2
+                                        }}<span class="sr-only"></span>
+                                    </button>
+                                </li>
+                                <li class="page-item">
+                                    <button class="page-link" *ngIf="
+                    metaLinks.next.length != 0 &&
+                    metaData.currentPage + 2 <= metaData.totalPages
+                  ">
+                                        ...
+                                    </button>
+                                </li>
+                                <li class="page-item">
+                                    <button class="page-link" [disabled]="metaLinks.next.length <= 0"
+                                        (click)="funcPaginate(metaLinks.next)">
+                                        <span aria-hidden="true">&raquo;</span>
+                                        <span class="sr-only">Next</span>
+                                    </button>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                    <!-- End Pagination -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Contacts model  -->
+<ng-template #content role="document" let-modal="close">
+    <div class="modal-header">
+        <h5 class="modal-title">Ajouter une commune</h5>
+        <button type="button" class="close" aria-label="Close" (click)="modal('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body p-3">
+        <aw-wizard [navBarLayout]="'large-empty-symbols'">
+            <form class="needs-validation col-12" [formGroup]="communeForm">
+                <!-- Step One -->
+                <aw-wizard-step stepTitle="Information patrimoine">
+                    <ng-template awWizardStepSymbol>1</ng-template>
+                    <div class="row mt-3">
+                        <label class="col-sm-3 col-form-label text-right"> Wilaya: </label>
+                        <div class="col-sm-7">
+                            <ng-select formControlName="wilayaId" placeholder=" Enter la wilaya">
+                                <ng-option *ngFor="let wilaya of wilayasList" [value]="wilaya.id">
+                                    {{ wilaya.nomLatin }}
+                                </ng-option>
+                            </ng-select>
+                        </div>
+                    </div>
+
+                    <div class="row mt-2">
+                        <label class="col-sm-3 col-form-label text-right">
+                            Nom Latin:</label>
+                        <div class="col-sm-7">
+                            <input type="text" class="form-control" id="nomLatin" placeholder="Enter Nom Latin"
+                                formControlName="nomLatin"
+                                [ngClass]="{ 'is-invalid': submitted && form.nomLatin.errors }" />
+                            <div *ngIf="submitted && form.nomLatin.errors" class="invalid-feedback">
+                                <span *ngIf="form.nomLatin.errors.required">Name is mendatory.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-2">
+                        <label class="col-sm-3 col-form-label text-right"> nomArabe:</label>
+                        <div class="col-sm-7">
+                            <input type="text" class="form-control" id="nomArabe" placeholder="Enter Code Arabe"
+                                formControlName="nomArabe"
+                                [ngClass]="{ 'is-invalid': submitted && form.nomArabe.errors }" />
+                            <div *ngIf="submitted && form.nomArabe.errors" class="invalid-feedback">
+                                <span *ngIf="form.nomArabe.errors.required">Name is mendatory.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-2">
+                        <label class="col-sm-3 col-form-label text-right">
+                            Code Postal:</label>
+                        <div class="col-sm-7">
+                            <input type="text" class="form-control" id="codePostal" placeholder="Enter Code Arabe"
+                                formControlName="codePostal" [ngClass]="{
+                  'is-invalid': submitted && form.codePostal.errors
+                }" />
+                            <div *ngIf="submitted && form.codePostal.errors" class="invalid-feedback">
+                                <span *ngIf="form.codePostal.errors.required">Name is mendatory.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <ul class="list-inline wizard mb-0 pg-2 mt-2">
+                        <li class="next list-inline-item float-right">
+                            <button class="btn btn-primary" awNextStep *ngIf="validateFirstStep">
+                                Suivant
+                            </button>
+                        </li>
+                    </ul>
+                </aw-wizard-step>
+
+                <!-- Step Two -->
+                <aw-wizard-step stepTitle="Information de livraison">
+                    <ng-template awWizardStepSymbol>2</ng-template>
+                    <div class="row pt-1">
+                        <label class="col-sm-3 col-form-label text-right">
+                            Commune Livrable ? :</label>
+                        <div class="col-sm-7">
+                            <ui-switch checkedLabel="Commune Livrable" uncheckedLabel="Commune Non Livrable"
+                                switchColor="#74788d" (valueChange)="onValueChange($event)" formControlName="livrable">
+                            </ui-switch>
+                        </div>
+                    </div>
+                    <div *ngIf="valueChange">
+                        <div class="row pt-1">
+                            <label class="col-sm-3 col-form-label text-right" for="livraisonStopDesck">
+                                livarison Stop Desck :</label>
+                            <div class="col-sm-7 mt-1">
+                                <ui-switch uncheckedLabel="Non" checkedLabel="Oui" formControlName="livraisonStopDesck">
+                                </ui-switch>
+                            </div>
+                        </div>
+                        <div class="row pt-1">
+                            <label class="col-sm-3 col-form-label text-right" for="livraisonDomicile">
+                                livarison à Domicile :</label>
+                            <div class="col-sm-7 mt-1">
+                                <ui-switch uncheckedLabel="Non" checkedLabel="Oui" formControlName="livraisonDomicile">
+                                </ui-switch>
+                            </div>
+                        </div>
+
+                        <div class="row pt-1">
+                            <label class="col-sm-3 col-form-label text-right" for="stockage">
+                                stockage:</label>
+                            <div class="col-sm-7 mt-1">
+                                <ui-switch uncheckedLabel="Non" checkedLabel="Oui" formControlName="stockage">
+                                </ui-switch>
+                            </div>
+                        </div>
+
+                        <div class="row mt-2">
+                            <label for="journeeLivraisons" class="col-sm-3 col-form-label text-right">Journée de
+                                livraisons :</label>
+                            <div class="col-sm-7 mt-1">
+                                <ng-select [items]="joureeSemain" [multiple]="true" formControlName="journeeLivraison"
+                                    bindLabel="nom" bindValue="journee" clearAllText="Clear" labelForId="state"
+                                    [closeOnSelect]="false"></ng-select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <ul class="list-inline wizard mb-0">
+                        <li class="previous list-inline-item">
+                            <button class="btn btn-primary" awPreviousStep>Previous</button>
+                        </li>
+                        <li class="next list-inline-item float-right">
+                            <button class="btn btn-primary" awNextStep *ngIf="validateSecondeStep">
+                                Suivant
+                            </button>
+                        </li>
+                    </ul>
+                </aw-wizard-step>
+
+                <!-- step three-->
+
+                <aw-wizard-step stepTitle="Confirm Detail">
+                    <ng-template awWizardStepSymbol>3</ng-template>
+                    <div class="p-3 text-left">
+                        <div class="row pb-1">
+                            <div class="col-12">
+                                <label class="mr-2">Nom Commune 'Latin': </label>
+                                <label for="nomLatin">{{
+                                    this.communeForm.get("nomLatin").value
+                                    }}</label>
+                            </div>
+                        </div>
+                        <div class="row pb-1">
+                            <div class="col-12">
+                                <label class="mr-2">Nom Commune 'Arabe': </label>
+                                <label for="nomLatin">{{
+                                    this.communeForm.get("nomArabe").value
+                                    }}</label>
+                            </div>
+                        </div>
+                        <div class="row pb-1">
+                            <div class="col-12">
+                                <label class="mr-2">Code Postal: </label>
+                                <label for="codePostal">{{
+                                    this.communeForm.get("codePostal").value
+                                    }}</label>
+                            </div>
+                        </div>
+
+                        <div class="row pb-1" *ngIf="this.communeForm.get('livrable').value; else nonLivrable">
+                            <div class="col-12">
+                                <label class="mr-2">Livrable le: </label>
+                                <label *ngFor="
+                    let jour of this.communeForm.get('journeeLivraison').value
+                  " class="mr-2">
+                                    {{ jour }}</label>
+                            </div>
+                        </div>
+                        <ng-template #nonLivrable>
+                            <label class="mr-2">Commune No Livrable <i class="fas fa-ban text-danger"></i></label>
+                        </ng-template>
+                    </div>
+                    <ul class="list-inline wizard mb-0">
+                        <li class="previous list-inline-item">
+                            <button class="btn btn-primary" awPreviousStep>Previous</button>
+                        </li>
+                    </ul>
+                    <div class="text-center">
+                        <button class="btn btn-outline-primary" type="submit" (click)="createCommune()"
+                            *ngIf="!btnSpinner">
+                            Valider
+                        </button>
+                        <button class="btn btn-outline-primary" type="button" disabled *ngIf="btnSpinner">
+                            <span class="spinner-border btnSpinner-border-sm" role="status" aria-hidden="true"></span>
+                            Ajout en cours
+                        </button>
+                    </div>
+                </aw-wizard-step>
+            </form>
+        </aw-wizard>
+    </div>
+</ng-template>

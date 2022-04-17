@@ -1,0 +1,61 @@
+<div>
+    <div class="row mb-3 col-12 align-center text-center d-flex justify-content-between">
+        <form [formGroup]="coursiersSelect" class="row" *ngIf="!coursierLoaded; else autreCoursier">
+            <h4 class="labtrack mt-1 mx-2"><i class="bi bi-collection "></i>Crée une récolte pour</h4>
+            <ng-select  formControlName="coursierSelected" placeholder=" Selectionner un coursier" [clearable]="false"
+                (change)="getRecoltesCoursierInformation($event)" [readonly]="coursierLoaded" appendTo="body">
+                <ng-option *ngFor="let coursier of coursiers" [value]="coursier">
+                    <span class="text-uppercase">{{coursier.nom}} {{coursier.prenom}}</span>
+                </ng-option>
+            </ng-select>
+        </form>
+        <ng-template #autreCoursier>
+            <button type="button" class="btn btn-dark text-center" (click)="changeCoursier()">
+                <i class="fas fa-arrow-left"></i> Autre coursier</button>
+            <h3 class="customBg text-dark px-3 py-2 rounded text-capitalize font-weight-bold">{{ctl.nom}}
+                {{ctl.prenom}}:
+                <span class="display-5 font-weight-bold">{{nbrColis}} Colis - {{montant}} DA</span>
+            </h3>
+        </ng-template>
+    </div>
+    <hr class=" mx-auto">
+
+    <table class="table table-bordered table-centered bg-white" *ngIf="coursierLoaded && montant > 0">
+        <thead class="">
+            <tr>
+                <th scope="col">Tracking</th>
+                <th scope="col">Type</th>
+                <th scope="col">Wilaya</th>
+                <th scope="col">Date livraison</th>
+                <th scope="col">Prix à récolter(DA)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let colis of listColis">
+                <td><span class="bg-light py-2 px-3 rounded text-dark font-weight-bold">{{colis.tracking}}</span>
+                <td>{{colis.service}}</td>
+                <td>{{colis.wilaya}}</td>
+                <td>{{colis.dateLivraison | date:'dd-MM-YYYY HH:mm:ss'}}</td>
+                <td class="font-weight-bold">{{colis.cost}} DA</td>
+            </tr>
+        </tbody>
+        <tfoot>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td class="customBg">
+                    <h1 class="text-dark font-weight-bold p-0 ">Total: {{montant}} DA</h1>
+                </td>
+            </tr>
+      
+        </tfoot>
+    </table>
+<div class=" d-flex justify-content-center" *ngIf="coursierLoaded && montant > 0">
+<button class="btn btn-success" (click)="validateReceptionRecolte()">
+    <i class="ri-check-fill"></i> 
+    Confirmer et valider la réception
+</button>
+</div>
+</div>
