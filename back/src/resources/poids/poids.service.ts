@@ -81,6 +81,15 @@ export class PoidsService {
     });
   }
 
+  async getPlagePoids(poids: number) {
+    return await this.poidsRepository.findOne({
+      where: {
+        min: LessThanOrEqual(poids),
+        max: MoreThanOrEqual(poids),
+      },
+    });
+  }
+
   findOne(id: number) {
     return `This action returns a #${id} poid`;
   }

@@ -29,6 +29,8 @@ import { RecoltesModule } from './resources/recoltes/recoltes.module';
 import configuration from './config/configuration';
 import { PmtModule } from './resources/pmt/pmt.module';
 import { PmtCoursierModule } from './resources/pmt-coursier/pmt-coursier.module';
+import { ServiceClientModule } from './resources/service-client/service-client.module';
+import { ExpiditeurPublicModule } from './resources/expiditeur-public/expiditeur-public.module';
 
 @Module({
   imports: [
@@ -72,6 +74,8 @@ import { PmtCoursierModule } from './resources/pmt-coursier/pmt-coursier.module'
     RecoltesModule,
     PmtModule,
     PmtCoursierModule,
+    ServiceClientModule,
+    ExpiditeurPublicModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -91,6 +91,29 @@ export class CodeTarifsZonesService {
     }
   }
 
+  async findCodeTarifZon_v2(
+    zonId: number,
+    codeTarifId: number,
+    plageSurpoidsId: number,
+  ): Promise<CodeTarifsZone[]> {
+    const codeTarifZones = await this.codeTarifZonesRepository
+      .createQueryBuilder('codeTarifZone')
+      .leftJoinAndSelect('codeTarifZone.codeTarif', 'codeTarif')
+      .leftJoinAndSelect('codeTarifZone.zone', 'zone')
+      .leftJoinAndSelect('codeTarifZone.poids', 'poids')
+      .where(
+        `codeTarif.id = '${codeTarifId}' and zone.id = '${zonId}' and poids.id = '${plageSurpoidsId}'`,
+      )
+      .select(['codeTarifZone'])
+      .getMany();
+
+    if (codeTarifZones) {
+      return codeTarifZones;
+    } else {
+      throw new EntityNotFoundError(CodeTarifsZone, { zonId, codeTarifId });
+    }
+  }
+
   findAll() {
     return `This action returns all codeTarifsZones`;
   }

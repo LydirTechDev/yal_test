@@ -509,6 +509,7 @@ export class RecoltesService {
     );
     let recoltes: Recolte[];
     if (userStation.typeUser === TypeUserEnum.caissierAgence) {
+      
       recoltes = await this.recolteRepository
         .createQueryBuilder('recolte')
         .leftJoinAndSelect('recolte.shipment', 'shipment')

@@ -44,16 +44,29 @@ const routes: Routes = [
     canActivate: [AuthGuard],
   },
   {
-    path: 'finance', component: LayoutComponent, loadChildren: () => import('./finance/finance.module')
-      .then(m => m.FinanceModule), canActivate: [AuthGuard]
+    path: 'finance',
+    component: LayoutComponent,
+    loadChildren: () =>
+      import('./finance/finance.module').then((m) => m.FinanceModule),
+    canActivate: [AuthGuard],
   },
   {
-    path: 'recherche/:tracking', component: LayoutComponent, children: [
+    path: 'recherche/:tracking',
+    component: LayoutComponent,
+    children: [
       {
         path: '',
-        component: ResultSearchTrackingComponent
+        component: ResultSearchTrackingComponent,
       },
-    ]
+    ],
+  },
+  {
+    path: 'service-client',
+    component: LayoutComponent,
+    loadChildren: () =>
+      import('./service-client/service-client.module').then(
+        (m) => m.ServiceClientModule
+      ),
   },
   {
     path: '**',
@@ -67,4 +80,4 @@ const routes: Routes = [
   exports: [RouterModule],
   providers: [],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

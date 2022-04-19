@@ -1,0 +1,272 @@
+<div class="row ml-2 p-0 m-0">
+    <div class="m-0 p-0">
+        <h4 class="m-0 p-0">Nouveau envoi <span class="text-muted"> Retrait de cahier de charge</span></h4>
+    </div>
+</div>
+<div class="row ml-2 p-0 m-0">
+    <form [formGroup]="classiqueShippmentForm" class="form col-12">
+        <div class="row mt-2">
+            <div class="col-6  border-white border-right">
+                <div class="text-center">
+                    <hr class="hr-text" data-content="Expéditeur">
+                </div>
+                <!-- Raison sociale -->
+                <div class="form-group row mb-1 mt-2">
+                    <label class="col-md-3 col-form-label text-right" for="raisonSocialeExp">Raison sociale: </label>
+                    <div class="col-md-8">
+                        <input class="form-control" formControlName="raisonSocialeExp" type="text"
+                            placeholder="Raison sociale"
+                            [ngClass]="{'is-invalid': classiqueShippmentForm.controls['raisonSocialeExp'].invalid && (classiqueShippmentForm.controls['raisonSocialeExp'].dirty || classiqueShippmentForm.controls['raisonSocialeExp'].touched),'is-valid': classiqueShippmentForm.controls['raisonSocialeExp'].valid && (classiqueShippmentForm.controls['raisonSocialeExp'].dirty || classiqueShippmentForm.controls['raisonSocialeExp'].touched) }">
+                        <div *ngIf="classiqueShippmentForm.controls['raisonSocialeExp'].invalid"
+                            class="invalid-feedback">
+                            <span *ngIf="classiqueShippmentForm.controls['raisonSocialeExp'].errors.minlength">longueur
+                                minimale 3
+                                characters </span>
+                            <span *ngIf="classiqueShippmentForm.controls['raisonSocialeExp'].errors.maxlength">Longuer
+                                maximale
+                                50
+                                characters</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nom -->
+                <div class="form-group row mb-1">
+                    <label class="col-md-3 col-form-label text-right" for="nomExp">Nom*:</label>
+                    <div class="col-md-8">
+                        <input class="form-control" formControlName="nomExp" type="text" placeholder="Nom"
+                            [ngClass]="{'is-invalid': classiqueShippmentForm.controls['nomExp'].invalid && (classiqueShippmentForm.controls['nomExp'].dirty || classiqueShippmentForm.controls['nomExp'].touched),'is-valid': classiqueShippmentForm.controls['nomExp'].valid && (classiqueShippmentForm.controls['nomExp'].dirty || classiqueShippmentForm.controls['nomExp'].touched) }">
+                        <div *ngIf="classiqueShippmentForm.controls['nomExp'].invalid" class="invalid-feedback">
+                            <span *ngIf="classiqueShippmentForm.controls['nomExp'].errors.required">Nom requie</span>
+                            <span *ngIf="classiqueShippmentForm.controls['nomExp'].errors.minlength">longueur minimale 3
+                                characters
+                                characters or more.</span>
+                            <span *ngIf="classiqueShippmentForm.controls['nomExp'].errors.maxlength">Longuer maximale 50
+                                characters</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Prenom -->
+                <div class="form-group row mb-1 ">
+                    <label class="col-md-3 col-form-label text-right">Prénom*:</label>
+                    <div class="col-md-8">
+                        <input class="form-control" formControlName="prenomExp" placeholder="Prénom"
+                            [ngClass]="{'is-invalid': classiqueShippmentForm.controls['prenomExp'].invalid && (classiqueShippmentForm.controls['prenomExp'].dirty || classiqueShippmentForm.controls['prenomExp'].touched),'is-valid': classiqueShippmentForm.controls['prenomExp'].valid && (classiqueShippmentForm.controls['prenomExp'].dirty || classiqueShippmentForm.controls['prenomExp'].touched) }">
+                        <div *ngIf="classiqueShippmentForm.controls['prenomExp'].invalid" class="invalid-feedback">
+                            <span *ngIf="classiqueShippmentForm.controls['prenomExp'].errors.required">Prénom
+                                requie</span>
+                            <span *ngIf="classiqueShippmentForm.controls['prenomExp'].errors.minlength">longueur
+                                minimale 3
+                                characters</span>
+                            <span *ngIf="classiqueShippmentForm.controls['prenomExp'].errors.maxlength">Longuer maximale
+                                50
+                                characters</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Telephone -->
+                <div class="form-group row mb-1 text-right">
+                    <label class="col-md-3 col-form-label">Téléphone*:</label>
+                    <div class="col-md-8 text-left">
+                        <input class="form-control" formControlName="telephoneExp" placeholder="00-00-00-00-00"
+                            type="text" mask="00-00-00-00-00"
+                            [ngClass]="{'is-invalid': classiqueShippmentForm.controls['telephoneExp'].invalid && (classiqueShippmentForm.controls['telephoneExp'].dirty || classiqueShippmentForm.controls['telephoneExp'].touched),'is-valid': classiqueShippmentForm.controls['telephoneExp'].valid && (classiqueShippmentForm.controls['telephoneExp'].dirty || classiqueShippmentForm.controls['telephoneExp'].touched) }">
+                        <div *ngIf="classiqueShippmentForm.controls['telephoneExp'].invalid" class="invalid-feedback">
+                            <span *ngIf="classiqueShippmentForm.controls['telephoneExp'].errors.required">Téléphone
+                                requie</span>
+                            <span *ngIf="classiqueShippmentForm.controls['telephoneExp'].errors.minlength">longueur
+                                autoriser
+                                10
+                                characters</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Adresse -->
+                <div class="form-group row mb-1 text-right">
+                    <label class="col-md-3 col-form-label">Adresse*:</label>
+                    <div class="col-md-8 text-left">
+                        <input class="form-control" formControlName="adresseExp" placeholder="Adresse"
+                            [ngClass]="{'is-invalid': classiqueShippmentForm.controls['adresseExp'].invalid && (classiqueShippmentForm.controls['adresseExp'].dirty || classiqueShippmentForm.controls['adresseExp'].touched),'is-valid': classiqueShippmentForm.controls['adresseExp'].valid && (classiqueShippmentForm.controls['adresseExp'].dirty || classiqueShippmentForm.controls['adresseExp'].touched) }">
+                        <div *ngIf="classiqueShippmentForm.controls['adresseExp'].invalid" class="invalid-feedback">
+                            <span *ngIf="classiqueShippmentForm.controls['adresseExp'].errors.required">adresse
+                                requise</span>
+                            <span *ngIf="classiqueShippmentForm.controls['adresseExp'].errors.minlength">longueur
+                                minimale
+                                3
+                                characters
+                            </span>
+                            <span *ngIf="classiqueShippmentForm.controls['adresseExp'].errors.maxlength">longueur
+                                maximale
+                                50
+                                characters </span>
+                        </div>
+                    </div>
+                </div>
+                <!-- num pièce d'identité -->
+                <div class="form-group row mb-1 text-right">
+                    <label class="col-md-3 col-form-label">N° pièce d'identité*:</label>
+                    <div class="col-md-8 text-left">
+                        <input class="form-control" formControlName="numIdentite" placeholder="000000000" type="text"
+                            [ngClass]="{'is-invalid': classiqueShippmentForm.controls['numIdentite'].invalid && (classiqueShippmentForm.controls['numIdentite'].dirty || classiqueShippmentForm.controls['numIdentite'].touched),'is-valid': classiqueShippmentForm.controls['numIdentite'].valid && (classiqueShippmentForm.controls['numIdentite'].dirty || classiqueShippmentForm.controls['numIdentite'].touched) }">
+                        <div *ngIf="classiqueShippmentForm.controls['numIdentite'].invalid" class="invalid-feedback">
+                            <span *ngIf="classiqueShippmentForm.controls['numIdentite'].errors.required">Téléphone
+                                requie</span>
+                            <span *ngIf="classiqueShippmentForm.controls['numIdentite'].errors.minlength">longueur
+                                autoriser
+                                10
+                                characters</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="text-center">
+                    <hr class="hr-text" data-content="Destinataire">
+                </div>
+                <!-- Raison sociale -->
+                <div class="form-group row mb-1 mt-2">
+                    <label class="col-md-3 col-form-label text-right" for="raisonSociale">Raison sociale: </label>
+                    <div class="col-md-8">
+                        <input class="form-control" formControlName="raisonSociale" type="text"
+                            placeholder="Raison sociale"
+                            [ngClass]="{'is-invalid': classiqueShippmentForm.controls['raisonSociale'].invalid && (classiqueShippmentForm.controls['raisonSociale'].dirty || classiqueShippmentForm.controls['raisonSociale'].touched),'is-valid': classiqueShippmentForm.controls['raisonSociale'].valid && (classiqueShippmentForm.controls['raisonSociale'].dirty || classiqueShippmentForm.controls['raisonSociale'].touched) }">
+                        <div *ngIf="classiqueShippmentForm.controls['raisonSociale'].invalid" class="invalid-feedback">
+                            <span *ngIf="classiqueShippmentForm.controls['raisonSociale'].errors.minlength">longueur
+                                minimale 3
+                                characters </span>
+                            <span *ngIf="classiqueShippmentForm.controls['raisonSociale'].errors.maxlength">Longuer
+                                maximale
+                                50
+                                characters</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Telephone -->
+                <div class="form-group row mb-1 text-right">
+                    <label class="col-md-3 col-form-label">Téléphone*:</label>
+                    <div class="col-md-8 text-left">
+                        <input class="form-control" formControlName="telephone" placeholder="00-00-00-00-00" type="text"
+                            mask="00-00-00-00-00"
+                            [ngClass]="{'is-invalid': classiqueShippmentForm.controls['telephone'].invalid && (classiqueShippmentForm.controls['telephone'].dirty || classiqueShippmentForm.controls['telephone'].touched),'is-valid': classiqueShippmentForm.controls['telephone'].valid && (classiqueShippmentForm.controls['telephone'].dirty || classiqueShippmentForm.controls['telephone'].touched) }">
+                        <div *ngIf="classiqueShippmentForm.controls['telephone'].invalid" class="invalid-feedback">
+                            <span *ngIf="classiqueShippmentForm.controls['telephone'].errors.required">Téléphone
+                                requie</span>
+                            <span *ngIf="classiqueShippmentForm.controls['telephone'].errors.minlength">longueur
+                                autoriser
+                                10
+                                characters</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Adresse -->
+                <div class="form-group row mb-1 text-right">
+                    <label class="col-md-3 col-form-label">Adresse*:</label>
+                    <div class="col-md-8 text-left">
+                        <input class="form-control" formControlName="adresse" placeholder="Adresse"
+                            [ngClass]="{'is-invalid': classiqueShippmentForm.controls['adresse'].invalid && (classiqueShippmentForm.controls['adresse'].dirty || classiqueShippmentForm.controls['adresse'].touched),'is-valid': classiqueShippmentForm.controls['adresse'].valid && (classiqueShippmentForm.controls['adresse'].dirty || classiqueShippmentForm.controls['adresse'].touched) }">
+                        <div *ngIf="classiqueShippmentForm.controls['adresse'].invalid" class="invalid-feedback">
+                            <span *ngIf="classiqueShippmentForm.controls['adresse'].errors.required">adresse
+                                requise</span>
+                            <span *ngIf="classiqueShippmentForm.controls['adresse'].errors.minlength">longueur
+                                minimale
+                                3
+                                characters
+                            </span>
+                            <span *ngIf="classiqueShippmentForm.controls['adresse'].errors.maxlength">longueur
+                                maximale
+                                50
+                                characters </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mt-1 text-center">
+            <hr class="hr-text" data-content="Information de livraison">
+        </div>
+        <div class="row">
+            <div class="col-6  border-white border-right">
+                <!-- wilaya -->
+                <div class="form-group row mb-1 text-right">
+                    <label class="col-md-3 col-form-label"> Wilaya*: </label>
+                    <div class="col-sm-8 text-left">
+                        <ng-select formControlName="wilayaId" placeholder=" Selectionner la wilaya"
+                            (change)="onChangeWilaya()">
+                            <ng-option *ngFor="let wilaya of wilayasData" [value]="wilaya.id">
+                                {{ wilaya.codeWilaya }} {{ wilaya.nomLatin }}
+                            </ng-option>
+                        </ng-select>
+                        <span
+                            *ngIf="classiqueShippmentForm.controls['wilayaId'].invalid && classiqueShippmentForm.controls['wilayaId'].touched"
+                            class="invalid-feedback-custom error">Wilaya requise</span>
+                    </div>
+                </div>
+
+                <!--commune-->
+                <div class="form-group row mb-1 text-right">
+                    <label class="col-md-3 col-form-label"> Commune*: </label>
+                    <div class="col-sm-8 text-left">
+                        <ng-select formControlName="communeId" placeholder="Selectionner la commune"
+                            (change)="getEstimateTarif()">
+                            <ng-option *ngFor="let commune of communesData" [value]="commune.id">
+                                {{ commune.codePostal }} {{ commune.nomLatin }}
+                            </ng-option>
+                        </ng-select>
+                        <span
+                            *ngIf="classiqueShippmentForm.controls['communeId'].invalid && classiqueShippmentForm.controls['communeId'].touched"
+                            class="invalid-feedback-custom error">Commune requise</span>
+                    </div>
+                </div>
+
+                <!-- Designation -->
+                <div class="form-group row mb-1 ">
+                    <label class="col-md-3 col-form-label text-right">Désignations*:</label>
+                    <div class="col-md-8">
+                        <input class="form-control" formControlName="designationProduit"
+                            placeholder="Désignation Produit "
+                            [ngClass]="{'is-invalid': classiqueShippmentForm.controls['designationProduit'].invalid && (classiqueShippmentForm.controls['designationProduit'].dirty || classiqueShippmentForm.controls['designationProduit'].touched),'is-valid': classiqueShippmentForm.controls['designationProduit'].valid && (classiqueShippmentForm.controls['designationProduit'].dirty || classiqueShippmentForm.controls['designationProduit'].touched) }">
+                        <div *ngIf="classiqueShippmentForm.controls['designationProduit'].invalid"
+                            class="invalid-feedback">
+                            <span
+                                *ngIf="classiqueShippmentForm.controls['designationProduit'].errors.required">Designation
+                                produit
+                                requise</span>
+                            <span
+                                *ngIf="classiqueShippmentForm.controls['designationProduit'].errors.minlength">longueur
+                                minimale 3
+                                characters</span>
+                            <span
+                                *ngIf="classiqueShippmentForm.controls['designationProduit'].errors.maxlength">longueur
+                                maximale 50
+                                characters</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row col-6 d-flex justify-content-around">
+                <div class="form-group col-12 ">
+                    <div class="col-12 text-center">
+                        <h2>Frais d'envoi <span class="text-muted" *ngIf="estimateTarif != null">{{estimateTarif |
+                                currency:' ':'symbol':'2.0-3'}} Da</span></h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 pt-1 d-flex justify-content-around ext-right">
+            <button class="btn btn-md btn-outline-danger waves-effect waves-light" (click)="cancel()">
+                <!-- [disabled]="!this.classiqueShippmentForm.valid" -->
+                <i class="ri-check-line align-middle me-2"></i>
+                Anuuler
+            </button>
+            <button class="btn btn-md btn-success waves-effect waves-light" (click)="createShipment()">
+                <!-- [disabled]="!this.classiqueShippmentForm.valid" -->
+                <i class="ri-check-line align-middle me-2"></i>
+                Valider
+            </button>
+        </div>
+    </form>
+</div>

@@ -41,6 +41,7 @@ import { AgencesService } from '../agences/agences.service';
 import { TypeUserEnum } from 'src/enums/TypeUserEnum';
 import { ExcelService } from 'src/core/templates/excel/excel.service';
 import { PmtCoursierService } from '../pmt-coursier/pmt-coursier.service';
+import { CreateShipmentFromAgenceDto } from './dto/create-shipment-from-agence.dto';
 
 /**
  *
@@ -842,6 +843,49 @@ export class ShipmentsService {
     return tracking.toLowerCase();
   }
 
+  async createFromAgence(
+    shipment: CreateShipmentFromAgenceDto,
+    createdBy: User,
+    tarifLivraison: number,
+    res: any,
+  ) {
+    console.log(
+      '################################################################################ ',
+    );
+    console.log(
+      '🚀 ~ file: shipments.service.ts ~ line 852 ~ ShipmentsService ~ setShipmentsPreExpedition ~ tarifLivraison',
+      tarifLivraison,
+    );
+    console.log(
+      '🚀 ~ file: shipments.service.ts ~ line 852 ~ ShipmentsService ~ setShipmentsPreExpedition ~ createdBy',
+      createdBy,
+    );
+    const newShipment = this.shipmentRepository.create(shipment);
+
+    const saveShipment = await this.shipmentRepository.save(newShipment);
+
+    const saveStatus = await this.statusService.create({
+      shipment: saveShipment,
+      user: createdBy,
+      libelle: StatusShipmentEnum.enPreparation,
+      createdOn: createdBy.employe.agence.id,
+    });
+    saveShipment.tracking = await this.generateYal(saveShipment.id);
+    const setPreExpidier = await this.statusService.create({
+      shipment: saveShipment,
+      user: createdBy,
+      libelle: StatusShipmentEnum.presExpedition,
+      createdOn: createdBy.employe.agence.id,
+    });
+    saveShipment.lastStatus = StatusShipmentEnum.presExpedition;
+    await this.shipmentRepository.save(saveShipment);
+
+    return await this.pdfService.generateShipmentAgence(
+      saveShipment,
+      tarifLivraison,
+    );
+  }
+
   async calculTarifslivraison(ShipmentTraking) {
     const shipment = await this.shipmentRepository
       .createQueryBuilder('shipment')
@@ -1394,15 +1438,16 @@ export class ShipmentsService {
         shipment.id,
       );
       if (
-(        statusShipment[statusShipment.length - 1].libelle ==
-          StatusShipmentEnum.recueWilaya ||
-        statusShipment[statusShipment.length - 1].libelle ==
-          StatusShipmentEnum.recueAgence ||
         (statusShipment[statusShipment.length - 1].libelle ==
-          StatusShipmentEnum.expidie &&
-          shipment.commune.wilaya.id == infoEmploye.wilaya_id)) && shipment.livraisonStopDesck == false
+          StatusShipmentEnum.recueWilaya ||
+          statusShipment[statusShipment.length - 1].libelle ==
+            StatusShipmentEnum.recueAgence ||
+          (statusShipment[statusShipment.length - 1].libelle ==
+            StatusShipmentEnum.expidie &&
+            shipment.commune.wilaya.id == infoEmploye.wilaya_id)) &&
+        shipment.livraisonStopDesck == false
       ) {
-        console.log('hakim', shipment)
+        console.log('hakim', shipment);
         const stationLastStatus =
           await this.agenceService.getStationByLastStatus(statusShipment);
 
@@ -2238,6 +2283,7 @@ export class ShipmentsService {
     }
     return fraieRetoure;
   }
+
   async getSoldeClient(reqestedUser: User, clientId: any) {
     let nbShipmentDomicile = 0;
     let nbShipmentStopDesk = 0;
@@ -2249,10 +2295,6 @@ export class ShipmentsService {
     let shipments: Shipment[];
 
     const clientInfo = await this.clientService.infoClient(clientId.id);
-    console.log(
-      '🚀 ~ file: shipments.service.ts ~ line 941 ~ ShipmentsService ~ getSoldeClient ~ clientInfo',
-      clientInfo,
-    );
 
     const userStation = await this.userService.findInformationsEmploye(
       reqestedUser.id,
@@ -2303,10 +2345,6 @@ export class ShipmentsService {
         .getMany();
 
       shipments = shipmentsLibrerNonPayer;
-      console.log(
-        '🚀 ~ file: shipments.service.ts ~ line 1906 ~ ShipmentsService ~ getSoldeClient ~ shipments',
-        shipments,
-      );
     }
     for await (const shipment of shipmentsLibrerNonPayer) {
       if (shipment.livraisonGratuite) {
@@ -2328,19 +2366,7 @@ export class ShipmentsService {
           nbShipmentStopDesk += 1;
         }
         if (shipment.prixVente > clientInfo.c_o_d_ApartirDe) {
-          console.log(
-            '🚀 ~ file: shipments.service.ts ~ line 984 ~ ShipmentsService ~ forawait ~ prixVente',
-            shipment.prixVente,
-          );
           totalFraiCOD += (clientInfo.tauxCOD / 100) * shipment.prixVente;
-          console.log(
-            '🚀 ~ file: shipments.service.ts ~ line 985 ~ ShipmentsService ~ forawait ~ totalFraiCOD',
-            totalFraiCOD,
-          );
-          console.log(
-            '🚀 ~ file: shipments.service.ts ~ line 985 ~ ShipmentsService ~ forawait ~ totalFraiCOD',
-            totalFraiCOD,
-          );
         }
       }
     }
@@ -2375,6 +2401,7 @@ export class ShipmentsService {
       clientInfo,
     };
   }
+
   async setShipmentsOfRecolteStatusRecolte(user, recolteId: number) {
     const shipments = await this.shipmentRepository
       .createQueryBuilder('shipment')

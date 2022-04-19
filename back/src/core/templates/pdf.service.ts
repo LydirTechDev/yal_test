@@ -17,8 +17,389 @@ import { Pmt } from 'src/resources/pmt/entities/pmt.entity';
 import { EntityNotFoundError } from 'typeorm';
 import { PmtCoursier } from 'src/resources/pmt-coursier/entities/pmt-coursier.entity';
 import { delaiPaiementEnum } from 'src/enums/delaiPaiementEnum';
+import { Shipment } from 'src/resources/shipments/entities/shipment.entity';
+import { ExpiditeurPublic } from 'src/resources/expiditeur-public/entities/expiditeur-public.entity';
 @Injectable()
 export class PdfService {
+  async generateShipmentAgence(shipmentInfo: Shipment, tarifLivraison: number) {
+    console.log(
+      '🚀 ~ file: pdf.service.ts ~ line 25 ~ PdfService ~ generateShipmentAgence ~ tarifLivraison',
+      tarifLivraison,
+    );
+    let packageSlipTemplatePath = '';
+    packageSlipTemplatePath = 'src/assets/newBordereau.pdf';
+    const pdfTemplateBytes = fs.readFileSync(packageSlipTemplatePath);
+    const dest = 'src/testpdf/bordereau.pdf';
+    const pdfDoc = await PDFDocument.load(pdfTemplateBytes);
+
+    const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
+
+    const pages = pdfDoc.getPages();
+    const firstPage = pages[0];
+
+    const { width, height } = firstPage.getSize();
+
+    //infoPackageSliprmation service
+
+    const text = shipmentInfo.service.nom.toUpperCase();
+    const textSize = 16;
+    const textWidth = helveticaFont.widthOfTextAtSize(text, textSize);
+    const textHeight = helveticaFont.heightAtSize(textSize);
+    firstPage.drawText(text, {
+      // x: 24.5 + textHeight / 2,
+      // y: height - 133 - textWidth / 2,
+      x: 155,
+      y: 795,
+      size: textSize,
+      // color: rgb(1, 1, 1),
+    });
+
+    // --------------------- Expéditeur -----------------
+    firstPage.drawText('Expéditeur', {
+      x: 95,
+      y: height - 62,
+      size: 8,
+    });
+    firstPage.drawText(shipmentInfo.expiditeurPublic.raisonSocialeExp, {
+      x: 95,
+      y: height - 72,
+      size: 8,
+    });
+    firstPage.drawText(shipmentInfo.expiditeurPublic.adresseExp, {
+      x: 95,
+      y: height - 82,
+      size: 8,
+    });
+    firstPage.drawText(shipmentInfo.commune.nomLatin, {
+      x: 95,
+      y: height - 92,
+      size: 8,
+    });
+    firstPage.drawText(shipmentInfo.commune.wilaya.nomLatin, {
+      x: 95,
+      y: height - 102,
+      size: 8,
+    });
+    firstPage.drawText(shipmentInfo.expiditeurPublic.telephoneExp, {
+      x: 95,
+      y: height - 112,
+      size: 8,
+    });
+    firstPage.drawText(shipmentInfo.expiditeurPublic.numIdentite, {
+      x: 95,
+      y: height - 122,
+      size: 8,
+    });
+
+    // --------------------- Destinataire -----------------
+
+    // firstPage.drawText('Destinataire', {
+    //   x: 95,
+    //   y: height - 62,
+    //   size: 8,
+    // });
+
+    firstPage.drawText('Destinataire', {
+      x: 25,
+      y: height - 130,
+      size: 8,
+    });
+    firstPage.drawText(shipmentInfo.raisonSociale, {
+      x: 25,
+      y: height - 140,
+      size: 8,
+    });
+    firstPage.drawText(shipmentInfo.nom + ' ' + shipmentInfo.prenom, {
+      x: 25,
+      y: height - 170.6,
+      size: 8,
+    });
+
+    firstPage.drawText(shipmentInfo.adresse, {
+      x: 25,
+      y: height - 150,
+      size: 8,
+    });
+
+    firstPage.drawText(
+      shipmentInfo.commune.wilaya.nomLatin +
+        ' ' +
+        shipmentInfo.commune.nomLatin,
+      {
+        x: 25,
+        y: height - 160,
+        size: 8,
+      },
+    );
+
+    firstPage.drawText(shipmentInfo.telephone, {
+      x: 25,
+      y: height - 180,
+      size: 8,
+    });
+
+    let jpgUrl = '';
+    if (
+      shipmentInfo.service.nom.toLowerCase() == 'classique entreprise' ||
+      shipmentInfo.service.nom.toLowerCase() == 'classique divers'
+    ) {
+      jpgUrl = 'src/assets/img/classique.png';
+    }
+
+    const jpgImage = await pdfDoc.embedPng(fs.readFileSync(jpgUrl));
+
+    firstPage.drawImage(jpgImage, {
+      x: 165,
+      y: 563,
+      width: 120,
+      height: 33,
+    });
+
+    const textWilayaCode = '' + shipmentInfo.commune.wilaya.codeWilaya;
+    const textSizeWilayaCode = 67;
+    const textWidthWilayaCode = helveticaFont.widthOfTextAtSize(
+      textWilayaCode,
+      textSize,
+    );
+    const textHeightWilayaCode = helveticaFont.heightAtSize(textSize);
+    firstPage.drawText(textWilayaCode, {
+      x: 180 - textWidthWilayaCode / 2,
+      y: height - 140 - textHeightWilayaCode / 2,
+      size: textSizeWilayaCode,
+    });
+
+    const textWilayaLatin = shipmentInfo.commune.wilaya.nomLatin;
+    const textSizeWilayaLatin = 12;
+    const textWidthWilayaLatin = helveticaFont.widthOfTextAtSize(
+      textWilayaLatin,
+      textSizeWilayaLatin,
+    );
+
+    const textHeightWilayaLatin =
+      helveticaFont.heightAtSize(textSizeWilayaLatin);
+    firstPage.drawText(textWilayaLatin, {
+      x: 210 - textWidthWilayaLatin / 2,
+      y: height - 155 - textHeightWilayaLatin / 2,
+      size: textSizeWilayaLatin,
+    });
+
+    const textCommuneLatin = shipmentInfo.commune.wilaya.nomLatin;
+    const textSizeCommuneLatin = 10;
+    const textWidthCommuneLatin = helveticaFont.widthOfTextAtSize(
+      textCommuneLatin,
+      textSizeCommuneLatin,
+    );
+
+    const textHeightCommuneLatin =
+      helveticaFont.heightAtSize(textSizeCommuneLatin);
+    firstPage.drawText(textCommuneLatin, {
+      x: 210 - textWidthCommuneLatin / 2,
+      y: height - 168 - textHeightCommuneLatin / 2,
+      size: textSizeCommuneLatin,
+    });
+
+    firstPage.drawText(shipmentInfo.designationProduit, {
+      x: 30,
+      y: height - 310,
+      size: 8,
+    });
+
+    // ########################### condition si document #################################
+    if (
+      shipmentInfo.poids == 0 &&
+      shipmentInfo.largeur == 0 &&
+      shipmentInfo.hauteur == 0 &&
+      shipmentInfo.longueur == 0 &&
+      shipmentInfo.prixEstimer == 0
+    ) {
+      firstPage.drawText('Documents', {
+        x: 27,
+        y: 286,
+        size: 8,
+      });
+    } else {
+      firstPage.drawText('Poid: ' + shipmentInfo.poids + ' Kg', {
+        x: 27,
+        y: 286,
+        size: 8,
+      });
+
+      firstPage.drawText(
+        'Dimension: (' +
+          shipmentInfo.longueur +
+          ' x ' +
+          shipmentInfo.largeur +
+          ' x ' +
+          shipmentInfo.hauteur +
+          ') en (m)',
+        { x: 70, y: 286, size: 8 },
+      );
+    }
+
+    const textRetour =
+      shipmentInfo.createdBy.employe.agence.commune.codePostal.toString();
+    const textSizeRetour = 10;
+    const textWidthRetour = helveticaFont.widthOfTextAtSize(
+      textRetour,
+      textSizeRetour,
+    );
+
+    const textHeightRetour = helveticaFont.heightAtSize(textSizeRetour);
+
+    firstPage.drawText('RT:' + textRetour, {
+      x: 240,
+      y: height - 185 - textHeightRetour / 2,
+      size: textSizeRetour,
+    });
+
+    const textAgent = shipmentInfo.createdBy.employe.codeEmploye.toString();
+    const textWidthAgent = helveticaFont.widthOfTextAtSize(
+      textRetour,
+      textSizeRetour,
+    );
+
+    const textHeightAgent = helveticaFont.heightAtSize(textSizeRetour);
+
+    firstPage.drawText('AG:' + textRetour, {
+      x: 170,
+      y: height - 185 - textHeightRetour / 2,
+      size: textSizeRetour,
+    });
+
+    firstPage.drawText(shipmentInfo.createdAt.toISOString().split('T')[0], {
+      x: 210,
+      y: 262,
+      size: 8,
+    });
+
+    if (shipmentInfo.livraisonGratuite == null) {
+      const textSizeRecouvrement = 14;
+      firstPage.drawText(
+        'Tarif Livraison:' + tarifLivraison.toString() + ' DA',
+        {
+          x: 50,
+          y: 413,
+          size: textSizeRecouvrement,
+          color: rgb(0, 0, 0),
+        },
+      );
+    } else {
+      const textSizeRecouvrement = 25;
+      firstPage.drawText('Rec: ' + shipmentInfo.prixVente.toString() + ' DA', {
+        x: 50,
+        y: 410,
+        size: textSizeRecouvrement,
+        color: rgb(1, 1, 1),
+      });
+    }
+
+    // firstPage.drawRectangle({
+    //   x: 20,
+    //   y: 405,
+    //   width: 265,
+    //   height: 27,
+      // rotate: degrees(-15),
+    //   borderWidth: 0,
+    //   borderColor: grayscale(0.5),
+    //   color: rgb(0.75, 0.2, 0.2),
+    //   opacity: 0.5,
+    //   borderOpacity: 0.75,
+    // });
+
+    const textSizePrixEstime = 10;
+    if (shipmentInfo.prixEstimer == 0) {
+      firstPage.drawText('--', {
+        x: 210,
+        y: height - 310,
+        size: textSizePrixEstime,
+        // color: rgb(1, 1, 1),
+      });
+    } else {
+      firstPage.drawText(shipmentInfo.prixEstimer.toString() + ' DA', {
+        x: 210,
+        y: height - 310,
+        size: textSizePrixEstime,
+        // color: rgb(1, 1, 1),
+      });
+    }
+
+    // ########## QR-CODE #########
+    const qrcodeBuffer = await QRCode.toBuffer(
+      shipmentInfo.tracking +
+        '*' +
+        shipmentInfo.expiditeurPublic.raisonSocialeExp +
+        '*' +
+        shipmentInfo.createdBy.employe.agence.commune.wilaya.nomLatin +
+        '*' +
+        shipmentInfo.nom +
+        ' ' +
+        shipmentInfo.prenom +
+        '*' +
+        shipmentInfo.commune.wilaya.nomLatin +
+        '*' +
+        shipmentInfo.telephone +
+        '*' +
+        shipmentInfo.designationProduit +
+        '*' +
+        shipmentInfo.poids +
+        '*' +
+        shipmentInfo.nom +
+        '*' +
+        shipmentInfo.livraisonDomicile +
+        '*' +
+        shipmentInfo.adresse +
+        '*' +
+        shipmentInfo.livraisonGratuite +
+        '*',
+      {
+        color: {
+          dark: '#000', // Blue dots
+          light: '#0000', // Transparent background
+        },
+        errorCorrectionLevel: 'H',
+        margin: 0,
+      },
+    );
+
+    const qrcodeImage = await pdfDoc.embedPng(qrcodeBuffer);
+    const qrcodeDims = qrcodeImage.scaleToFit(63, 63);
+
+    firstPage.drawImage(qrcodeImage, {
+      x: 55 - qrcodeDims.width / 2,
+      y: height - 85 - qrcodeDims.height / 2,
+      width: qrcodeDims.width,
+      height: qrcodeDims.height,
+    });
+
+    //################## CODE BARRE ################
+    let barcodeBuffer = null;
+    barcodeBuffer = await bwipjs.toBuffer({
+      bcid: 'code128', // Barcode type
+      text: shipmentInfo.tracking, // Text to encode
+      scale: 3, // 3x scaling factor
+      height: 5, // Bar height, in millimeters
+      paddingheight: 2,
+      includetext: true, // Show human-readable text
+      textsize: 7,
+      textyoffset: 1,
+      textxalign: 'center', // Always good to set this
+    });
+
+    const barcodeImage = await pdfDoc.embedPng(barcodeBuffer);
+    const barcodeDims = barcodeImage.scaleToFit(210, 75);
+
+    firstPage.drawImage(barcodeImage, {
+      x: 160 - barcodeDims.width / 2,
+      y: height - 250.3 - barcodeDims.height / 2,
+      width: barcodeDims.width,
+      height: barcodeDims.height,
+    });
+
+    const pdfBytes = await pdfDoc.save();
+    fs.writeFileSync('dest', pdfBytes);
+    return pdfBytes;
+  }
+
   async generateInterneShipment(
     shipmentInfo,
     employeInfo,
@@ -213,6 +594,30 @@ export class PdfService {
     datePresExpedition,
     otherStatus?,
   ) {
+    console.log(
+      '🚀 ~ file: pdf.service.ts ~ line 216 ~ PdfService ~ otherStatus',
+      otherStatus,
+    );
+    console.log(
+      '🚀 ~ file: pdf.service.ts ~ line 216 ~ PdfService ~ datePresExpedition',
+      datePresExpedition,
+    );
+    console.log(
+      '🚀 ~ file: pdf.service.ts ~ line 216 ~ PdfService ~ recouvrement',
+      recouvrement,
+    );
+    console.log(
+      '🚀 ~ file: pdf.service.ts ~ line 216 ~ PdfService ~ tarifLivraison',
+      tarifLivraison,
+    );
+    console.log(
+      '🚀 ~ file: pdf.service.ts ~ line 216 ~ PdfService ~ infoClient',
+      infoClient,
+    );
+    console.log(
+      '🚀 ~ file: pdf.service.ts ~ line 216 ~ PdfService ~ infoPackageSlip',
+      infoPackageSlip,
+    );
     let packageSlipTemplatePath = '';
     console.log(infoPackageSlip, tarifLivraison);
     // if (infoClient.client_nbTentative == 3) {
@@ -1898,6 +2303,7 @@ export class PdfService {
     return pdfBytes;
   }
   // date format
+
   async formatDate(date) {
     console.log(
       '🚀 ~ file: pdf.service.ts ~ line 970 ~ PdfService ~ formatDate ~ date',
@@ -1916,6 +2322,7 @@ export class PdfService {
     console.log(dateFormat);
     return dateFormat;
   }
+
   async printRecolteManifest(recolte, trackings, userInfo, montant) {
     const tracking = trackings.join(' ');
     const dateRecolte = await this.formatDate(recolte.createdAt);
@@ -2020,6 +2427,7 @@ export class PdfService {
     fs.writeFileSync('dest', pdfBytes);
     return pdfBytes;
   }
+
   async printSacVersVendeur(sac, trackings, clientInfo) {
     const tracking = trackings.join(' ');
     const dateSac = await this.formatDate(sac.sacShipment_createdAt);
@@ -2105,6 +2513,7 @@ export class PdfService {
     fs.writeFileSync('dest', pdfBytes);
     return pdfBytes;
   }
+
   async printManifestRetourClient(sac, trackings, clientInfo) {
     const tracking = trackings.join(' ');
     const dateSac = await this.formatDate(sac.sacShipment_createdAt);
@@ -2177,6 +2586,7 @@ export class PdfService {
     fs.writeFileSync('dest', pdfBytes);
     return pdfBytes;
   }
+
   async printPmt(client: Client, pmt: Pmt) {
     const pmtTemplatePath = 'src/assets/pmt.pdf';
     const pdfTemplateBytes = fs.readFileSync(pmtTemplatePath);
@@ -2404,6 +2814,7 @@ export class PdfService {
     fs.writeFileSync('dest', pdfBytes);
     return pdfBytes;
   }
+
   async printPmtCoursier(pmtCoursier) {
     if (pmtCoursier.shipments.length > 0) {
       console.log(

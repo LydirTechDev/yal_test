@@ -40,6 +40,11 @@ import { CodeTarifService } from '../code-tarif/code-tarif.service';
 import { ExcelService } from 'src/core/templates/excel/excel.service';
 import { PmtCoursierService } from '../pmt-coursier/pmt-coursier.service';
 import { PmtCoursier } from '../pmt-coursier/entities/pmt-coursier.entity';
+import { ExpiditeurPublic } from '../expiditeur-public/entities/expiditeur-public.entity';
+import { ExpiditeurPublicService } from '../expiditeur-public/expiditeur-public.service';
+import { ServiceClientService } from '../service-client/service-client.service';
+import { Rotation } from '../rotations/entities/rotation.entity';
+import { RotationsService } from '../rotations/rotations.service';
 
 @Module({
   imports: [
@@ -64,6 +69,8 @@ import { PmtCoursier } from '../pmt-coursier/entities/pmt-coursier.entity';
       Coursier,
       CodeTarif,
       PmtCoursier,
+      ExpiditeurPublic,
+      Rotation
     ]),
   ],
   providers: [
@@ -88,6 +95,9 @@ import { PmtCoursier } from '../pmt-coursier/entities/pmt-coursier.entity';
     ExcelService,
     CodeTarifService,
     PmtCoursierService,
+    ExpiditeurPublicService,
+    ServiceClientService,
+    RotationsService
   ],
 })
 export class StatusModule {}

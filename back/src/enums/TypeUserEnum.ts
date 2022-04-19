@@ -7,4 +7,5 @@ export enum TypeUserEnum {
   finance = 548965156, // caissier-central
   caissierRegional = 1548965156, // caissier-regional
   caissierAgence = 2548965156, // caissier-agence
+  service_client = 2363594520,
 }

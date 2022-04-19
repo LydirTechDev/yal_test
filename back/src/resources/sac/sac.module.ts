@@ -45,6 +45,11 @@ import { CodeTarif } from '../code-tarif/entities/code-tarif.entity';
 import { ExcelService } from 'src/core/templates/excel/excel.service';
 import { PmtCoursierService } from '../pmt-coursier/pmt-coursier.service';
 import { PmtCoursier } from '../pmt-coursier/entities/pmt-coursier.entity';
+import { ExpiditeurPublicService } from '../expiditeur-public/expiditeur-public.service';
+import { ServiceClientService } from '../service-client/service-client.service';
+import { ExpiditeurPublic } from '../expiditeur-public/entities/expiditeur-public.entity';
+import { RotationsService } from '../rotations/rotations.service';
+import { Rotation } from '../rotations/entities/rotation.entity';
 
 @Module({
   imports: [
@@ -72,6 +77,8 @@ import { PmtCoursier } from '../pmt-coursier/entities/pmt-coursier.entity';
       SacShipment,
       CodeTarif,
       PmtCoursier,
+      ExpiditeurPublic,
+      Rotation
     ]),
   ],
   controllers: [SacController],
@@ -99,6 +106,9 @@ import { PmtCoursier } from '../pmt-coursier/entities/pmt-coursier.entity';
     CodeTarifService,
     ExcelService,
     PmtCoursierService,
+    ExpiditeurPublicService,
+    ServiceClientService,
+    RotationsService
   ],
 })
 export class SacModule {}

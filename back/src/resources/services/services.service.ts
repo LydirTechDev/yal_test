@@ -34,6 +34,19 @@ export class ServicesService {
     });
   }
 
+  async findOneByName(serviceName: string): Promise<Service> {
+    console.log(
+      '🚀 ~ file: services.service.ts ~ line 56 ~ ServicesService ~ findOneByName ~ serviceName',
+      serviceName,
+    );
+    const service = await this.serviceRepository.findOne({
+      where: [{ nom: serviceName }],
+      relations: ['codeTarif', 'codeTarif.codeTarifZone'],
+    });
+    console.log("🚀 ~ file: services.service.ts ~ line 46 ~ ServicesService ~ findOneByName ~ service", service)
+    return service;
+  }
+
   async findOneByNameOrCreate(serviceName: string): Promise<Service> {
     const service = await this.serviceRepository.findOne({
       where: [{ nom: serviceName }],

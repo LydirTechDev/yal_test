@@ -41,11 +41,16 @@ import { Status } from '../status/entities/status.entity';
 import { User } from '../users/entities/user.entity';
 import { Wilaya } from '../wilayas/entities/wilaya.entity';
 import { Zone } from '../zones/entities/zone.entity';
+import { ExpiditeurPublic } from '../expiditeur-public/entities/expiditeur-public.entity';
+import { ExpiditeurPublicService } from '../expiditeur-public/expiditeur-public.service';
+import { ServiceClientService } from '../service-client/service-client.service';
+import { Rotation } from '../rotations/entities/rotation.entity';
+import { RotationsService } from '../rotations/rotations.service';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
-      PmtCoursier, 
+      PmtCoursier,
       Shipment,
       Wilaya,
       Commune,
@@ -65,10 +70,13 @@ import { Zone } from '../zones/entities/zone.entity';
       Banque,
       Coursier,
       CodeTarif,
+      ExpiditeurPublic,
+      Rotation,
     ]),
   ],
   controllers: [PmtCoursierController],
-  providers: [PmtCoursierService,
+  providers: [
+    PmtCoursierService,
     ShipmentsService,
     WilayasService,
     CommunesService,
@@ -88,6 +96,10 @@ import { Zone } from '../zones/entities/zone.entity';
     AgencesService,
     CoursierService,
     CodeTarifService,
-    ExcelService,]
+    ExcelService,
+    ExpiditeurPublicService,
+    RotationsService,
+    ServiceClientService
+  ],
 })
 export class PmtCoursierModule {}

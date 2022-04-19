@@ -56,6 +56,12 @@ import { CodeTarif } from '../code-tarif/entities/code-tarif.entity';
 import { ExcelService } from 'src/core/templates/excel/excel.service';
 import { PmtCoursierService } from '../pmt-coursier/pmt-coursier.service';
 import { PmtCoursier } from '../pmt-coursier/entities/pmt-coursier.entity';
+import { ExpiditeurPublicService } from '../expiditeur-public/expiditeur-public.service';
+import { ExpiditeurPublic } from '../expiditeur-public/entities/expiditeur-public.entity';
+import { ServiceClientModule } from '../service-client/service-client.module';
+import { ServiceClientService } from '../service-client/service-client.service';
+import { RotationsService } from '../rotations/rotations.service';
+import { Rotation } from '../rotations/entities/rotation.entity';
 
 @Module({
   imports: [
@@ -80,6 +86,8 @@ import { PmtCoursier } from '../pmt-coursier/entities/pmt-coursier.entity';
       Coursier,
       CodeTarif,
       PmtCoursier,
+      ExpiditeurPublic,
+      Rotation
     ]),
     BanquesModule,
   ],
@@ -106,6 +114,9 @@ import { PmtCoursier } from '../pmt-coursier/entities/pmt-coursier.entity';
     CodeTarifService,
     ExcelService,
     PmtCoursierService,
+    ExpiditeurPublicService,
+    ServiceClientService,
+    RotationsService
   ],
   exports: [],
 })

@@ -10,7 +10,13 @@ import {
   paginate,
   Pagination,
 } from 'nestjs-typeorm-paginate';
-import { EntityNotFoundError, ILike, Not, Repository, UpdateResult } from 'typeorm';
+import {
+  EntityNotFoundError,
+  ILike,
+  Not,
+  Repository,
+  UpdateResult,
+} from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
@@ -129,7 +135,12 @@ export class UsersService {
    */
   async findInformationsEmploye(id: number) {
     const user = await this.userRepository.findOne({
-      relations: ['employe', 'employe.agence'],
+      relations: [
+        'employe',
+        'employe.agence',
+        'employe.agence.commune',
+        'employe.agence.commune.wilaya',
+      ],
       where: {
         id: id,
       },

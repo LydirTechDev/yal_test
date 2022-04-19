@@ -20,6 +20,7 @@ import { StatusShipmentEnum } from 'src/enums/status.shipment.enum';
 import { Pmt } from 'src/resources/pmt/entities/pmt.entity';
 import { Agence } from 'src/resources/agences/entities/agence.entity';
 import { PmtCoursier } from 'src/resources/pmt-coursier/entities/pmt-coursier.entity';
+import { ExpiditeurPublic } from 'src/resources/expiditeur-public/entities/expiditeur-public.entity';
 
 @Entity()
 export class Shipment {
@@ -58,7 +59,7 @@ export class Shipment {
   adresse: string;
 
   @Column({
-    nullable: false,
+    nullable: true,
   })
   numCommande: string;
 
@@ -73,10 +74,15 @@ export class Shipment {
   objetRecuperer?: string;
 
   @Column({
-    nullable: false,
+    nullable: true,
   })
   prixVente: number;
 
+  @Column({
+    nullable: true,
+  })
+  prixEstimer: number;
+  
   @Column({
     nullable: true,
     type: 'float',
@@ -107,12 +113,12 @@ export class Shipment {
   echange?: boolean;
 
   @Column({
-    nullable: false,
+    nullable: true,
   })
   livraisonGratuite: boolean;
 
   @Column({
-    nullable: false,
+    nullable: true,
   })
   ouvrireColis: boolean;
 
@@ -148,6 +154,15 @@ export class Shipment {
     nullable: false,
   })
   commune: Commune;
+
+  @ManyToOne(
+    () => ExpiditeurPublic,
+    (expiditeurPublic) => expiditeurPublic.shipments,
+    {
+      nullable: true,
+    },
+  )
+  expiditeurPublic: ExpiditeurPublic;
 
   @OneToMany(() => Status, (status) => status.shipment)
   status: Status[];
