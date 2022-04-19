@@ -32,7 +32,7 @@ export class RecoltesService {
     private employeService: EmployesService,
     private clientService: ClientsService,
     private pdfService: PdfService,
-  ) { }
+  ) {}
   async getPaginateRecolteOfUser(
     user,
     options: IPaginationOptions,
@@ -223,7 +223,7 @@ export class RecoltesService {
       );
     if (shipmentLivreOfCoursier.length > 0) {
       //creation de la recolte
-      
+
       const recolte = this.recolteRepository.create();
       recolte.createdBy = userStation;
       recolte.createdOn = userStation.employe.agence;
@@ -233,10 +233,14 @@ export class RecoltesService {
       recolte.recolteCoursier = userCoursierInfo;
       const recolteSave = await this.recolteRepository.save(recolte);
       const tracking = 'rec-' + (await this.generateTracking(recolteSave.id));
-      await this.recolteRepository.update(recolteSave.id, { tracking: tracking })
+      await this.recolteRepository.update(recolteSave.id, {
+        tracking: tracking,
+      });
 
       for await (const shipment of shipmentLivreOfCoursier) {
-        console.log("🚀 ~ file: recoltes.service.ts ~ line 236 ~ RecoltesService ~ forawait ~ shipment",)
+        console.log(
+          '🚀 ~ file: recoltes.service.ts ~ line 236 ~ RecoltesService ~ forawait ~ shipment',
+        );
         const statusShipment = await this.statusService.getShipmentStatusById(
           shipment.id,
         );
@@ -264,15 +268,18 @@ export class RecoltesService {
       throw new NotFoundException();
     }
   }
+  
   async createRecolteDesk(user, resp) {
-    const dateRecolte = new Date()
+    const dateRecolte = new Date();
     const listOfRecolte: string[] = [];
     const employeInfo = await this.userService.findInformationsEmploye(user.id);
-    console.log("🚀 ~ file: recoltes.service.ts ~ line 267 ~ RecoltesService ~ createRecolteDesk ~ employeInfo", employeInfo)
-    const shipmentLivreDesk =
-      await this.shipmentService.findShipmentLivreDesk(
-        user
-      );
+    console.log(
+      '🚀 ~ file: recoltes.service.ts ~ line 267 ~ RecoltesService ~ createRecolteDesk ~ employeInfo',
+      employeInfo,
+    );
+    const shipmentLivreDesk = await this.shipmentService.findShipmentLivreDesk(
+      user,
+    );
     if (shipmentLivreDesk.length > 0) {
       //creation de la recolte
       const recolte = this.recolteRepository.create();
@@ -284,12 +291,15 @@ export class RecoltesService {
       recolte.recolteCoursier = null;
       const recolteSave = await this.recolteRepository.save(recolte);
       const tracking = 'rec-' + (await this.generateTracking(recolteSave.id));
-      await this.recolteRepository.update(recolteSave.id, { tracking: tracking })
+      await this.recolteRepository.update(recolteSave.id, {
+        tracking: tracking,
+      });
       for await (const shipment of shipmentLivreDesk) {
-        console.log("🚀 ~ file: recoltes.service.ts ~ line 284 ~ RecoltesService ~ forawait ~ shipment", shipment)
-        if (
-          shipment.shipment_lastStatus == StatusShipmentEnum.pasPres
-        ) {
+        console.log(
+          '🚀 ~ file: recoltes.service.ts ~ line 284 ~ RecoltesService ~ forawait ~ shipment',
+          shipment,
+        );
+        if (shipment.shipment_lastStatus == StatusShipmentEnum.pasPres) {
           listOfRecolte.push(shipment.shipment_tracking);
           await this.shipmentService.updateShipmentRecolteId(
             shipment.shipment_id,
@@ -311,7 +321,6 @@ export class RecoltesService {
             createdAt: this.addToDate(dateRecolte),
             userAffect: null,
             createdOn: employeInfo.employe.agence.id,
-
           });
           //
         }
@@ -401,7 +410,6 @@ export class RecoltesService {
   // #############################################################################
   // #############################################################################
   async receiveRecoltes(user, rctTrackings: string[]) {
-
     const dateRecept = new Date();
     const userStation = await this.userService.findInformationsEmploye(user.id);
     if (userStation.typeUser === TypeUserEnum.caissierAgence) {
@@ -501,7 +509,7 @@ export class RecoltesService {
     let netClient = 0;
     let gain = 0;
     let nbrColis = 0;
-    let fraisRetour = 0
+    let fraisRetour = 0;
     const listRecolte = [];
     const listDateRecolte = [];
     const listClients = [];
@@ -579,9 +587,14 @@ export class RecoltesService {
             totalRamasse += tarifLivraison + shipment.prixVente;
           }
           let totalFraiCOD = 0;
-          console.log('hhhhhhhhhhhhhhhhhhhhhhhhhhh', shipment.prixVente, clientInfo.client_c_o_d_ApartirDe)
+          console.log(
+            'hhhhhhhhhhhhhhhhhhhhhhhhhhh',
+            shipment.prixVente,
+            clientInfo.client_c_o_d_ApartirDe,
+          );
           if (shipment.prixVente > clientInfo.client_c_o_d_ApartirDe) {
-            totalFraiCOD += (clientInfo.client_tauxCOD / 100) * shipment.prixVente;
+            totalFraiCOD +=
+              (clientInfo.client_tauxCOD / 100) * shipment.prixVente;
           }
           netClient += tarifsBordereau - tarifLivraison - totalFraiCOD;
           gain += tarifLivraison;
@@ -614,8 +627,9 @@ export class RecoltesService {
       }
     }
     for await (const client of listClients) {
-      const monatantRetour = await this.shipmentService.getInfoFraiRetourOfClient(client.id)
-      fraisRetour += monatantRetour.fraieRetoure
+      const monatantRetour =
+        await this.shipmentService.getInfoFraiRetourOfClient(client.id);
+      fraisRetour += monatantRetour.fraieRetoure;
     }
     listInformations['listDateRecolte'] = listDateRecolte;
     listInformations['listRecolte'] = listRecolte;
@@ -718,7 +732,8 @@ export class RecoltesService {
           }
           let totalFraiCOD = 0;
           if (shipment.prixVente > clientInfo.client_c_o_d_ApartirDe) {
-            totalFraiCOD += (clientInfo.client_tauxCOD / 100) * shipment.prixVente;
+            totalFraiCOD +=
+              (clientInfo.client_tauxCOD / 100) * shipment.prixVente;
           }
 
           netClient += tarifsBordereau - tarifLivraison - totalFraiCOD;
@@ -759,7 +774,7 @@ export class RecoltesService {
       const retoure = await this.shipmentService.getInfoFraiRetourOfClient(
         client.id,
       );
-      fraiRetoure += retoure.fraieRetoure
+      fraiRetoure += retoure.fraieRetoure;
       console.log(
         '🚀----------------------------------------------------------------------',
         fraiRetoure,
@@ -785,11 +800,15 @@ export class RecoltesService {
       .leftJoinAndSelect('recolte.shipment', 'shipment')
       .leftJoinAndSelect('shipment.status', 'status')
       .where(
-        `recolte.tracking = '${tracking.toLowerCase()}' and  recolte.receivedBy is not null and status.libelle = '${StatusShipmentEnum.recolte
+        `recolte.tracking = '${tracking.toLowerCase()}' and  recolte.receivedBy is not null and status.libelle = '${
+          StatusShipmentEnum.recolte
         }'`,
       )
       .getOne();
-    console.log("🚀 ~ file: recoltes.service.ts ~ line 713 ~ RecoltesService ~ libererParIdRecolte ~ recolte", recolte)
+    console.log(
+      '🚀 ~ file: recoltes.service.ts ~ line 713 ~ RecoltesService ~ libererParIdRecolte ~ recolte',
+      recolte,
+    );
     for await (const shipment of recolte.shipment) {
       const statusShipment = await this.statusService.getShipmentStatusById(
         shipment.id,
@@ -798,14 +817,18 @@ export class RecoltesService {
         statusShipment[statusShipment.length - 1].libelle ===
         StatusShipmentEnum.recolte
       ) {
-        console.log('--------------', statusShipment[statusShipment.length - 1].userAffect)
+        console.log(
+          '--------------',
+          statusShipment[statusShipment.length - 1].userAffect,
+        );
         delete shipment.status;
         await this.statusService.create({
           shipment: shipment,
           user: user.id,
           libelle: StatusShipmentEnum.pretAPayer,
           userAffect: statusShipment[statusShipment.length - 1].userAffect
-            ? statusShipment[statusShipment.length - 1].userAffect.id : null,
+            ? statusShipment[statusShipment.length - 1].userAffect.id
+            : null,
         });
 
         await this.shipmentService.update_v2(shipment.id, {
@@ -850,14 +873,15 @@ export class RecoltesService {
           statusShipment[statusShipment.length - 1].libelle ===
           StatusShipmentEnum.recolte
         ) {
-          delete shipment.status
+          delete shipment.status;
           await this.statusService.create({
             // shipment: await this.shipmentService.findOne(shipment.id),
             shipment: shipment,
             user: user.id,
             libelle: StatusShipmentEnum.pretAPayer,
             userAffect: statusShipment[statusShipment.length - 1].userAffect
-              ? statusShipment[statusShipment.length - 1].userAffect.id : null,
+              ? statusShipment[statusShipment.length - 1].userAffect.id
+              : null,
           });
 
           await this.shipmentService.updateLibererPaiementParDate(shipment.id, {
@@ -924,16 +948,13 @@ export class RecoltesService {
         await this.shipmentService.getShipmentsOfRecolte(recolte.id);
 
       if (recolte.recolteCoursier == null) {
-        userInfo =
-          await this.employeService.findOneByUserId(
-            recolte.createdBy.id,
-          );
-
+        userInfo = await this.employeService.findOneByUserId(
+          recolte.createdBy.id,
+        );
       } else {
-        userInfo =
-          await this.coursierService.findInformationOfCoursierByUserId(
-            recolte.recolteCoursier.id,
-          );
+        userInfo = await this.coursierService.findInformationOfCoursierByUserId(
+          recolte.recolteCoursier.id,
+        );
       }
       for await (const shipment of listShipmentOfRecolte) {
         let cost = 0;
