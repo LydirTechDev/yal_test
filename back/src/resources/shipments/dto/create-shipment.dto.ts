@@ -51,7 +51,8 @@ export class CreateShipmentDto {
 
   @IsNumber()
   prixVente: number;
-
+  @IsNumber()
+  prixEstimer: number;
   @IsNumber()
   poids: number;
 
@@ -66,7 +67,6 @@ export class CreateShipmentDto {
 
   @IsBoolean()
   echange = false;
-
   @IsString()
   @MinLength(3)
   @MaxLength(50)

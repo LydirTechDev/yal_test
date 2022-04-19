@@ -23,7 +23,7 @@ export class AjouterEmployeComponent implements OnInit {
     { text: 'Operations', value: 236429359 },
     { text: 'Caissier agence', value: 2548965156 },
     { text: 'Caissier regional', value: 1548965156 },
-    { text: 'Admin finance', value: 548965156 },
+    { text: 'Caissier central', value: 548965156 },
     { text: 'Admin', value: 963734 },
     { text: 'Service client', value: 2363594520 },
   ];

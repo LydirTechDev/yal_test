@@ -48,6 +48,8 @@ import { CodeTarif } from '../code-tarif/entities/code-tarif.entity';
 import { ExcelService } from 'src/core/templates/excel/excel.service';
 import { PmtCoursierService } from '../pmt-coursier/pmt-coursier.service';
 import { PmtCoursier } from '../pmt-coursier/entities/pmt-coursier.entity';
+import { Facture } from '../facture/entities/facture.entity';
+import { FactureService } from '../facture/facture.service';
 import { ExpiditeurPublicService } from '../expiditeur-public/expiditeur-public.service';
 import { ServiceClientService } from '../service-client/service-client.service';
 import { ExpiditeurPublic } from '../expiditeur-public/entities/expiditeur-public.entity';
@@ -80,6 +82,7 @@ import { RotationsService } from '../rotations/rotations.service';
       Departement,
       CodeTarif,
       PmtCoursier,
+      Facture,
       ExpiditeurPublic,
       Rotation,
     ]),
@@ -110,6 +113,7 @@ import { RotationsService } from '../rotations/rotations.service';
     CodeTarifService,
     ExcelService,
     PmtCoursierService,
+    FactureService,
     ExpiditeurPublicService,
     RotationsService,
     ServiceClientService

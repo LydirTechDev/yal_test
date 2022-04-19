@@ -19,6 +19,7 @@ export class PmtCoursier {
 
   @Column({
     unique: true,
+    nullable: true,
   })
   tracking: string;
 

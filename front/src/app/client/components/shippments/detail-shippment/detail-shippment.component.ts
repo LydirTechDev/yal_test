@@ -43,6 +43,7 @@ export class DetailShippmentComponent implements OnInit, OnDestroy {
        */
       designationProduit: ['', Validators.compose([Validators.required, Validators.minLength(5), Validators.maxLength(50)])],
       prixVente: [0, Validators.compose([Validators.required, Validators.pattern('[0-9]+')])],
+      prixEstimer: [1000, Validators.compose([Validators.required])],
       poids: [0, Validators.compose([Validators.required, Validators.pattern('[0-9]+')])],
       longueur: [0, Validators.compose([Validators.required, Validators.pattern('[0-9]+')])],
       largeur: [0, Validators.compose([Validators.required, Validators.pattern('[0-9]+')])],
@@ -96,6 +97,7 @@ export class DetailShippmentComponent implements OnInit, OnDestroy {
 
         this.shippmentForm.get('designationProduit').setValue(responce.designationProduit),
           this.shippmentForm.get('prixVente').setValue(responce.prixVente),
+          this.shippmentForm.get('prixEstimer').setValue(responce.prixEstimer),
           this.shippmentForm.get('poids').setValue(responce.poids),
           this.shippmentForm.get('longueur').setValue(responce.longueur),
           this.shippmentForm.get('largeur').setValue(responce.largeur),
@@ -186,6 +188,19 @@ export class DetailShippmentComponent implements OnInit, OnDestroy {
         }
       )
 
+    }
+  }
+  setValuePrixEstimer() {
+    if (this.shippmentForm.get('prixVente').value >= 1000) {
+
+      this.shippmentForm.patchValue({
+        prixEstimer: this.shippmentForm.get('prixVente').value
+      })
+
+    } else {
+      this.shippmentForm.patchValue({
+        prixEstimer: 1000
+      })
     }
   }
 }

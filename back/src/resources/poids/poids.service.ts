@@ -80,7 +80,6 @@ export class PoidsService {
       order: { min: 'ASC' },
     });
   }
-
   async getPlagePoids(poids: number) {
     return await this.poidsRepository.findOne({
       where: {
@@ -89,7 +88,6 @@ export class PoidsService {
       },
     });
   }
-
   findOne(id: number) {
     return `This action returns a #${id} poid`;
   }

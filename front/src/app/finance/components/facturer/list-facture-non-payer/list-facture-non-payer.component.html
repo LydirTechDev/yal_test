@@ -1,0 +1,206 @@
+<div class="container-fluid">
+    <app-pagetitle [breadcrumbItems]="breadCrumbItems"> </app-pagetitle>
+    <div class="row mb-3 ml-1" style="margin-top: -24px">
+        <!-- <a href="javascript:void(0);" class="btn btn-outline-primary" (click)="openModal(content)">
+        <i class="fas fa-plus-circle">
+          <span class="mt-1 font-weight-normal pl-1">Ajouter Wilaya</span>
+        </i>
+      </a> -->
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row mb-md-2">
+                        <!-- Search -->
+                        <div class="col-sm-12 col-md-12">
+                            <div id="tickets-table_filter" class="dataTables_filter text-md-right">
+                                <label class="d-inline-flex align-items-center">Recherche:
+                                    <input type="text" name="searchTerm" class="form-control form-control-sm ml-2"
+                                        aria-controls="tickets-table" [(ngModel)]="searchFactureTerm"
+                                        (ngModelChange)="searchTermUpdate(searchFactureTerm)" /></label>
+                            </div>
+                        </div>
+                        <!-- End search -->
+                    </div>
+                    <!-- Table -->
+                    <div class="table-responsive">
+                        <table id="basic-datatable"
+                            class="table table-centered dt-responsive nowrap no-footer dtr-inline">
+                            <thead>
+                                <tr>
+                                    <th>N° Facture</th>
+                                    <th>Client</th>
+                                    <th>Montant</th>
+                                    <th>Nombre d'envoi</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody *ngIf="!isLoading; else spiner">
+
+                                <tr *ngFor="let facture of factureData">
+                                    <td>
+                                        <a class="text-dark font-weight-bold">
+                                            {{ facture.numFacture }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                      {{ facture.client.nomCommercial }} {{ facture.client.raisonSociale }}
+                                    </td>
+                                    <td>
+                                      {{ facture.montantTotal }}
+                                    </td>
+                                    <td>
+                                      {{facture.shipments.length}}
+                                    </td>
+                                    <td>
+                                      <button class="btn btn-sm btn-danger" (click)="openModal(content,facture.id)">Payer</button>
+                                    </td>
+                                </tr>
+                                <tr *ngIf="factureData.length <= 0">
+                                    <th colspan="4" class="text-center">
+                                        <div class="text-center">
+                                            <p class="m-0 p-0"><i class="ri-error-warning-line customIcone"> </i> Pas
+                                                de factures! </p>
+                                        </div>
+                                    </th>
+                                </tr>
+                            </tbody>
+
+                            <ng-template #spiner>
+                                <tbody>
+                                    <tr>
+                                        <th colspan="4" class="text-center">
+                                            <div class="spinner-border text-primary m-1" role="status">
+                                                <span class="sr-only">Loading...</span>
+                                            </div>
+                                            <span class="d-block">Chargement ...</span>
+                                        </th>
+                                    </tr>
+                                </tbody>
+                            </ng-template>
+                        </table>
+                    </div>
+                    <!-- End table -->
+                    <div class="row justify-content-md-between align-items-md-center mt-2">
+                        <div class="col-sm-12 col-md-5">
+                            <div class="dataTables_info mb-2" id="tickets-table_info" role="status" aria-live="polite">
+                                Total factures {{ metaData.totalItems }}
+                            </div>
+                        </div>
+                        <!-- Pagination -->
+                        <div class="col-sm-12 col-md-5">
+                            <nav aria-label="...">
+                                <ul class="pagination justify-content-end">
+                                    <!-- <li class="page-item">
+                                        <button class="page-link info">
+                                            total utilistaeur : {{ metaData.totalItems }}
+                                        </button>
+                                    </li> -->
+                                    <li class="page-item">
+                                        <button class="page-link" [disabled]="metaLinks.previous.length <= 0"
+                                            (click)="funcPaginate(metaLinks.previous)">
+                                            <span aria-hidden="true">&laquo;</span>
+                                            <span class="sr-only">Previous</span>
+                                        </button>
+                                    </li>
+                                    <li class="page-item">
+                                        <button class="page-link" *ngIf="metaData.currentPage - 2 > 0"
+                                            (click)="funcPaginate('', metaData.currentPage - 2)">
+                                            {{ metaData.currentPage - 2
+                                            }}<span class="sr-only"></span>
+                                        </button>
+                                    </li>
+                                    <li class="page-item">
+                                        <button class="page-link" *ngIf="metaData.currentPage - 1 > 0"
+                                            (click)="funcPaginate('', metaData.currentPage - 1)">
+                                            {{ metaData.currentPage - 1
+                                            }}<span class="sr-only"></span>
+                                        </button>
+                                    </li>
+                                    <li class="page-item active">
+                                        <button class="page-link" (click)="funcPaginate('', metaData.currentPage)">
+                                            {{ metaData.currentPage
+                                            }}<span class="sr-only">(current)</span>
+                                        </button>
+                                    </li>
+                                    <li class="page-item">
+                                        <button class="page-link" (click)="funcPaginate('', metaData.currentPage + 1)"
+                                            *ngIf="metaData.currentPage + 1 <= metaData.totalPages">
+                                            {{ metaData.currentPage + 1
+                                            }}<span class="sr-only"></span>
+                                        </button>
+                                    </li>
+                                    <li class="page-item">
+                                        <button class="page-link" (click)="funcPaginate('', metaData.currentPage + 2)"
+                                            *ngIf="metaData.currentPage + 2 < metaData.totalPages">
+                                            {{ metaData.currentPage + 2
+                                            }}<span class="sr-only"></span>
+                                        </button>
+                                    </li>
+                                    <li class="page-item">
+                                        <button class="page-link" *ngIf="
+                    metaLinks.next.length != 0 &&
+                    metaData.currentPage + 2 <= metaData.totalPages
+                  ">
+                                            ...
+                                        </button>
+                                    </li>
+                                    <li class="page-item">
+                                        <button class="page-link" [disabled]="metaLinks.next.length <= 0"
+                                            (click)="funcPaginate(metaLinks.next)">
+                                            <span aria-hidden="true">&raquo;</span>
+                                            <span class="sr-only">Next</span>
+                                        </button>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                        <!-- End Pagination -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+
+  <ng-template #content role="document" let-modal="close">
+    <h5 class="text-center mt-3">Informations de paiement</h5>
+   <form [formGroup]="paiementForm" class="row col-12 d-flex justify-content-center mt-2 mb-4">
+          <!-- moyenPaiement -->
+          <div class="form-group col-12 row mb-3">
+            <label class="col-12 col-form-label text-left" for="moyenPayement">Moyen paiement*:</label>
+            <div class="col-12">
+              <ng-select name="moyenPayement" id="moyenPayement" formControlName="moyenPayement" placeholder="Moyen paiement" [clearable]="false"
+              (change)="changeMoyenPaiement($event)" >
+                <ng-option value="espece">Espèce</ng-option>
+                <ng-option value="virement">Virement</ng-option>
+                <ng-option value="cheque">Chèque</ng-option>
+              </ng-select>
+              <span *ngIf="paiementForm.controls['moyenPayement'].invalid && paiementForm.controls['moyenPayement'].touched"
+                class="invalid-feedback-custom  error">Moyen paiement requis</span>
+            </div>
+          </div>
+
+           <!-- numeroCheque -->
+        <div *ngIf="cheque" class="form-group col-12 row mb-3">
+          <label class="col-12 col-form-label text-left" for="numeroCheque">N° Chèque*:</label>
+          <div class="col-12">
+            <input class="form-control" formControlName="numeroCheque" type="text" placeholder="N° Chèque"
+              [ngClass]="{'is-invalid': paiementForm.controls['numeroCheque'].invalid && (paiementForm.controls['numeroCheque'].dirty || paiementForm.controls['numeroCheque'].touched),'is-valid': paiementForm.controls['numeroCheque'].valid && (paiementForm.controls['numeroCheque'].dirty || paiementForm.controls['numeroCheque'].touched) }">
+            <div *ngIf="paiementForm.controls['numeroCheque'].invalid" class="invalid-feedback">
+              <span *ngIf="paiementForm.controls['numeroCheque'].errors.required">nom commercial requis</span>
+              <span *ngIf="paiementForm.controls['numeroCheque'].errors.minlength">longueur minimale 3 characters</span>
+              <span *ngIf="paiementForm.controls['numeroCheque'].errors.maxlength">longueur maximale 30 characters</span>
+            </div>
+          </div>
+        </div>
+   </form>
+   <div class="col-12 d-flex justify-content-center mx-auto mt-1 mb-2 ">
+    <button class="btn btn-sm  btn-danger" (click)="modal('Cross click')" >  <i class="ri-arrow-left-line align-middle ms-2" ></i> Annuler</button>
+    <button class="btn btn-sm btn-success" [disabled]="paiementForm.invalid" ngClass="disable"  (click)=" Confirm() ">Valider <i class="fa fa-check-circle" aria-hidden="true"></i>
+    </button>
+  </div>
+
+
+  </ng-template>

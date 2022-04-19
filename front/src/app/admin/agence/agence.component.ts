@@ -100,6 +100,9 @@ export class AgenceComponent implements OnInit {
   typeAgences: any[] = [
     { type: AgencesTypesEnum.bureau, name: AgencesTypesEnum.bureau },
     { type: AgencesTypesEnum.hub, name: AgencesTypesEnum.hub },
+    { type: AgencesTypesEnum.centreRetour, name: AgencesTypesEnum.centreRetour },
+    { type: AgencesTypesEnum.caisseRegional, name: AgencesTypesEnum.caisseRegional },
+    { type: AgencesTypesEnum.caisseCentral, name: AgencesTypesEnum.caisseCentral },
   ];
 
   /**

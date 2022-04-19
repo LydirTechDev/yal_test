@@ -3,7 +3,7 @@
       <h4 class="labtrack mt-1 mx-2 "><i class="bi bi-collection "></i>Payer le coursier :</h4>
       <div class="col-3">
         <ng-select formControlName="coursierSelected" placeholder=" Selectionner un coursier" [clearable]="false"
-          [readonly]="coursierLoaded" (change)="getColisLivrerByCoursierId($event)">
+          [readonly]="coursierLoaded" (change)="getColisLivrerByCoursierId($event)" appendTo="body">
           <ng-option *ngFor="let coursier of coursierData" [value]="coursier">
             <span class="text-uppercase">{{coursier.nom}} {{coursier.prenom}}</span>
           </ng-option>
@@ -27,8 +27,8 @@
   <thead class="">
     <tr>
       <th scope="col">Tracking</th>
-      <th scope="col">Type</th>
-      <th scope="col">Wilaya</th>
+      <!-- <th scope="col">Type</th> -->
+      <!-- <th scope="col">Wilaya</th> -->
       <th scope="col">Date livraison</th>
       <th scope="col">Prix de livraison</th>
 
@@ -38,16 +38,16 @@
   <tbody>
     <tr *ngFor="let colis of listColis">
       <td><span class="bg-light py-2 px-3 rounded text-dark font-weight-bold">{{colis.shipment_tracking}}</span>
-      <td>{{colis.service_nom}}</td>
-      <td>{{colis.wilaya_nomLatin}}</td>
+      <!-- <td>{{colis.service_nom}}</td> -->
+      <!-- <td>{{colis.wilaya_nomLatin}}</td> -->
       <td>{{colis.status_createdAt | date:'dd-MM-YYYY HH:mm:ss'}}</td>
       <td class="font-weight-bold">300 DA</td>
     </tr>
   </tbody>
   <tfoot>
     <tr>
-      <td></td>
-      <td></td>
+      <!-- <td></td> -->
+      <!-- <td></td> -->
       <td></td>
       <td></td>
       <td class="customBg">
@@ -55,12 +55,12 @@
       </td>
     </tr>
     <tr>
+      <!-- <td></td> -->
+      <!-- <td></td> -->
       <td></td>
       <td></td>
-      <td></td>
-      <td></td>
-      <td class="text-right">
-        <button class="btn btn-outline-primary" (click)="Confirm()">Payer</button>
+      <td class="text-left">
+        <button class="btn btn-danger" (click)="Confirm()"><i class="fas fa-cash-register"></i> Payer </button>
       </td>
     </tr>
 

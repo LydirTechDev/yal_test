@@ -83,6 +83,19 @@ export class ClientsController {
       searchClientTerm,
     );
   }
+  @Get('clientsWithClassicShipments')
+  getClientsHaveClassicShipmentInInterval(
+    @Query('dateDebut') dateDebut,
+    @Query('dateFin') dateFin,
+    @Request() req
+  ): Promise<any> {
+    console.log("🚀 ~ file: clients.controller.ts ~ line 55 ~ ClientsController ~ req", req.user)
+    return this.clientsService.getClientsHaveClassicShipmentInInterval(
+      dateDebut,
+      dateFin,
+      req.user.id
+    );
+  }
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.clientsService.findOneClientById(+id);

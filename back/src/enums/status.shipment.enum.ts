@@ -20,6 +20,7 @@ export enum StatusShipmentEnum {
   retourRecuAgence = 'RETOUR REÇU AGENCE',
   ARetirer = 'A RETIRÉ',
   retirer = 'RETIRÉ',
+  retourPayer = 'RETOUR PAYÉ',
 
   // livraison
   affectedToCoursier = 'AFFECTER AU COURSIER',
@@ -40,4 +41,7 @@ export enum StatusShipmentEnum {
   recolte = 'RÉCOLTÉ',
   pretAPayer = 'PRÉT A PAYER',
   payer = 'PAYER',
+
+  //facture
+  facturer = 'FACTURÉ',
 }

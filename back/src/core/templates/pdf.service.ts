@@ -399,7 +399,6 @@ export class PdfService {
     fs.writeFileSync('dest', pdfBytes);
     return pdfBytes;
   }
-
   async generateInterneShipment(
     shipmentInfo,
     employeInfo,
@@ -594,30 +593,6 @@ export class PdfService {
     datePresExpedition,
     otherStatus?,
   ) {
-    console.log(
-      '🚀 ~ file: pdf.service.ts ~ line 216 ~ PdfService ~ otherStatus',
-      otherStatus,
-    );
-    console.log(
-      '🚀 ~ file: pdf.service.ts ~ line 216 ~ PdfService ~ datePresExpedition',
-      datePresExpedition,
-    );
-    console.log(
-      '🚀 ~ file: pdf.service.ts ~ line 216 ~ PdfService ~ recouvrement',
-      recouvrement,
-    );
-    console.log(
-      '🚀 ~ file: pdf.service.ts ~ line 216 ~ PdfService ~ tarifLivraison',
-      tarifLivraison,
-    );
-    console.log(
-      '🚀 ~ file: pdf.service.ts ~ line 216 ~ PdfService ~ infoClient',
-      infoClient,
-    );
-    console.log(
-      '🚀 ~ file: pdf.service.ts ~ line 216 ~ PdfService ~ infoPackageSlip',
-      infoPackageSlip,
-    );
     let packageSlipTemplatePath = '';
     console.log(infoPackageSlip, tarifLivraison);
     // if (infoClient.client_nbTentative == 3) {
@@ -925,34 +900,55 @@ export class PdfService {
       y: 262,
       size: 8,
     });
+    const textSizeRecouvrement = 20;
     if (infoPackageSlip.shipment_livraisonGratuite) {
-      const textSizeRecouvrement = 25;
+      firstPage.drawText('Montant à récolter:', {
+        x: 25,
+        y: 415,
+        size: 14,
+        // color: rgb(0, 0, 0),
+      });
       firstPage.drawText(
-        'Rec:' + infoPackageSlip.shipment_prixVente.toString() + ' DA',
+        infoPackageSlip.shipment_prixVente
+          .toString()
+          .replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' DA',
         {
-          x: 50,
-          y: 410,
+          x: 145,
+          y: 412,
           size: textSizeRecouvrement,
           // color: rgb(0, 0, 0),
         },
       );
     } else {
-      const textSizeRecouvrement = 25;
-      firstPage.drawText('Rec: ' + recouvrement.toString() + ' DA', {
-        x: 50,
-        y: 410,
-        size: textSizeRecouvrement,
+      firstPage.drawText('Montant à récolter:', {
+        x: 25,
+        y: 415,
+        size: 14,
         // color: rgb(1, 1, 1),
       });
+      firstPage.drawText(
+        recouvrement.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' DA',
+        {
+          x: 145,
+          y: 412,
+          size: textSizeRecouvrement,
+          // color: rgb(1, 1, 1),
+        },
+      );
     }
     //
     const textSizePrixEstime = 10;
-    firstPage.drawText(infoPackageSlip.shipment_prixVente.toString() + ' DA', {
-      x: 210,
-      y: height - 310,
-      size: textSizePrixEstime,
-      // color: rgb(1, 1, 1),
-    });
+    firstPage.drawText(
+      infoPackageSlip.shipment_prixVente
+        .toString()
+        .replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' DA',
+      {
+        x: 210,
+        y: height - 310,
+        size: textSizePrixEstime,
+        // color: rgb(1, 1, 1),
+      },
+    );
     //
 
     firstPage.drawRectangle({
@@ -2182,26 +2178,26 @@ export class PdfService {
     const { width, height } = firstPage.getSize();
 
     firstPage.drawText(sac.sac_typeSac, {
-      x: 240,
-      y: height - 15,
+      x: 20,
+      y: height - 75,
       size: 9,
     });
 
-    firstPage.drawText(sac.sac_id.toString(), {
-      x: 110,
-      y: height - 33,
-      size: 13,
-    });
+    // firstPage.drawText(sac.sac_id.toString(), {
+    //   x: 110,
+    //   y: height - 33,
+    //   size: 13,
+    // });
 
-    firstPage.drawText(dateSac.toString(), {
-      x: 465,
-      y: height - 33,
+    firstPage.drawText('Le ' + dateSac.toString(), {
+      x: 20,
+      y: height - 138,
       size: 11,
     });
 
     firstPage.drawText(trackings.length.toString() + ')', {
       x: 330,
-      y: height - 198,
+      y: height - 195,
       size: 20,
     });
 
@@ -2303,7 +2299,6 @@ export class PdfService {
     return pdfBytes;
   }
   // date format
-
   async formatDate(date) {
     console.log(
       '🚀 ~ file: pdf.service.ts ~ line 970 ~ PdfService ~ formatDate ~ date',
@@ -2322,7 +2317,6 @@ export class PdfService {
     console.log(dateFormat);
     return dateFormat;
   }
-
   async printRecolteManifest(recolte, trackings, userInfo, montant) {
     const tracking = trackings.join(' ');
     const dateRecolte = await this.formatDate(recolte.createdAt);
@@ -2344,8 +2338,8 @@ export class PdfService {
         '/' +
         userInfo.agence.commune.wilaya.nomLatin.toUpperCase(),
       {
-        x: 220,
-        y: height - 20,
+        x: 30,
+        y: height - 65,
         size: 10,
       },
     );
@@ -2365,13 +2359,13 @@ export class PdfService {
     if (recolte.recolteCoursier == null) {
       firstPage.drawText('DESK', {
         x: 30,
-        y: height - 100,
+        y: height - 115,
         size: 15,
       });
     }
-    firstPage.drawText(dateRecolte, {
-      x: 485,
-      y: height - 32,
+    firstPage.drawText('Le ' + dateRecolte, {
+      x: 30,
+      y: height - 95,
       size: 11,
     });
     console.log('3');
@@ -2388,7 +2382,7 @@ export class PdfService {
         font: helveticaFont,
       },
     );
-    console.log('4');
+    // console.log('4');
 
     //CODE BARRE
     const barcodeBuffer = await bwipjs.toBuffer({
@@ -2427,7 +2421,6 @@ export class PdfService {
     fs.writeFileSync('dest', pdfBytes);
     return pdfBytes;
   }
-
   async printSacVersVendeur(sac, trackings, clientInfo) {
     const tracking = trackings.join(' ');
     const dateSac = await this.formatDate(sac.sacShipment_createdAt);
@@ -2444,19 +2437,19 @@ export class PdfService {
 
     const { width, height } = firstPage.getSize();
     firstPage.drawText(sac.sac_typeSac, {
-      x: 240,
-      y: height - 15,
+      x: 20,
+      y: height - 75,
       size: 9,
     });
 
-    firstPage.drawText(sac.sac_id.toString(), {
-      x: 110,
-      y: height - 33,
-      size: 13,
-    });
-    firstPage.drawText(dateSac.toString(), {
-      x: 465,
-      y: height - 33,
+    // firstPage.drawText(sac.sac_id.toString(), {
+    //   x: 110,
+    //   y: height - 33,
+    //   size: 13,
+    // });
+    firstPage.drawText('Le' + dateSac.toString(), {
+      x: 20,
+      y: height - 135,
       size: 11,
     });
     firstPage.drawText(trackings.length.toString() + ')', {
@@ -2513,7 +2506,6 @@ export class PdfService {
     fs.writeFileSync('dest', pdfBytes);
     return pdfBytes;
   }
-
   async printManifestRetourClient(sac, trackings, clientInfo) {
     const tracking = trackings.join(' ');
     const dateSac = await this.formatDate(sac.sacShipment_createdAt);
@@ -2526,20 +2518,20 @@ export class PdfService {
     const pages = pdfDoc.getPages();
     const firstPage = pages[0];
     const { width, height } = firstPage.getSize();
-    firstPage.drawText(sac.sac_typeSac, {
-      x: 220,
-      y: height - 15,
-      size: 9,
-    });
+    // firstPage.drawText(sac.sac_typeSac, {
+    //   x: 20,
+    //   y: height - 75,
+    //   size: 9,
+    // });
 
-    firstPage.drawText('Accusé n# ' + sac.sac_id.toString(), {
-      x: 40,
-      y: height - 33,
-      size: 9,
-    });
+    // firstPage.drawText('Accusé n# ' + sac.sac_id.toString(), {
+    //   x: 40,
+    //   y: height - 33,
+    //   size: 9,
+    // });
     firstPage.drawText('Le ' + dateSac.toString(), {
-      x: 455,
-      y: height - 33,
+      x: 20,
+      y: height - 135,
       size: 11,
     });
     firstPage.drawText(trackings.length.toString(), {
@@ -2586,8 +2578,8 @@ export class PdfService {
     fs.writeFileSync('dest', pdfBytes);
     return pdfBytes;
   }
-
   async printPmt(client: Client, pmt: Pmt) {
+
     const pmtTemplatePath = 'src/assets/pmt.pdf';
     const pdfTemplateBytes = fs.readFileSync(pmtTemplatePath);
     const pdfDoc = await PDFDocument.load(pdfTemplateBytes);
@@ -2699,7 +2691,6 @@ export class PdfService {
       size: 16,
       font: helveticaFont,
     });
-
     firstPage.drawText(pmt.client.nomGerant + '  ' + pmt.client.prenomGerant, {
       x: 169,
       y: height - 649,
@@ -2803,7 +2794,6 @@ export class PdfService {
 
     const qrcodePmtImage = await pdfDoc.embedPng(qrcodePmtBuffer);
     const qrcodePmtDims = qrcodePmtImage.scaleToFit(80, 80);
-
     firstPage.drawImage(qrcodePmtImage, {
       x: 500,
       y: 750,
@@ -2814,7 +2804,6 @@ export class PdfService {
     fs.writeFileSync('dest', pdfBytes);
     return pdfBytes;
   }
-
   async printPmtCoursier(pmtCoursier) {
     if (pmtCoursier.shipments.length > 0) {
       console.log(
@@ -2991,5 +2980,84 @@ export class PdfService {
         `le pmt d'id ${pmtCoursier.id} n'a aucun colis`,
       );
     }
+  }
+  async printFactureClassique(facture) {
+    console.log("🚀 ~ file: pdf.service.ts ~ line 2466 ~ PdfService ~ printFactureClassique ~ facture", facture)
+    const conventionTemplatePath = 'src/assets/FactureClassique.pdf';
+    const pdfTemplateBytes = fs.readFileSync(conventionTemplatePath);
+    const dest = 'src/testpdf/convention.pdf';
+    const pdfDoc = await PDFDocument.load(pdfTemplateBytes);
+    const pdfDocVierge = await PDFDocument.load(pdfTemplateBytes);;
+
+    // Get the first page of the document
+    const pages = pdfDoc.getPages();
+    const firstPage = pages[0];
+    const secondPage = pages[1];
+    const lastPage = pages[pages.length - 1];
+
+
+    const { width, height } = firstPage.getSize();
+    let rectangleStart = 252;
+    let lineStart = 237;
+
+
+    for (let i = 1; i < 50; i++) {
+      if (rectangleStart < 762) {
+        this.drawLine(firstPage, height, rectangleStart, lineStart)
+        rectangleStart = rectangleStart + 15;
+        lineStart = lineStart + 15
+      } else {
+        this.printFactureClassique(facture)
+      }
+
+    }
+
+
+    const pdfBytes = await pdfDoc.save();
+    fs.writeFileSync('dest', pdfBytes);
+    return pdfBytes;
+  }
+
+  async drawLine(firstPage, height, rectangleStart, lineStart) {
+
+    firstPage.drawRectangle({
+      x: 26.4,
+      y: height - rectangleStart,
+      width: 545.5,
+      height: 15,
+      borderColor: rgb(0, 0, 0),
+      borderWidth: 0.6,
+    })
+
+    firstPage.drawLine({
+      start: { x: 105.5, y: height - lineStart },
+      end: { x: 105.5, y: height - rectangleStart },
+      thickness: 0.7,
+      color: rgb(0, 0, 0),
+    })
+    firstPage.drawLine({
+      start: { x: 187.7, y: height - lineStart },
+      end: { x: 187.7, y: height - rectangleStart },
+      thickness: 0.7,
+      color: rgb(0, 0, 0),
+    })
+    firstPage.drawLine({
+      start: { x: 312.5, y: height - lineStart },
+      end: { x: 312.5, y: height - rectangleStart },
+      thickness: 0.7,
+      color: rgb(0, 0, 0),
+    })
+    firstPage.drawLine({
+      start: { x: 423, y: height - lineStart },
+      end: { x: 423, y: height - rectangleStart },
+      thickness: 0.7,
+      color: rgb(0, 0, 0),
+    })
+    firstPage.drawLine({
+      start: { x: 486, y: height - lineStart },
+      end: { x: 486, y: height - rectangleStart },
+      thickness: 0.7,
+      color: rgb(0, 0, 0),
+    });
   }
 }

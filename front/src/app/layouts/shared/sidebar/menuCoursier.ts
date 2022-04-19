@@ -43,4 +43,10 @@ export const MENUCOURSIER: MenuItem[] = [
       //   },
     ],
   },
+  {
+    id: 7,
+    label: 'Mes paiements',
+    icon: 'fas fa-cash-register',
+    link: 'list-paiement-coursier'
+  },
 ];

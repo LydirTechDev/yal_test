@@ -16,6 +16,7 @@ import { Recolte } from 'src/resources/recoltes/entities/recolte.entity';
 import { Shipment } from 'src/resources/shipments/entities/shipment.entity';
 import { Pmt } from 'src/resources/pmt/entities/pmt.entity';
 import { PmtCoursier } from 'src/resources/pmt-coursier/entities/pmt-coursier.entity';
+import { Facture } from 'src/resources/facture/entities/facture.entity';
 
 @Entity()
 export class Agence {
@@ -114,4 +115,6 @@ export class Agence {
     (pmtCoursierCreatedOn) => pmtCoursierCreatedOn.createdOn,
   )
   pmtCoursierCreatedOn: PmtCoursier[];
+  @OneToMany(() => Facture, (facture) => facture.createdOn)
+  facture: Facture[];
 }

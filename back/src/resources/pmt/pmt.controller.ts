@@ -23,11 +23,41 @@ import { stringify } from 'querystring';
 @UseGuards(JwtAuthGuard, RoleGuard)
 @Controller('pmt')
 export class PmtController {
-  constructor(private readonly pmtService: PmtService) { }
+  constructor(private readonly pmtService: PmtService) {}
 
   @Post()
   create(@Body() createPmtDto: CreatePmtDto) {
     return this.pmtService.create(createPmtDto);
+  }
+  @Get('find-all-paginate-pmt-client')
+  findAllPaginatePmtClient(
+    @Req() req,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit,
+    @Query('searchPmtTerm') searchPmtTerm: string,
+  ) {
+    console.log('snfvejnvjenjrne');
+    return this.pmtService.findAllPaginatePmtClient(
+      {
+        page,
+        limit,
+      },
+      req.user,
+      searchPmtTerm,
+    );
+  }
+
+  @Get('print-pmt-client/:pmtTraking')
+  printPmtClient(@Req() req, @Param() pmtTraking, @Res() res: Response) {
+    return this.pmtService.printPmtCLientById(
+      pmtTraking.pmtTraking,
+      req.user,
+      res,
+    );
+  }
+  @Get('getPaiementDetails/:tracking')
+  getPaiementDetails(@Param('tracking') tracking) {
+    return this.pmtService.getPaiementDetails(tracking);
   }
 
   @Get('find-all-paginate-pmt')
@@ -37,7 +67,7 @@ export class PmtController {
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit,
     @Query('searchPmtTerm') searchPmtTerm: string,
   ) {
-    console.log('hbsdyubyubu')
+    console.log('hbsdyubyubu');
     return this.pmtService.findAllPaginatePmt(
       {
         page,
@@ -70,4 +100,6 @@ export class PmtController {
   findOne(@Param('id') id: string) {
     return this.pmtService.findOne(+id);
   }
+
+  //
 }

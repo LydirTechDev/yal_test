@@ -27,7 +27,7 @@ export class ReceiveRecoltesComponent implements OnInit {
   }
   
   recieveRecoltesCheck() {
-    const express_reg = new RegExp(/^rct-\d{3}\w{3}$/, 'i');
+    const express_reg = new RegExp(/^rec-\d{8}$/, 'i');
     const track = this.formdata.value['rctTracking'];
     if (!express_reg.test(track)) {
       this.sweetAlertService.backgroundRed();

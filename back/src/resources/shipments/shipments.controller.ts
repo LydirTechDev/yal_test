@@ -364,6 +364,14 @@ export class ShipmentsController {
   ) {
     return this.shipmentsService.getColisReturnStation(req.user, coursierId);
   }
+  @Get('getColisOfClientClassic/:id')
+  getColisOfClientClassic(
+    @Param('id', ParseIntPipe) id,
+    @Query('dateDebut') dateDebut,
+    @Query('dateFin') dateFin,
+  ) {
+    return this.shipmentsService.getShipmentClassicWithIntervalOfClient(id, dateDebut, dateFin);
+  }
 
   @Get('getSacsClientInformation/:idClient')
   getSacsClientInformation(@Request() req, @Param('idClient') idClient) {
@@ -402,6 +410,10 @@ export class ShipmentsController {
     return this.shipmentsService.findOne(+id);
   }
 
+  @Patch('facturerShipments')
+  async facturerShipments(@Body() shipments: any, @Request() req) {
+    return await this.shipmentsService.facturerShipments(shipments, req);
+  }
   @Patch(':id')
   update(
     @Param('id') id: number,

@@ -18,7 +18,7 @@
     <div class="col-12 col-md-10  mx-auto text-center" style="background:transparent;"
         *ngIf="listeColisRetourWilaya.length > 0">
         <form [formGroup]="formdata" class=" p-0 m-0">
-            <div class="form-groupe  col-12 col-md-10 mx-auto d-flex m-0 ">
+            <div class="form-groupe  col-12 col-lg-10 mx-auto d-flex m-0 ">
                 <input type="text" formControlName="tracking" class="form-control mr-1 mt-1 shadow" 
                     placeholder="11111111" autofocus>
                 <input type="submit" class="btn btn-info shadow px-4 mx-1" (click)="viderSac()" value="ajouter">
@@ -27,8 +27,9 @@
         <hr class="mx-auto">
     </div>
     <div class=" text-dark">
-        <label class='m-3 p-2 bg-info text-white' *ngFor="let i of selected">{{i}}<i
-                class="fas fa-times  mx-2 text-danger" (click)="deletselected(i)"></i></label>
+        <label class='m-3 p-2 bg-info text-white' *ngFor="let i of listeColisRetourWilaya">{{i}}
+            <!-- <i class="fas fa-times  mx-2 text-danger" (click)="deletselected(i)"></i> -->
+        </label>
     </div>
     <div class="mx-auto text-center mt-5" *ngIf="selected.length > 0">
         <button type="submit" class="btn btn-success shadow btn-lg  px-4 mx-1" (click)="receptShipments()">Vider le

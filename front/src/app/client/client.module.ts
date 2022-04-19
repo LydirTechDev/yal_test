@@ -17,6 +17,8 @@ import { NgxMaskModule } from 'ngx-mask';
 import { UiSwitchModule } from 'ngx-ui-switch';
 import { DetailShippmentComponent } from './components/shippments/detail-shippment/detail-shippment.component';
 import { TracabiliteComponent } from './components/shippments/tracabilite/tracabilite.component';
+import { PaiementsClientComponent } from './components/paiements-client/paiements-client.component';
+import { DetailPaiementComponent } from './components/detail-paiement/detail-paiement.component';
 
 
 @NgModule({
@@ -26,7 +28,9 @@ import { TracabiliteComponent } from './components/shippments/tracabilite/tracab
     UploadShippmnetsComponent,
     ShippmentsComponent,
     DetailShippmentComponent,
-    TracabiliteComponent
+    TracabiliteComponent,
+    PaiementsClientComponent,
+    DetailPaiementComponent
   ],
   imports: [
     CommonModule,

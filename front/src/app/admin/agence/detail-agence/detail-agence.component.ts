@@ -29,6 +29,9 @@ export class DetailAgenceComponent implements OnInit {
   typeAgences: any[] = [
     { type: AgencesTypesEnum.bureau, name: AgencesTypesEnum.bureau },
     { type: AgencesTypesEnum.hub, name: AgencesTypesEnum.hub },
+    { type: AgencesTypesEnum.centreRetour, name: AgencesTypesEnum.centreRetour },
+    { type: AgencesTypesEnum.caisseRegional, name: AgencesTypesEnum.caisseRegional },
+    { type: AgencesTypesEnum.caisseCentral, name: AgencesTypesEnum.caisseCentral },
   ];
 
   hidden: boolean = true;
@@ -52,8 +55,7 @@ export class DetailAgenceComponent implements OnInit {
       Validators.compose([
         Validators.required,
         Validators.minLength(3),
-        Validators.maxLength(50),
-        Validators.pattern('[a-zA-Z]+'),
+        Validators.maxLength(50),,
       ]),
     ],
     adresse: [
@@ -103,6 +105,7 @@ export class DetailAgenceComponent implements OnInit {
       .getAgenceById(this.route.params.id)
       .subscribe((agences) => {
         this.agences = agences;
+        console.log("🚀 ~ file: detail-agence.component.ts ~ line 109 ~ DetailAgenceComponent ~ .subscribe ~ agences", agences)
         this.agenceForm.patchValue({
           nom: agences.nom,
           adresse: agences.adresse,

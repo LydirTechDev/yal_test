@@ -33,8 +33,6 @@ export class StatusService {
   }
 
   async getShipmentStatusByUser(userId: number, shipmentId: number) {
-    console.log("🚀 ~ file: status.service.ts ~ line 36 ~ StatusService ~ getShipmentStatusByUser ~ shipmentId", shipmentId)
-    console.log("🚀 ~ file: status.service.ts ~ line 36 ~ StatusService ~ getShipmentStatusByUser ~ userId", userId)
     const shipmentStatus = await this.statusRepository.find({
       relations: ['shipment', 'user'],
       where: {

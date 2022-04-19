@@ -223,17 +223,18 @@ export class RecoltesService {
       );
     if (shipmentLivreOfCoursier.length > 0) {
       //creation de la recolte
-      const tracking = await this.generateRct();
+      
       const recolte = this.recolteRepository.create();
-      recolte.tracking = tracking;
       recolte.createdBy = userStation;
       recolte.createdOn = userStation.employe.agence;
       recolte.receivedAt = null;
       recolte.receivedBy = null;
       recolte.receivedOn = null;
       recolte.recolteCoursier = userCoursierInfo;
-
       const recolteSave = await this.recolteRepository.save(recolte);
+      const tracking = 'rec-' + (await this.generateTracking(recolteSave.id));
+      await this.recolteRepository.update(recolteSave.id, { tracking: tracking })
+
       for await (const shipment of shipmentLivreOfCoursier) {
         console.log("🚀 ~ file: recoltes.service.ts ~ line 236 ~ RecoltesService ~ forawait ~ shipment",)
         const statusShipment = await this.statusService.getShipmentStatusById(
@@ -274,9 +275,7 @@ export class RecoltesService {
       );
     if (shipmentLivreDesk.length > 0) {
       //creation de la recolte
-      const tracking = await this.generateRct();
       const recolte = this.recolteRepository.create();
-      recolte.tracking = tracking;
       recolte.createdBy = employeInfo;
       recolte.createdOn = employeInfo.employe.agence;
       recolte.receivedAt = null;
@@ -284,6 +283,8 @@ export class RecoltesService {
       recolte.receivedOn = null;
       recolte.recolteCoursier = null;
       const recolteSave = await this.recolteRepository.save(recolte);
+      const tracking = 'rec-' + (await this.generateTracking(recolteSave.id));
+      await this.recolteRepository.update(recolteSave.id, { tracking: tracking })
       for await (const shipment of shipmentLivreDesk) {
         console.log("🚀 ~ file: recoltes.service.ts ~ line 284 ~ RecoltesService ~ forawait ~ shipment", shipment)
         if (
@@ -312,7 +313,7 @@ export class RecoltesService {
             createdOn: employeInfo.employe.agence.id,
 
           });
-      //
+          //
         }
       }
       return await this.printRecolteManifest(recolteSave.id, resp);
@@ -500,6 +501,7 @@ export class RecoltesService {
     let netClient = 0;
     let gain = 0;
     let nbrColis = 0;
+    let fraisRetour = 0
     const listRecolte = [];
     const listDateRecolte = [];
     const listClients = [];
@@ -509,7 +511,6 @@ export class RecoltesService {
     );
     let recoltes: Recolte[];
     if (userStation.typeUser === TypeUserEnum.caissierAgence) {
-      
       recoltes = await this.recolteRepository
         .createQueryBuilder('recolte')
         .leftJoinAndSelect('recolte.shipment', 'shipment')
@@ -577,7 +578,12 @@ export class RecoltesService {
             tarifsBordereau = shipment.prixVente + tarifLivraison;
             totalRamasse += tarifLivraison + shipment.prixVente;
           }
-          netClient += tarifsBordereau - tarifLivraison;
+          let totalFraiCOD = 0;
+          console.log('hhhhhhhhhhhhhhhhhhhhhhhhhhh', shipment.prixVente, clientInfo.client_c_o_d_ApartirDe)
+          if (shipment.prixVente > clientInfo.client_c_o_d_ApartirDe) {
+            totalFraiCOD += (clientInfo.client_tauxCOD / 100) * shipment.prixVente;
+          }
+          netClient += tarifsBordereau - tarifLivraison - totalFraiCOD;
           gain += tarifLivraison;
           nbrColis += 1;
           if (
@@ -586,6 +592,7 @@ export class RecoltesService {
           ) {
             listRecolte.push(recolte.tracking);
           }
+
           if (
             !listDateRecolte.includes(
               recolte.receivedAt.toLocaleDateString('fr-CA', {
@@ -606,18 +613,18 @@ export class RecoltesService {
         }
       }
     }
-
+    for await (const client of listClients) {
+      const monatantRetour = await this.shipmentService.getInfoFraiRetourOfClient(client.id)
+      fraisRetour += monatantRetour.fraieRetoure
+    }
     listInformations['listDateRecolte'] = listDateRecolte;
     listInformations['listRecolte'] = listRecolte;
     listInformations['listClients'] = listClients;
     listInformations['nbrColis'] = nbrColis;
     listInformations['totalRamasse'] = totalRamasse;
-    listInformations['netClient'] = netClient;
-    listInformations['gain'] = gain;
-    console.log(
-      '🚀 ~ file: recoltes.service.ts ~ line 248 ~ RecoltesService ~ getInformationsPaiementToLiberer ~ listInformations',
-      listInformations,
-    );
+    listInformations['netClient'] = netClient - fraisRetour;
+    // listInformations['gain'] = gain;
+
     return listInformations;
   }
 
@@ -709,8 +716,12 @@ export class RecoltesService {
             tarifsBordereau = shipment.prixVente + tarifLivraison;
             totalRamasse += tarifLivraison + shipment.prixVente;
           }
+          let totalFraiCOD = 0;
+          if (shipment.prixVente > clientInfo.client_c_o_d_ApartirDe) {
+            totalFraiCOD += (clientInfo.client_tauxCOD / 100) * shipment.prixVente;
+          }
 
-          netClient += tarifsBordereau - tarifLivraison;
+          netClient += tarifsBordereau - tarifLivraison - totalFraiCOD;
           gain += tarifLivraison;
           nbrColis += 1;
 
@@ -745,9 +756,10 @@ export class RecoltesService {
      * sommer tt les frai retoure de tt les client pre a payer
      */
     for await (const client of listClients) {
-      fraiRetoure += await this.shipmentService.getInfoFraiRetourOfClient(
+      const retoure = await this.shipmentService.getInfoFraiRetourOfClient(
         client.id,
       );
+      fraiRetoure += retoure.fraieRetoure
       console.log(
         '🚀----------------------------------------------------------------------',
         fraiRetoure,
@@ -786,7 +798,7 @@ export class RecoltesService {
         statusShipment[statusShipment.length - 1].libelle ===
         StatusShipmentEnum.recolte
       ) {
-        console.log('--------------',statusShipment[statusShipment.length - 1].userAffect)
+        console.log('--------------', statusShipment[statusShipment.length - 1].userAffect)
         delete shipment.status;
         await this.statusService.create({
           shipment: shipment,
@@ -844,8 +856,8 @@ export class RecoltesService {
             shipment: shipment,
             user: user.id,
             libelle: StatusShipmentEnum.pretAPayer,
-            userAffect: statusShipment[statusShipment.length - 1].userAffect 
-            ? statusShipment[statusShipment.length - 1].userAffect.id : null,
+            userAffect: statusShipment[statusShipment.length - 1].userAffect
+              ? statusShipment[statusShipment.length - 1].userAffect.id : null,
           });
 
           await this.shipmentService.updateLibererPaiementParDate(shipment.id, {
@@ -890,54 +902,10 @@ export class RecoltesService {
   remove(id: number) {
     return `This action removes a #${id} recolte`;
   }
-  async generateRct() {
-    const x1 = 'rct-';
-    let x2 = '';
-    let x3 = '';
-    for (let i = 0; i < 3; i++) {
-      x2 += Math.floor(Math.random() * 10);
-    }
-    for (let i = 0; i < 3; i++) {
-      const alph = [
-        'A',
-        'B',
-        'C',
-        'D',
-        'E',
-        'F',
-        'G',
-        'H',
-        'I',
-        'J',
-        'K',
-        'L',
-        'M',
-        'N',
-        'O',
-        'P',
-        'Q',
-        'R',
-        'S',
-        'T',
-        'U',
-        'V',
-        'W',
-        'X',
-        'Y',
-        'Z',
-      ];
-      x3 += alph[Math.floor(Math.random() * 25)];
-    }
-    const tracking = x1 + x2 + x3;
-    const response = await this.recolteRepository.findOne({
-      where: {
-        tracking: tracking,
-      },
-    });
-    while (response) {
-      await this.generateRct();
-    }
-    return tracking.toLowerCase();
+  async generateTracking(id) {
+    let code = id.toString();
+    while (code.length < 8) code = '0' + code;
+    return code.toLowerCase();
   }
   //
   async printRecolteManifest(recolteId, res) {

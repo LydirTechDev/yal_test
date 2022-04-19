@@ -37,8 +37,13 @@
                             </tr>
                         </thead>
                         <tbody *ngIf="!isLoading; else spiner">
-                            <tr *ngFor="let pmt of pmtsData; let i=index ">
-                                <td>{{pmt.tracking}}</td>
+                            <tr *ngFor="let pmt of pmtsData; let i=index "  (click)="detailPmt(pmt.tracking)">
+                                    <td>
+                                        <h4 class="hover"><span class="px-3 text-white badge badge-secondary">
+                                                {{pmt.tracking}}
+                                            </span>
+                                        </h4>
+                                    </td>
                                 <!-- <td>{{pmt.nom}}</td> -->
                                 <!-- <td>{{pmt.prenom}}</td> -->
                                 <td>{{pmt.createdAt | date:'dd-MM-YYYY HH:mm:ss'}}</td>
@@ -53,7 +58,7 @@
                                 <th colspan="7" class="text-center">
                                     <div class="text-center">
                                         <p class="m-0 p-0"><i class="ri-error-warning-line customIcone"> </i> Pas
-                                            de colis internes ! </p>
+                                            de pmt ! </p>
                                     </div>
                                 </th>
                             </tr>

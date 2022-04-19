@@ -21,7 +21,6 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RoleGuard } from 'src/auth/guards/role.guard';
 import { Pagination } from 'nestjs-typeorm-paginate';
 import { Recolte } from './entities/recolte.entity';
-import { TypeUserEnum } from 'src/enums/TypeUserEnum';
 @UseGuards(JwtAuthGuard, RoleGuard)
 @Controller('recoltes')
 export class RecoltesController {

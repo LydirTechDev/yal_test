@@ -41,6 +41,8 @@ import { Status } from '../status/entities/status.entity';
 import { User } from '../users/entities/user.entity';
 import { Wilaya } from '../wilayas/entities/wilaya.entity';
 import { Zone } from '../zones/entities/zone.entity';
+import { Facture } from '../facture/entities/facture.entity';
+import { FactureService } from '../facture/facture.service';
 import { ExpiditeurPublic } from '../expiditeur-public/entities/expiditeur-public.entity';
 import { ExpiditeurPublicService } from '../expiditeur-public/expiditeur-public.service';
 import { ServiceClientService } from '../service-client/service-client.service';
@@ -70,6 +72,7 @@ import { RotationsService } from '../rotations/rotations.service';
       Banque,
       Coursier,
       CodeTarif,
+      Facture,
       ExpiditeurPublic,
       Rotation,
     ]),
@@ -97,6 +100,7 @@ import { RotationsService } from '../rotations/rotations.service';
     CoursierService,
     CodeTarifService,
     ExcelService,
+    FactureService,
     ExpiditeurPublicService,
     RotationsService,
     ServiceClientService

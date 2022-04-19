@@ -63,6 +63,7 @@ export class AddOneShippmnetComponent implements OnInit {
        */
       designationProduit: ['', Validators.compose([Validators.required, Validators.minLength(3), Validators.maxLength(50)])],
       prixVente: [0, Validators.compose([Validators.required])],
+      prixEstimer: [1000, Validators.compose([Validators.required])],
       poids: [0, Validators.compose([Validators.required, Validators.min(0), Validators.max(150)])],
       longueur: [0, Validators.compose([Validators.required, Validators.min(0), Validators.max(2)])],
       largeur: [0, Validators.compose([Validators.required, Validators.min(0), Validators.max(2)])],
@@ -206,6 +207,19 @@ export class AddOneShippmnetComponent implements OnInit {
           console.log("🚀 ~ file: add-one-shippmnet.component.ts ~ line 179 ~ AddOneShippmnetComponent ~ createShipment ~ error", error)
         }
       );
+    }
+  }
+  setValuePrixEstimer() {
+    if (this.shippmentForm.get('prixVente').value >= 1000) {
+
+      this.shippmentForm.patchValue({
+        prixEstimer: this.shippmentForm.get('prixVente').value
+      })
+
+    } else {
+      this.shippmentForm.patchValue({
+        prixEstimer: 1000
+      })
     }
   }
 }

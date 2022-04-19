@@ -16,6 +16,9 @@ import { InfoPaiementsClientComponent } from './components/info-paiements-client
 import { ListPaiementsComponent } from './components/list-paiements/list-paiements.component';
 import { PayerCoursierComponent } from './components/payer-coursier/payer-coursier.component';
 import { ListPaiementCoursierComponent } from './components/list-paiement-coursier/list-paiement-coursier.component';
+import { FacturerComponent } from './components/facturer/facturer.component';
+import { ListFactureNonPayerComponent } from './components/facturer/list-facture-non-payer/list-facture-non-payer.component';
+import { ListFacturePayerComponent } from './components/facturer/list-facture-payer/list-facture-payer.component';
 
 @NgModule({
   declarations: [
@@ -28,6 +31,9 @@ import { ListPaiementCoursierComponent } from './components/list-paiement-coursi
     ListPaiementsComponent,
     PayerCoursierComponent,
     ListPaiementCoursierComponent,
+    FacturerComponent,
+    ListFactureNonPayerComponent,
+    ListFacturePayerComponent
   ],
   imports: [
     CommonModule,

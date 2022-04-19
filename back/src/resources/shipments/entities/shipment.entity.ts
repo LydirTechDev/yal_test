@@ -20,6 +20,7 @@ import { StatusShipmentEnum } from 'src/enums/status.shipment.enum';
 import { Pmt } from 'src/resources/pmt/entities/pmt.entity';
 import { Agence } from 'src/resources/agences/entities/agence.entity';
 import { PmtCoursier } from 'src/resources/pmt-coursier/entities/pmt-coursier.entity';
+import { Facture } from 'src/resources/facture/entities/facture.entity';
 import { ExpiditeurPublic } from 'src/resources/expiditeur-public/entities/expiditeur-public.entity';
 
 @Entity()
@@ -77,12 +78,11 @@ export class Shipment {
     nullable: true,
   })
   prixVente: number;
-
   @Column({
     nullable: true,
   })
   prixEstimer: number;
-  
+
   @Column({
     nullable: true,
     type: 'float',
@@ -154,7 +154,6 @@ export class Shipment {
     nullable: false,
   })
   commune: Commune;
-
   @ManyToOne(
     () => ExpiditeurPublic,
     (expiditeurPublic) => expiditeurPublic.shipments,
@@ -213,4 +212,6 @@ export class Shipment {
   })
   @JoinColumn()
   shipmentRelation: Shipment;
+  @ManyToOne(() => Facture, (facture) => facture.shipments, { nullable: true })
+  facture: Facture;
 }

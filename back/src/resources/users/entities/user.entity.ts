@@ -21,6 +21,7 @@ import { Recolte } from 'src/resources/recoltes/entities/recolte.entity';
 import { Pmt } from 'src/resources/pmt/entities/pmt.entity';
 import { Shipment } from 'src/resources/shipments/entities/shipment.entity';
 import { PmtCoursier } from 'src/resources/pmt-coursier/entities/pmt-coursier.entity';
+import { Facture } from 'src/resources/facture/entities/facture.entity';
 
 @Entity('Users')
 export class User {
@@ -105,6 +106,8 @@ export class User {
     (pmtCoursierCreatedBy) => pmtCoursierCreatedBy.createdBy,
   )
   pmtCoursierCreatedBy: PmtCoursier[];
+  @OneToMany(() => Facture, (facture) => facture.createdBy)
+  facture: Facture[];
 
   @BeforeUpdate()
   @BeforeInsert()

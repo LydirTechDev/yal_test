@@ -14,6 +14,7 @@ export class CreateClientSacRetourComponent implements OnInit {
   client: any[] = []
   sacTransfert: string[];
   listeColisARetires: string[] = [];
+  countListeColisARetires= 0;
   count: number = 0;
   formdata: FormGroup;
   clientSelected: FormGroup
@@ -92,6 +93,7 @@ export class CreateClientSacRetourComponent implements OnInit {
   getColiPresARetire(idClient) {
     this.shipmentOpsService.getColiPresARetire(idClient).then(resp => {
       this.listeColisARetires = resp
+      this.countListeColisARetires =resp.length
       console.log(resp)
     })
   }

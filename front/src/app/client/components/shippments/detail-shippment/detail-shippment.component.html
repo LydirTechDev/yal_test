@@ -150,26 +150,47 @@
               </div>
             </div>
 
-            <!-- Prix Produit-->
-            <div class="form-group row mb-3 ">
-              <label class="col-md-3 col-form-label text-right">Prix du produit*:</label>
-              <div class="col-md-9">
-                <div class="input-group">
-                  <input class="form-control" formControlName="prixVente" placeholder="Prix de vante du Produit "
-                    [ngClass]="{'is-invalid': shippmentForm.controls['prixVente'].invalid && (shippmentForm.controls['prixVente'].dirty || shippmentForm.controls['prixVente'].touched),'is-valid': shippmentForm.controls['prixVente'].valid && (shippmentForm.controls['prixVente'].dirty || shippmentForm.controls['prixVente'].touched) }">
-                  <div class="input-group-prepend">
-                    <span class="input-group-text" id="validationTooltipUsernamePrepend">DA</span>
-                  </div>
-                  <div *ngIf="shippmentForm.controls['prixVente'].invalid" class="invalid-feedback">
-                    <span *ngIf="shippmentForm.controls['prixVente'].errors.required">prixVente requie</span>
-                    <span *ngIf="shippmentForm.controls['prixVente'].errors.minlength">longueur minimale 3
-                      characters.</span>
-                    <span *ngIf="shippmentForm.controls['prixVente'].errors.maxlength">longueur maximale 50
-                      characters.</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+    <!-- Prix Produit-->
+    <div class="form-group row mb-3 ">
+      <label class="col-md-3 col-form-label text-right">Prix du produit*:</label>
+      <div class="col-md-9">
+        <div class="input-group">
+          <input class="form-control" formControlName="prixVente" placeholder="Prix de vante du Produit "
+            [ngClass]="{'is-invalid': shippmentForm.controls['prixVente'].invalid && (shippmentForm.controls['prixVente'].dirty || shippmentForm.controls['prixVente'].touched),'is-valid': shippmentForm.controls['prixVente'].valid && (shippmentForm.controls['prixVente'].dirty || shippmentForm.controls['prixVente'].touched) }">
+          <div class="input-group-prepend">
+            <span class="input-group-text" id="validationTooltipUsernamePrepend">DA</span>
+          </div>
+          <div *ngIf="shippmentForm.controls['prixVente'].invalid" class="invalid-feedback">
+            <span *ngIf="shippmentForm.controls['prixVente'].errors.required">prixVente requie</span>
+            <span *ngIf="shippmentForm.controls['prixVente'].errors.minlength">longueur minimale 3
+              characters.</span>
+            <span *ngIf="shippmentForm.controls['prixVente'].errors.maxlength">longueur maximale 50
+              characters.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Prix Estimer-->
+    <div class="form-group row mb-3 ">
+      <label class="col-md-3 col-form-label text-right">Prix estimé*:</label>
+      <div class="col-md-9">
+        <div class="input-group">
+          <input type="number" min="1000" class="form-control" formControlName="prixEstimer"
+            placeholder="Prix de vante du Produit "
+            [ngClass]="{'is-invalid': shippmentForm.controls['prixEstimer'].invalid && (shippmentForm.controls['prixEstimer'].dirty || shippmentForm.controls['prixEstimer'].touched),'is-valid': shippmentForm.controls['prixEstimer'].valid && (shippmentForm.controls['prixEstimer'].dirty || shippmentForm.controls['prixEstimer'].touched) }">
+          <div class="input-group-prepend">
+            <span class="input-group-text" id="validationTooltipUsernamePrepend">DA</span>
+          </div>
+          <div *ngIf="shippmentForm.controls['prixEstimer'].invalid" class="invalid-feedback">
+            <span *ngIf="shippmentForm.controls['prixEstimer'].errors.required">prix de vente requis</span>
+            <span *ngIf="shippmentForm.controls['prixEstimer'].errors.minlength">longueur minimale 3
+              characters.</span>
+            <span *ngIf="shippmentForm.controls['prixEstimer'].errors.maxlength">longueur maximale 50
+              characters.</span>
+          </div>
+        </div>
+      </div>
+    </div>
           </div>
 
           <div class="col-6 border-left pt-3 mb-2">

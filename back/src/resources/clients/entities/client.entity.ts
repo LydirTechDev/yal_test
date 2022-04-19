@@ -3,6 +3,7 @@ import { JourSemaineEnum } from 'src/enums/JourSemaineEnum';
 import { Agence } from 'src/resources/agences/entities/agence.entity';
 import { ClientsTarif } from 'src/resources/clients-tarifs/entities/clients-tarif.entity';
 import { Commune } from 'src/resources/communes/entities/commune.entity';
+import { Facture } from 'src/resources/facture/entities/facture.entity';
 import { Pmt } from 'src/resources/pmt/entities/pmt.entity';
 import { User } from 'src/resources/users/entities/user.entity';
 import {
@@ -136,4 +137,6 @@ export class Client {
   caisseAgence: Agence;
   @OneToMany(() => Pmt, (pmts) => pmts.client)
   pmts: Pmt[];
+  @OneToMany(() => Facture, (facture) => facture.client)
+  facture: Facture[];
 }

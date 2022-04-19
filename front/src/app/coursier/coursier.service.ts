@@ -81,4 +81,42 @@ export class CoursierService {
       `${environment.apiV1}shipments/getStatistiqueShipmentCoursier`
     );
   }
+
+  getAllPaginatePmt() {
+    return this.http.get<Pagination<any>>(
+      `${environment.apiV1}pmtCoursier/find-all-paginate-pmt-coursier`
+    );
+  }
+
+
+  funcPaginatePmt(
+    link?: string,
+    page?: number,
+    search?: string
+  ): Observable<Pagination<any>> {
+    if (page && search == undefined) {
+      link = `${environment.apiV1}pmtCoursier/find-all-paginate-pmt-coursier?page=${page}`;
+      return this.http.get<Pagination<any>>(link)
+    }
+    if (page && search) {
+      link = `${environment.apiV1}pmtCoursier/find-all-paginate-pmt-coursier?searchPmtTerm=${search}&page=${page}`;
+      return this.http.get<Pagination<any>>(link)
+    }
+    if (search) {
+      return this.http.get<Pagination<any>>(`${link}&searchPmtTerm=${search}`);
+    }
+    return this.http.get<Pagination<any>>(link);
+  }
+
+  searchPmt(searchPmtTerm: string) {
+    return this.http.get<Pagination<any>>(
+      `${environment.apiV1}pmtCoursier/find-all-paginate-pmt-coursier?searchPmtTerm=${searchPmtTerm}`
+    );
+  }
+
+  getPaiementDetailsCoursier(tracking) {
+    return this.http.get<any>(
+      `${environment.apiV1}pmtCoursier/getPaiementDetailsCoursier/${tracking}`
+    );
+  }
 }

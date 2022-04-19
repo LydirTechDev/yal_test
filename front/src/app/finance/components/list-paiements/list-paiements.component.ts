@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import {
   IPaginationLinks,
   IPaginationMeta,
@@ -21,7 +22,8 @@ export class ListPaiementsComponent implements OnInit {
 
   constructor(
     private readonly financeService: FinanceService,
-    private readonly sweetalertService: SweetAlertService
+    private readonly sweetalertService: SweetAlertService,
+    private router: Router,
   ) {
     this.isLoading = false;
     this._pmtsErrorAndInitialis();
@@ -141,5 +143,9 @@ export class ListPaiementsComponent implements OnInit {
       last: '',
     };
     this.isLoading = false;
+  }
+
+  detailPmt(tracking) {
+    this.router.navigateByUrl(`client/paiement/${tracking}`)
   }
 }

@@ -1,9 +1,9 @@
-<div id="panel" class="col-12 col-md-8  mx-auto text-center" style="background:transparent;">
-    <form [formGroup]="formdata">
+<div id="panel" class="col-12  col-md-10 col-lg-8  mx-auto text-center" style="background:transparent;">
+    <form [formGroup]="formdata" class="col-12">
         <h4 class="labtrack "><i class="bi bi-collection "></i>Recever les récoltes d'argents</h4>
-        <div class="form-groupe col-10 mx-auto d-flex m-0 ">
+        <div class="form-groupe col-12 col-md-10 mx-auto d-flex m-0 ">
             <input mdbInput type="text"  formControlName="rctTracking" class="form-control mr-1 shadow mt-1"
-                placeholder="rct-111AAA" autofocus>
+                placeholder="rec-11111111" autofocus>
             <input mdbBtn type="submit"  color="primary" class="btn btn-info shadow px-4 mx-1 waves-light"
                 (click)="recieveRecoltesCheck()" value="Ajouter">
         </div>

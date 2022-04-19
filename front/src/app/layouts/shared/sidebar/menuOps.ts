@@ -159,13 +159,13 @@ export const MENUOPS: MenuItem[] = [
       {
         id:26 ,
         label: 'Colis à livrer',
-        link: 'shipment-livraison',
+        link: '/operations/shipment-livraison',
         parentId: 25,
       },
       {
         id: 27,
         label: 'Liste des échecs',
-        link: 'shipment-echec-livraison',
+        link: '/operations/shipment-echec-livraison',
         parentId: 25,
       }],
   },

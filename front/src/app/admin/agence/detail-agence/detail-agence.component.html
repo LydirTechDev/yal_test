@@ -119,7 +119,7 @@
       <label class="col-md-3 col-form-label">Adresse*:</label>
       <div class="col-md-9 text-left">
         <input class="form-control" formControlName="adresse" placeholder="agenceForm adresse ex: wilaya, commune, rue n°"
-          type="text" mask="00-00-00-00-00"
+          type="text"
           [ngClass]="{'is-invalid': agenceForm.controls['adresse'].invalid && (agenceForm.controls['adresse'].dirty || agenceForm.controls['adresse'].touched),'is-valid': agenceForm.controls['adresse'].valid && (agenceForm.controls['adresse'].dirty || agenceForm.controls['adresse'].touched) }">
         <div *ngIf="agenceForm.controls['adresse'].invalid" class="invalid-feedback">
           <span *ngIf="agenceForm.controls['adresse'].errors.required">Adresse requis</span>

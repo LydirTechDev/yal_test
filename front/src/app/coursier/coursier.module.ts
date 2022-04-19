@@ -7,9 +7,11 @@ import { ReceiveShipmentsComponent } from './components/receive-shipments/receiv
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ListShipmentsComponent } from './components/list-shipments/list-shipments.component';
 import { ListEchecsComponent } from './components/list-echecs/list-echecs.component';
+import { MesPaiementsComponent } from './components/mes-paiements/mes-paiements.component';
+import { DetailPaiementCoursierComponent } from './components/detail-paiement-coursier/detail-paiement-coursier.component';
 
 @NgModule({
-  declarations: [DashboardComponent, ReceiveShipmentsComponent, ListShipmentsComponent, ListEchecsComponent],
+  declarations: [DashboardComponent, ReceiveShipmentsComponent, ListShipmentsComponent, ListEchecsComponent, MesPaiementsComponent, DetailPaiementCoursierComponent],
   imports: [
     CommonModule,
     FormsModule,

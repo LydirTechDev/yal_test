@@ -35,7 +35,7 @@
                                 <th>Agence</th>
                                 <th>Date création</th>
                                 <th>Nombre de colis</th>
-                                <th>Détail</th>
+                                <th>Imprimer</th>
                             </tr>
                         </thead>
                         <tbody *ngIf="!isLoading; else spiner">
@@ -67,8 +67,6 @@
                                 <td class="py-0">
                                     <button mdbBtn color="mdb-color" class=" btn-sm btn " (click)="print(recolte.id)"
                                         mdbWavesEffect><i class="fas fa-print fa-lg"></i></button>
-                                    <button mdbBtn class=" btn-sm btn btn-primary" (click)="print(recolte.id)"
-                                        mdbWavesEffect><i class=" fas fa-info-circle fa-lg"></i></button>
                                 </td>
                             </tr>
                             <tr *ngIf="recolteData.length <= 0">

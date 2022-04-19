@@ -29,6 +29,7 @@ import { RecoltesModule } from './resources/recoltes/recoltes.module';
 import configuration from './config/configuration';
 import { PmtModule } from './resources/pmt/pmt.module';
 import { PmtCoursierModule } from './resources/pmt-coursier/pmt-coursier.module';
+import { FactureModule } from './resources/facture/facture.module';
 import { ServiceClientModule } from './resources/service-client/service-client.module';
 import { ExpiditeurPublicModule } from './resources/expiditeur-public/expiditeur-public.module';
 
@@ -74,6 +75,7 @@ import { ExpiditeurPublicModule } from './resources/expiditeur-public/expiditeur
     RecoltesModule,
     PmtModule,
     PmtCoursierModule,
+    FactureModule,
     ServiceClientModule,
     ExpiditeurPublicModule,
   ],

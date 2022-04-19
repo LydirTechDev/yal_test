@@ -18,7 +18,10 @@ export class Pmt {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({
+    unique: true,
+    nullable: true,
+  })
   tracking: string;
 
   // ----------------------------- create -----------------------------

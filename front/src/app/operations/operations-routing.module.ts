@@ -124,7 +124,6 @@ const routes: Routes = [
   {path: 'list-shipments',
   component: ListShipmentsComponent,
   },
-//
   {
     path: 'shipment-livraison',
     component: ListeShipmentLivraisonComponent,

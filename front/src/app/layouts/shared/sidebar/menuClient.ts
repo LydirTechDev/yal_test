@@ -29,16 +29,11 @@ export const MENUCLIENT: MenuItem[] = [
         icon: 'fas fa-shipping-fast',
         link: '/client/colis/tracabilite'
     },
-    // {
-    //     id: 5,
-    //     label: 'MENUITEMS.RECOVERIES.TEXT',
-    //     icon: 'ri-dashboard-line',
-    //     link: '/app/client/recouvrements'
-    // },
-    // {
-    //     id: 6,
-    //     label: 'MENUITEMS.RETURNS.TEXT',
-    //     icon: 'ri-dashboard-line',
-    //     link: '/app/client/retours'
-    // },
+    {
+        id: 5,
+        label: 'Mes paiements',
+        icon: 'fas fa-cash-register',
+        link: '/client/paiementclient'
+    },
+
 ];

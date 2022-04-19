@@ -31,11 +31,12 @@
         <hr class="mx-auto">
     </div>
     <div class=" text-dark">
-        <label class='m-3 p-2 bg-info text-white' *ngFor="let i of selected">{{i}}<i
-                class="fas fa-times  mx-2 text-danger" (click)="deletselected(i)"></i></label>
+        <label class='m-3 p-2 bg-info text-white' *ngFor="let i of listeColisRetourVersAgence">{{i}}
+            <!-- <i class="fas fa-times  mx-2 text-danger" (click)="deletselected(i)"></i> -->
+            </label>
     </div>
     <div class="mx-auto text-center mt-5" *ngIf="selected.length > 0">
-        <button type="submit" class="btn btn-success shadow btn-lg  px-4 mx-1" (click)="receptPackageSlip()">Vider le
+        <button type="submit" class="btn  btn-success shadow btn-lg  px-4 mx-1" (click)="receptPackageSlip()">Vider le
             sac
         </button>
     </div>

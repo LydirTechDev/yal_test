@@ -211,10 +211,6 @@ export class AuthService {
         this.router.navigate(['/finance']);
         isRedirected = true;
         break;
-      case '2363594520':
-        this.router.navigate(['/service-client']);
-        isRedirected = true;
-        break;
       default:
         break;
     }

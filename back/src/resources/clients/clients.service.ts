@@ -12,10 +12,12 @@ import {
 } from 'nestjs-typeorm-paginate';
 import { ExcelService } from 'src/core/templates/excel/excel.service';
 import { PdfService } from 'src/core/templates/pdf.service';
+import { StatusShipmentEnum } from 'src/enums/status.shipment.enum';
 import { TypeUserEnum } from 'src/enums/TypeUserEnum';
 import {
   EntityNotFoundError,
   getConnection,
+  getManager,
   ILike,
   Repository,
   UpdateResult,
@@ -133,7 +135,17 @@ export class ClientsService {
   }
   async infoClient(id: number): Promise<Client> {
     return await this.clientRepository.findOneOrFail(id, {
-      relations: ['user' ,'communeDepart', 'communeDepart.wilaya'],
+      relations: ['user', 'communeDepart', 'communeDepart.wilaya'],
+    });
+  }
+  async infoClientByUserId(id: number): Promise<Client> {
+    return await this.clientRepository.findOneOrFail({
+      relations: ['user', 'communeDepart', 'communeDepart.wilaya'],
+      where: {
+        user: {
+          id: id,
+        },
+      },
     });
   }
   async findUserInformationsOfClient(idClient: number) {
@@ -357,7 +369,7 @@ export class ClientsService {
   ): Promise<UpdateResult> {
     let isActif: boolean;
     let updateUserDto: UpdateUserDto;
-    console.log("etsttttuus", updateClientDto.isActive);
+    console.log('etsttttuus', updateClientDto.isActive);
     if (updateClientDto.isActive === 'Inactif') {
       isActif = false;
     } else if (updateClientDto.isActive === 'Actif') {
@@ -490,5 +502,42 @@ export class ClientsService {
   async export(res: any, term: string) {
     const data = await this.getClientToExportBySearch(term);
     this.excelService.exportToExcel(res, term, data);
+  }
+
+  async getClientsHaveClassicShipmentInInterval(
+    dateDebut,
+    dateFin,
+    userId,
+  ): Promise<any> {
+    const date = new Date(dateFin);
+    date.setHours(23, 59, 59);
+    dateFin = date.toISOString();
+    const agenceId = (await this.userService.findOne(userId)).employe.agence.id;
+
+    const clients = await await getManager()
+      .createQueryBuilder(Shipment, 'shipment')
+      .leftJoinAndSelect('shipment.createdBy', 'createdBy')
+      .leftJoinAndSelect('createdBy.client', 'client')
+      .leftJoinAndSelect('shipment.status', 'status')
+      .leftJoinAndSelect('shipment.commune', 'commune')
+      .leftJoinAndSelect('commune.wilaya', 'wilaya')
+      .leftJoin('status.user', 'user')
+      .leftJoinAndSelect('shipment.service', 'service')
+      .where(
+        `(service.nom='Classique Entreprise' or service.nom ='Classique Divers') and client.caisseAgenceId=${agenceId}`,
+      )
+      .andWhere(
+        `status.libelle = '${StatusShipmentEnum.expidie}' and shipment.facture IsNull`,
+      )
+      .andWhere('status.createdAt >= :dateDebut', { dateDebut: `${dateDebut}` })
+      .andWhere('status.createdAt <= :dateFin', { dateFin: `${dateFin}` })
+      .select('client')
+      .distinctOn(['client.id'])
+      .getRawMany();
+    if (clients) {
+      return clients;
+    } else {
+      throw new EntityNotFoundError(Client, `n'existe pas`);
+    }
   }
 }
