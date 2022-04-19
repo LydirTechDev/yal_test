@@ -47,6 +47,8 @@ import { Pmt } from '../pmt/entities/pmt.entity';
 import { CodeTarif } from '../code-tarif/entities/code-tarif.entity';
 import { ExpiditeurPublicService } from '../expiditeur-public/expiditeur-public.service';
 import { ExpiditeurPublic } from '../expiditeur-public/entities/expiditeur-public.entity';
+import { FactureService } from '../facture/facture.service';
+import { Facture } from '../facture/entities/facture.entity';
 
 @Module({
   imports: [
@@ -72,6 +74,7 @@ import { ExpiditeurPublic } from '../expiditeur-public/entities/expiditeur-publi
       PmtCoursier,
       CodeTarif,
       ExpiditeurPublic,
+      Facture,
     ]),
   ],
   controllers: [ServiceClientController],
@@ -100,32 +103,8 @@ import { ExpiditeurPublic } from '../expiditeur-public/entities/expiditeur-publi
     PmtCoursierService,
     CodeTarifService,
     ExpiditeurPublicService,
+    FactureService,
   ],
-  exports: [
-    ServiceClientService,
-    ServicesService,
-    UsersService,
-    RotationsService,
-    WilayasService,
-    ZonesService,
-    ExcelService,
-    EmployesService,
-    AgencesService,
-    BanquesService,
-    FonctionsService,
-    CommunesService,
-    DepartementsService,
-    PoidsService,
-    CodeTarifsZonesService,
-    ShipmentsService,
-    StatusService,
-    ClientsService,
-    ClientsTarifsService,
-    CoursierService,
-    PdfService,
-    PmtCoursierService,
-    CodeTarifService,
-    ExpiditeurPublicService,
-  ],
+  exports: [ServiceClientService],
 })
 export class ServiceClientModule {}
