@@ -126,7 +126,7 @@
                 <div class="form-group row mb-1 text-right">
                     <label class="col-md-3 col-form-label">N° pièce d'identité*:</label>
                     <div class="col-md-8 text-left">
-                        <input class="form-control" formControlName="numIdentite" placeholder="000000000" type="text"
+                        <input class="form-control" formControlName="numIdentite" placeholder="000000000" type="text" mask="000000000"
                             [ngClass]="{'is-invalid': classiqueShippmentForm.controls['numIdentite'].invalid && (classiqueShippmentForm.controls['numIdentite'].dirty || classiqueShippmentForm.controls['numIdentite'].touched),'is-valid': classiqueShippmentForm.controls['numIdentite'].valid && (classiqueShippmentForm.controls['numIdentite'].dirty || classiqueShippmentForm.controls['numIdentite'].touched) }">
                         <div *ngIf="classiqueShippmentForm.controls['numIdentite'].invalid" class="invalid-feedback">
                             <span *ngIf="classiqueShippmentForm.controls['numIdentite'].errors.required">Téléphone
@@ -455,7 +455,7 @@
                 <i class="ri-check-line align-middle me-2"></i>
                 Anuuler
             </button>
-            <button class="btn btn-md btn-success waves-effect waves-light" (click)="createShipment()">
+            <button class="btn btn-md btn-success waves-effect waves-light" (click)="Confirm()">
                 <!-- [disabled]="!this.classiqueShippmentForm.valid" -->
                 <i class="ri-check-line align-middle me-2"></i>
                 Valider

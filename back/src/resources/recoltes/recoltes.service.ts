@@ -268,7 +268,7 @@ export class RecoltesService {
       throw new NotFoundException();
     }
   }
-  
+
   async createRecolteDesk(user, resp) {
     const dateRecolte = new Date();
     const listOfRecolte: string[] = [];
@@ -944,8 +944,8 @@ export class RecoltesService {
     });
     if (recolte) {
       let userInfo;
-      const listShipmentOfRecolte =
-        await this.shipmentService.getShipmentsOfRecolte(recolte.id);
+      const listShipmentOfRecolte = await this.shipmentService.getShipmentsOfRecolte(recolte.id);
+      console.log("🚀 ~ file: recoltes.service.ts ~ line 948 ~ RecoltesService ~ printRecolteManifest ~ listShipmentOfRecolte", listShipmentOfRecolte)
 
       if (recolte.recolteCoursier == null) {
         userInfo = await this.employeService.findOneByUserId(
@@ -958,9 +958,15 @@ export class RecoltesService {
       }
       for await (const shipment of listShipmentOfRecolte) {
         let cost = 0;
-        const tarifLivraison = await this.shipmentService.calculTarifslivraison(
-          shipment.tracking,
-        );
+        let tarifLivraison;
+        if (shipment.service.nom.toLowerCase() == 'classique divers') {
+          tarifLivraison = 0;
+        } else {
+          tarifLivraison = await this.shipmentService.calculTarifslivraison(
+            shipment.tracking,
+          );
+        }
+
         if (shipment.livraisonGratuite) {
           cost += shipment.prixVente;
           montant += cost;

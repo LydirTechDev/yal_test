@@ -11,6 +11,7 @@ import { UiSwitchModule } from 'ngx-ui-switch';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { NgxMaskModule } from 'ngx-mask';
+import { CreateRecolteCsComponent } from './create-recolte-desk/create-recolte-cs.component';
 
 @NgModule({
   declarations: [
@@ -18,6 +19,7 @@ import { NgxMaskModule } from 'ngx-mask';
     CreateClassiqueShipmentComponent,
     CreateCahierDeChargeShipmentComponent,
     CreateSoumissionShipmentComponent,
+    CreateRecolteCsComponent,
   ],
   imports: [
     CommonModule,

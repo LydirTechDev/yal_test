@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { SweetAlertService } from 'src/app/core/services/sweet-alert.service';
 import { ServiceClientService } from '../service-client.service';
 
 @Component({
@@ -18,6 +19,7 @@ export class CreateClassiqueShipmentComponent implements OnInit {
   constructor(
     private readonly formBuilder: FormBuilder,
     private readonly shippmentsServiceClient: ServiceClientService,
+    private readonly sweetAlertService: SweetAlertService,
     private router: Router
   ) {}
 
@@ -162,29 +164,6 @@ export class CreateClassiqueShipmentComponent implements OnInit {
       this.classiqueShippmentForm.controls['prixEstimer'].setValue(0);
     }
   }
-  onChangeShippmentTypeDesk(value: boolean) {
-    this.classiqueShippmentForm.controls['communeId'].reset();
-    this.classiqueShippmentForm.controls['wilayaId'].reset();
-    if (value === true) {
-      this.classiqueShippmentForm.controls['livraisonDomicile'].setValue(false);
-    } else {
-      this.classiqueShippmentForm.controls['livraisonDomicile'].setValue(true);
-    }
-    this.getEstimateTarif();
-  }
-
-  onChangeShippmentTypeHome(value: boolean) {
-    this.classiqueShippmentForm.controls['communeId'].reset();
-    this.classiqueShippmentForm.controls['wilayaId'].reset();
-    if (value === true) {
-      this.classiqueShippmentForm.controls['livraisonStopDesck'].setValue(
-        false
-      );
-    } else {
-      this.classiqueShippmentForm.controls['livraisonStopDesck'].setValue(true);
-    }
-    this.getEstimateTarif();
-  }
 
   onChangeWilaya() {
     this.classiqueShippmentForm.controls['communeId'].reset();
@@ -210,39 +189,22 @@ export class CreateClassiqueShipmentComponent implements OnInit {
       this.shippmentsServiceClient
         .getEstimateTarif(this.classiqueShippmentForm.value)
         .subscribe((resp) => {
-          console.log(
-            '🚀 ~ file: create-classique-shipment.component.ts ~ line 201 ~ CreateClassiqueShipmentComponent ~ ).subscribe ~ resp',
-            resp
-          );
           this.estimateTarif = resp;
         });
-      console.log(
-        '🚀 ~ file: create-classique-shipment.component.ts ~ line 202 ~ CreateClassiqueShipmentComponent ~ this.classiqueShippmentForm.value',
-        this.classiqueShippmentForm.value
-      );
     }
   }
 
   createShipment() {
-    console.log(
-      '🚀~ file: create-classique-shipment.component.ts ~ line 190 ~ CreateClassiqueShipmentComponent ~ createShipment ~ this.classiqueShippmentForm.value',
-      this.classiqueShippmentForm.value
-    );
-    console.log(
-      '🚀~ file: create-classique-shipment.component.ts ~ line 190 ~ CreateClassiqueShipmentComponent ~ createShipment ~ this.classiqueShippmentForm.value',
-      this.classiqueShippmentForm.valid
-    );
     if (this.classiqueShippmentForm.valid) {
-      console.log("🚀~ file: create-classique-shipment.component.ts ~ line 236 ~ CreateClassiqueShipmentComponent ~ createShipment ~ this.classiqueShippmentForm.valid", this.classiqueShippmentForm.valid)
-      console.log("🚀~ file: create-classique-shipment.component.ts ~ line 236 ~ CreateClassiqueShipmentComponent ~ createShipment ~ this.classiqueShippmentForm.valid", this.classiqueShippmentForm.valid)
       this.shippmentsServiceClient
         .createShipmentClassique(this.classiqueShippmentForm.value)
         .subscribe(
           (data) => {
-            // this.classiqueShippmentForm.reset();
+            this.classiqueShippmentForm.reset();
+            this.estimateTarif = null;
             this.openFile(data, 'application/pdf');
             this.estimateTarif = null;
-            // this.router.navigate(['service-client/classique']);
+            this.router.navigate(['service-client/classique']);
           },
           (error) => {
             console.log(
@@ -253,6 +215,21 @@ export class CreateClassiqueShipmentComponent implements OnInit {
         );
     }
   }
+
+  Confirm() {
+    if (this.classiqueShippmentForm.valid) {
+      const alertTitle = " Confirmer l'envoi et la réception du montant";
+      const alertMessage = `${this.estimateTarif}  DA`;
+      this.sweetAlertService
+        .confirmStandard(alertTitle, alertMessage, '', '', null)
+        .then((result) => {
+          if (result.isConfirmed) {
+            this.createShipment();
+          }
+        });
+    }
+  }
+
   openFile(data: any, type: string) {
     let blob = new Blob([data], { type: type });
     let url = window.URL.createObjectURL(blob);

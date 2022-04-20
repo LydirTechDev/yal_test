@@ -445,10 +445,15 @@ export class ShipmentsService {
     return listShipments;
   }
   async getTrackingCoursierReceive(user: User) {
+    console.log(
+      '🚀 ~ file: shipments.service.ts ~ line 448 ~ ShipmentsService ~ getTrackingCoursierReceive ~ user',
+      user,
+    );
     const listShipmentsReseive: string[] = [];
     const shipments = await this.shipmentRepository
       .createQueryBuilder('shipment')
       .leftJoinAndSelect('shipment.status', 'status')
+      .leftJoinAndSelect('shipment.service', 'service')
       .where(
         `status.libelle = '${StatusShipmentEnum.affectedToCoursier}' and 
     status.userAffectId = ${user.id}`,
@@ -461,17 +466,31 @@ export class ShipmentsService {
           shipment,
           user,
         );
-      const client = await this.clientService.findClientByShipment(shipment);
-      console.log(
-        '🚀 ~ file: shipments.service.ts ~ line 143 ~ ShipmentsService ~ forawait ~ client',
-        client,
-      );
-      if (
-        shipmentStatus[shipmentStatus.length - 1].libelle ==
-          StatusShipmentEnum.affectedToCoursier &&
-        shipmentStatus.length <= client.nbTentative
-      ) {
-        listShipmentsReseive.push(shipment.tracking);
+      if (shipment.service.nom.toLowerCase() == 'classique divers') {
+        console.log(
+          '🚀 ~ file: shipments.service.ts ~ line 469 ~ ShipmentsService ~ forawait ~ shipment.service.nom',
+          shipment.service.nom,
+        );
+        if (
+          shipmentStatus[shipmentStatus.length - 1].libelle ==
+            StatusShipmentEnum.affectedToCoursier &&
+          shipmentStatus.length <= 3
+        ) {
+          listShipmentsReseive.push(shipment.tracking);
+        }
+      } else {
+        const client = await this.clientService.findClientByShipment(shipment);
+        console.log(
+          '🚀 ~ file: shipments.service.ts ~ line 143 ~ ShipmentsService ~ forawait ~ client',
+          client,
+        );
+        if (
+          shipmentStatus[shipmentStatus.length - 1].libelle ==
+            StatusShipmentEnum.affectedToCoursier &&
+          shipmentStatus.length <= client.nbTentative
+        ) {
+          listShipmentsReseive.push(shipment.tracking);
+        }
       }
     }
     return listShipmentsReseive;
@@ -1133,6 +1152,10 @@ export class ShipmentsService {
         shipment.recolteId is null`,
       )
       .getRawMany();
+    console.log(
+      '🚀 ~ file: shipments.service.ts ~ line 1155 ~ ShipmentsService ~ getRecoltesOfCoursier ~ shipmentsCoursier',
+      shipmentsCoursier,
+    );
     for (const shipment of shipmentsCoursier) {
       const statusShipment = await this.statusService.getShipmentStatusById(
         shipment.shipment_id,
@@ -1142,9 +1165,15 @@ export class ShipmentsService {
         StatusShipmentEnum.pasPres
       ) {
         let cost = 0;
-        const tarifLivraison = await this.calculTarifslivraison(
-          shipment.shipment_tracking,
-        );
+        let tarifLivraison;
+        if (shipment.service_nom.toLowerCase() == 'classique divers') {
+          tarifLivraison = 0;
+        } else {
+          tarifLivraison = await this.calculTarifslivraison(
+            shipment.shipment_tracking,
+          );
+        }
+
         if (shipment.shipment_livraisonGratuite) {
           cost += shipment.shipment_prixVente;
           montant += cost;
@@ -1169,9 +1198,11 @@ export class ShipmentsService {
     const shipments = await this.findShipmentLivreDesk(user);
     for await (const shipment of shipments) {
       let cost = 0;
+
       const tarifLivraison = await this.calculTarifslivraison(
         shipment.shipment_tracking,
       );
+
       if (shipment.shipment_livraisonGratuite) {
         cost += shipment.shipment_prixVente;
         montant += cost;
@@ -1237,7 +1268,7 @@ export class ShipmentsService {
   }
   async getShipmentsOfRecolte(id: number) {
     const listShipmentOfRecolte = await this.shipmentRepository.find({
-      relations: ['recolte'],
+      relations: ['recolte', 'service'],
       where: {
         recolte: {
           id: id,
@@ -1880,6 +1911,7 @@ export class ShipmentsService {
       .getMany();
     return shipments;
   }
+
   async getStatistiqueShipmentCoursier(user) {
     const statistique = {
       total: 0,
@@ -1888,22 +1920,29 @@ export class ShipmentsService {
       echange: 0,
       enAttente: 0,
       montant: 0,
+      gain: 0,
     };
     const shipmentsOfCoursier = await this.shipmentRepository
       .createQueryBuilder('shipment')
       .leftJoinAndSelect('shipment.status', 'status')
+      .leftJoinAndSelect('shipment.service', 'service')
       .leftJoinAndSelect('shipment.shipmentRelation', 'shipmentRelation')
       .where(
-        `
-      status.libelle = '${StatusShipmentEnum.affectedToCoursier}' and 
+        `status.libelle = '${StatusShipmentEnum.affectedToCoursier}' and 
           status.userAffectId = ${user.id}`,
       )
       .getMany();
+    const freelanceInfo =
+      await this.coursierService.findInformationOfCoursierByUserId(user.id);
     for await (const shipment of shipmentsOfCoursier) {
       const status = await this.statusService.getShipmentStatusById(
         shipment.id,
       );
-      console.log(statistique);
+      console.log(
+        '🚀 ~ file: shipments.service.ts ~ line 1937 ~ ShipmentsService ~ forawait ~ shipment',
+        status[status.length - 1].libelle,
+      );
+      // const gainParShipment = await this.client
       switch (status[status.length - 1].libelle) {
         case StatusShipmentEnum.affectedToCoursier:
           statistique.total += 1;
@@ -1922,25 +1961,39 @@ export class ShipmentsService {
         case StatusShipmentEnum.pasPres:
           // statistique.total += 1;
           if (
+            shipment.shipmentRelation != null &&
             shipment.shipmentRelation.lastStatus == StatusShipmentEnum.echange
           ) {
             statistique.echange += 1;
             statistique.total += 1;
           }
           statistique.livre += 1;
-          const tarifLivraison = await this.calculTarifslivraison(
-            shipment.tracking,
+          console.log(
+            '🚀 ~ file: shipments.service.ts ~ line 1968 ~ ShipmentsService ~ forawait ~ statistique',
+            shipment,
           );
-
-          if (shipment.livraisonGratuite) {
-            const cost = shipment.prixVente;
-            statistique.montant += cost;
+          if (shipment.service.nom.toLowerCase() == 'classique divers') {
           } else {
-            const cost = tarifLivraison + shipment.prixVente;
-            statistique.montant += cost;
+            const tarifLivraison = await this.calculTarifslivraison(
+              shipment.tracking,
+            );
+
+            if (shipment.livraisonGratuite) {
+              const cost = shipment.prixVente;
+              statistique.montant += cost;
+            } else {
+              const cost = tarifLivraison + shipment.prixVente;
+              statistique.montant += cost;
+            }
           }
           //
           break;
+        case StatusShipmentEnum.preRecolte:
+          if (!shipment.payer) {
+            statistique.gain += freelanceInfo.montantLivraison;
+          }
+          break;
+        //
         case StatusShipmentEnum.tentativeEchoue:
           statistique.total += 1;
           //
@@ -1958,6 +2011,10 @@ export class ShipmentsService {
     return statistique;
   }
   //
+  getRecoltesCsInformation(user) {
+    let montant = 0;
+  }
+
   async getStatistiqueClient(user) {
     const statusAller = [
       StatusShipmentEnum.enPreparation,

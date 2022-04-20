@@ -26,7 +26,10 @@ export class UsersComponent implements OnInit {
     236429359: { text: 'operations' },
     42659985: { text: 'coursier' },
     963734: { text: 'admin' },
-    548965156: { text: 'finance' }
+    548965156: { text: 'Caissier central' },
+    1548965156: { text: 'Caissier regional' },
+    2548965156: { text: 'Caissier agence' },
+    2363594520: { text: 'Service client' },
   };
 
   constructor(
@@ -82,14 +85,16 @@ export class UsersComponent implements OnInit {
   funcPaginate(link: string, params?: number) {
     this.isLoading = true;
     setTimeout(() => {
-      this.usersService.funcPaginate(link, params, this.searchUserTerm).subscribe(
-        (response) => {
-          this._usersResponse(response);
-        },
-        (error) => {
-          this._usersErrorAndInitialis(error);
-        }
-      );
+      this.usersService
+        .funcPaginate(link, params, this.searchUserTerm)
+        .subscribe(
+          (response) => {
+            this._usersResponse(response);
+          },
+          (error) => {
+            this._usersErrorAndInitialis(error);
+          }
+        );
     }, 330);
   }
 
@@ -124,7 +129,7 @@ export class UsersComponent implements OnInit {
       const alertTitle = 'Confirmation des modifications';
       const alertMessage = 'voulez vous activer cet utilisateur!';
       this.sweetAlertService
-        .confirmStandard(alertTitle, alertMessage,'','',null)
+        .confirmStandard(alertTitle, alertMessage, '', '', null)
         .then((result) => {
           if (result.isConfirmed) {
             this.usersService.updateActvivityUser(id, req).subscribe(
@@ -143,11 +148,11 @@ export class UsersComponent implements OnInit {
             if (searchUserTerm) {
               this.userData = [];
               this.getAllUsers();
-              this.funcPaginate('', params)
+              this.funcPaginate('', params);
             } else {
               this.userData = [];
               this.getAllUsers();
-              this.funcPaginate('', params)
+              this.funcPaginate('', params);
             }
           }
         });
@@ -155,7 +160,7 @@ export class UsersComponent implements OnInit {
       const alertTitle = 'Confirmation des modifications';
       const alertMessage = 'voulez vous désactiver cet utilisateur!';
       this.sweetAlertService
-        .confirmStandard(alertTitle, alertMessage,'','',null)
+        .confirmStandard(alertTitle, alertMessage, '', '', null)
         .then((result) => {
           if (result.isConfirmed) {
             this.usersService.updateActvivityUser(id, req).subscribe(
@@ -174,11 +179,11 @@ export class UsersComponent implements OnInit {
             if (searchUserTerm) {
               this.userData = [];
               this.getAllUsers();
-              this.funcPaginate('', params)
+              this.funcPaginate('', params);
             } else {
               this.userData = [];
               this.getAllUsers();
-              this.funcPaginate('', params)
+              this.funcPaginate('', params);
             }
           }
         });

@@ -1,14 +1,14 @@
 <div class="row mb-3 col-12 align-center text-center d-flex justify-content-between">
   <form [formGroup]="coursierForm" class="row col-12" *ngIf="!coursierLoaded; else autreCoursier">
-      <h4 class="labtrack mt-1 mx-2 "><i class="bi bi-collection "></i>Payer le coursier :</h4>
-      <div class="col-3">
-        <ng-select formControlName="coursierSelected" placeholder=" Selectionner un coursier" [clearable]="false"
-          [readonly]="coursierLoaded" (change)="getColisLivrerByCoursierId($event)" appendTo="body">
-          <ng-option *ngFor="let coursier of coursierData" [value]="coursier">
-            <span class="text-uppercase">{{coursier.nom}} {{coursier.prenom}}</span>
-          </ng-option>
-        </ng-select>
-      </div>
+    <h4 class="labtrack mt-1 mx-2 "><i class="bi bi-collection "></i>Payer le coursier :</h4>
+    <div class="col-3">
+      <ng-select formControlName="coursierSelected" placeholder=" Selectionner un coursier" [clearable]="false"
+        [readonly]="coursierLoaded" (change)="getColisLivrerByCoursierId($event)" appendTo="body">
+        <ng-option *ngFor="let coursier of coursierData" [value]="coursier">
+          <span class="text-uppercase">{{coursier.nom}} {{coursier.prenom}}</span>
+        </ng-option>
+      </ng-select>
+    </div>
   </form>
 
   <ng-template #autreCoursier>
@@ -38,10 +38,10 @@
   <tbody>
     <tr *ngFor="let colis of listColis">
       <td><span class="bg-light py-2 px-3 rounded text-dark font-weight-bold">{{colis.shipment_tracking}}</span>
-      <!-- <td>{{colis.service_nom}}</td> -->
-      <!-- <td>{{colis.wilaya_nomLatin}}</td> -->
+        <!-- <td>{{colis.service_nom}}</td> -->
+        <!-- <td>{{colis.wilaya_nomLatin}}</td> -->
       <td>{{colis.status_createdAt | date:'dd-MM-YYYY HH:mm:ss'}}</td>
-      <td class="font-weight-bold">300 DA</td>
+      <td class="font-weight-bold">{{colis.coursier_montantLivraison}}</td>
     </tr>
   </tbody>
   <tfoot>
@@ -67,4 +67,3 @@
   </tfoot>
 
 </table>
-

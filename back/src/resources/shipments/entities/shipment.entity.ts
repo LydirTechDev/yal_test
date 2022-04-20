@@ -78,6 +78,7 @@ export class Shipment {
     nullable: true,
   })
   prixVente: number;
+  
   @Column({
     nullable: true,
   })
@@ -186,6 +187,8 @@ export class Shipment {
 
   @ManyToOne(() => Recolte, (recolte) => recolte.shipment)
   recolte: Recolte;
+
+  
   @Column({
     nullable: true,
   })
@@ -206,6 +209,7 @@ export class Shipment {
   @ManyToOne(() => PmtCoursier, (pmtCoursier) => pmtCoursier.shipments, {
     nullable: true,
   })
+
   pmtCoursier: PmtCoursier;
   @OneToOne(() => Shipment, (shipmentRelation) => shipmentRelation, {
     nullable: true,

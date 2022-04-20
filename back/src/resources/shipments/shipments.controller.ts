@@ -388,6 +388,7 @@ export class ShipmentsController {
   getShipmentLivrerByCoursierId(@Param('id', ParseIntPipe) id: number) {
     return this.shipmentsService.getShipmentsByCoursierId(id);
   }
+  
   @Get('paginateColisTracabiliteOfClient')
   getPaginateColisTracabiliteOfClient(
     @Request() req,

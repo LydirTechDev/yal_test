@@ -49,6 +49,7 @@ export class CreateRecolteComponent implements OnInit {
     return this.financeOpsService
       .getListCoursiersAttachedToMyStation()
       .subscribe(async (resp) => {
+        console.log("🚀 ~ file: create-recolte.component.ts ~ line 52 ~ CreateRecolteComponent ~ .subscribe ~ resp", resp)
         for await (const coursier of resp) {
           this.coursiers.push({
             id: coursier.id,

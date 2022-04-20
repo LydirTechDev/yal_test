@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { CreateCahierDeChargeShipmentComponent } from './create-cahier-de-charge-shipment/create-cahier-de-charge-shipment.component';
 import { CreateClassiqueShipmentComponent } from './create-classique-shipment/create-classique-shipment.component';
+import { CreateRecolteCsComponent } from './create-recolte-desk/create-recolte-cs.component';
 import { CreateSoumissionShipmentComponent } from './create-soumission-shipment/create-soumission-shipment.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 
@@ -21,6 +22,10 @@ const routes: Routes = [
   {
     path: 'soumission',
     component: CreateSoumissionShipmentComponent,
+  },
+  {
+    path: 'cree-recolte',
+    component: CreateRecolteCsComponent,
   },
 ];
 

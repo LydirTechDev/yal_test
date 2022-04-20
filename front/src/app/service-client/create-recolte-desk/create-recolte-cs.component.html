@@ -1,0 +1,45 @@
+<div>
+    <div class="row mb-3 col-12  p-0">
+            <h3 class="customBg text-dark text-right ml-auto px-3 py-2 rounded text-capitalize font-weight-bold">
+            Total des colis j'ai créer: {{nbrColis}}  -  Monatant à remetre: {{montant}} DA
+            </h3>
+    </div>
+    <hr class=" mx-auto">
+<table class="table table-bordered table-centered bg-white" *ngIf="montant > 0">
+    <thead class="">
+        <tr>
+            <th scope="col">Tracking</th>
+            <th scope="col">Type</th>
+            <th scope="col">Wilaya</th>
+            <th scope="col">Date livraison</th>
+            <th scope="col">Prix à récolter(DA)</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let colis of listColis">
+            <td><span class="bg-light py-2 px-3 rounded text-dark font-weight-bold">{{colis.tracking}}</span>
+            <td>{{colis.service}}</td>
+            <td>{{colis.wilaya}}</td>
+            <td>{{colis.dateLivraison }}</td> <!-- | date:'dd-MM-YYYY HH:mm:ss' -->
+            <td class="font-weight-bold">{{colis.cost}} DA</td>
+        </tr>
+    </tbody>
+    <tfoot>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td class="customBg">
+                <h1 class="text-dark font-weight-bold p-0 ">Total: {{montant}} DA</h1>
+            </td>
+        </tr>
+
+    </tfoot>
+</table>
+<div class=" d-flex justify-content-center" *ngIf="montant > 0">
+    <button class="btn btn-success" (click)="createRecolteCs()">
+        <i class="ri-check-fill"></i>
+        Créer la récolte
+    </button>
+    </div></div>

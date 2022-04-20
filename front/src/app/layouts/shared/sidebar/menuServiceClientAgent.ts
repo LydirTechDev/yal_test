@@ -37,4 +37,30 @@ export const MENUSEVICECLIENT: MenuItem[] = [
       },
     ],
   },
+  {
+    id: 7,
+    label: 'Récoltes',
+    icon: 'fas fa-money-bill-wave',
+    subItems: [
+      {
+        id: 8,
+        label: 'Créer récolte',
+        link: '/service-client/cree-recolte',
+        parentId: 7,
+      },
+      // {
+      //   id: 9,
+      //   label: 'Créer récolte DESK',
+      //   link: '/operations/cree-recoltedesk',
+      //   parentId: 7,
+      // },
+
+      // {
+      //   id: 10,
+      //   label: 'Mes récoltes',
+      //   link: '/operations/mes-recoltes',
+      //   parentId: 7,
+      // },
+    ],
+  },
 ];

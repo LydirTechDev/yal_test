@@ -100,6 +100,7 @@ export class RecoltesController {
   createRecolteDesk(@Request() req, @Response() res) {
     return this.recoltesService.createRecolteDesk(req.user, res);
   }
+
   @Post()
   create(
     @Request() req,
@@ -108,6 +109,7 @@ export class RecoltesController {
   ) {
     return this.recoltesService.create(req.user, createRecolteDto, res);
   }
+  
   @Get('printRecolte/:idRecolte')
   async printRecolte(@Param('idRecolte') idRecolte, @Response() res) {
     return await this.recoltesService.printRecolteManifest(idRecolte, res);

@@ -49,6 +49,7 @@ export class Recolte {
     nullable: true,
   })
   receivedOn: Agence;
+  
   @ManyToOne(() => User, (coursier) => coursier.recolteCoursier)
   recolteCoursier: User;
 }
