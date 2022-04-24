@@ -66,10 +66,10 @@ export class CoursierService {
     );
   }
   funcPaginateColisCoursierEchecs(link: string, page: number) {
-  if (page) {
-    link = `${environment.apiV1}shipments/paginateColisCoursierEchecs?page=${page}`;
-  }
-  return this.http.get<Pagination<any>>(link);
+    if (page) {
+      link = `${environment.apiV1}shipments/paginateColisCoursierEchecs?page=${page}`;
+    }
+    return this.http.get<Pagination<any>>(link);
   }
   getPaginateColisCoursierEchecs() {
     return this.http.get<Pagination<any>>(
@@ -88,7 +88,6 @@ export class CoursierService {
     );
   }
 
-
   funcPaginatePmt(
     link?: string,
     page?: number,
@@ -96,11 +95,11 @@ export class CoursierService {
   ): Observable<Pagination<any>> {
     if (page && search == undefined) {
       link = `${environment.apiV1}pmtCoursier/find-all-paginate-pmt-coursier?page=${page}`;
-      return this.http.get<Pagination<any>>(link)
+      return this.http.get<Pagination<any>>(link);
     }
     if (page && search) {
       link = `${environment.apiV1}pmtCoursier/find-all-paginate-pmt-coursier?searchPmtTerm=${search}&page=${page}`;
-      return this.http.get<Pagination<any>>(link)
+      return this.http.get<Pagination<any>>(link);
     }
     if (search) {
       return this.http.get<Pagination<any>>(`${link}&searchPmtTerm=${search}`);
@@ -118,5 +117,19 @@ export class CoursierService {
     return this.http.get<any>(
       `${environment.apiV1}pmtCoursier/getPaiementDetailsCoursier/${tracking}`
     );
+  }
+
+  getTrackingPresExp() {
+    return this.http.get<string[]>(
+      `${environment.apiV1}shipments/getPickupFreelance`
+    );
+  }
+
+  setShipmentRamasser(tracking: string[]) {
+    return this.http
+      .post(`${environment.apiV1}shipments/setShipmentRamasser-freelance`, {
+        tracking: tracking,
+      })
+      .subscribe();
   }
 }

@@ -35,6 +35,12 @@ export const MENUCOURSIER: MenuItem[] = [
         link: 'shipment-echec-coursier',
         parentId: 3,
       },
+      {
+        id: 7,
+        label: 'Pickup',
+        link: 'pickup-coursier',
+        parentId: 3,
+      },
       //   {
       //     id: 6,
       //     label: 'Ramassage des colis',
@@ -44,9 +50,9 @@ export const MENUCOURSIER: MenuItem[] = [
     ],
   },
   {
-    id: 7,
+    id: 8,
     label: 'Mes paiements',
     icon: 'fas fa-cash-register',
-    link: 'list-paiement-coursier'
+    link: 'list-paiement-coursier',
   },
 ];

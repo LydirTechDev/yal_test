@@ -647,6 +647,36 @@ export class ShipmentsService {
     }
   }
 
+  async setShipmentRamasser(user: any, trackings: any) {
+    const coursierInfo = await this.userService.findInformationUserOfCoursier(
+      user.id,
+    );
+    if (trackings.length != null) {
+      for (let tracking of trackings) {
+        tracking = tracking.toLowerCase();
+        const express_reg = new RegExp(/^\d{8}$/i);
+        if (express_reg.test(tracking)) {
+          const shipment = await this.findOneShipmnetByTraking(tracking);
+          if (shipment != undefined) {
+            const statusShipment =
+              await this.statusService.getShipmentStatusById(shipment.id);
+            if (
+              statusShipment[statusShipment.length - 1].libelle ==
+              StatusShipmentEnum.presExpedition
+            ) {
+              const createStautsShipment = await this.statusService.create({
+                user: user,
+                shipment: shipment,
+                libelle: StatusShipmentEnum.ramasse,
+              });
+            }
+          }
+        }
+      }
+      return true;
+    }
+  }
+
   async setShipmentExpedier(user: any, trackings: any) {
     const employeInfo = await this.employeService.findOneByUserId(user.id);
     if (trackings.length != null) {
@@ -660,7 +690,9 @@ export class ShipmentsService {
               await this.statusService.getShipmentStatusById(shipment.id);
             if (
               statusShipment[statusShipment.length - 1].libelle ==
-              StatusShipmentEnum.presExpedition
+                StatusShipmentEnum.presExpedition ||
+              statusShipment[statusShipment.length - 1].libelle ==
+                StatusShipmentEnum.ramasse
             ) {
               const createStautsShipment = await this.statusService.create({
                 user: user,
@@ -1031,10 +1063,52 @@ export class ShipmentsService {
   async getTrackingPresExp() {
     const listTracking: string[] = [];
     const shipments = await this.shipmentRepository.find({
+      where: [
+        {
+          lastStatus: StatusShipmentEnum.presExpedition,
+        },
+        {
+          lastStatus: StatusShipmentEnum.ramasse,
+        },
+      ],
+    });
+    for await (const shipment of shipments) {
+      const statusShipment = await this.statusService.getShipmentStatusById(
+        shipment.id,
+      );
+      if (
+        (statusShipment[statusShipment.length - 1].libelle ===
+          StatusShipmentEnum.presExpedition ||
+          statusShipment[statusShipment.length - 1].libelle ===
+            StatusShipmentEnum.ramasse) &&
+        !listTracking.includes(shipment.tracking)
+      ) {
+        listTracking.push(shipment.tracking);
+      }
+    }
+    console.log(listTracking);
+    return listTracking;
+  }
+
+  async getTrackingPresExpPickup(user: User) {
+    console.log(
+      '🚀 ~ file: shipments.service.ts ~ line 1055 ~ ShipmentsService ~ getTrackingPresExpPickup ~ user',
+      user.id,
+    );
+    const listTracking: string[] = [];
+    const coursierInfo = await this.userService.findInformationUserOfCoursier(
+      user.id,
+    );
+    console.log(
+      '🚀 ~ file: shipments.service.ts ~ line 1059 ~ ShipmentsService ~ getTrackingPresExpPickup ~ coursierInfo',
+      coursierInfo,
+    );
+    const shipments = await this.shipmentRepository.find({
       where: {
         lastStatus: StatusShipmentEnum.presExpedition,
       },
     });
+
     for await (const shipment of shipments) {
       const statusShipment = await this.statusService.getShipmentStatusById(
         shipment.id,

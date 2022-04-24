@@ -1,0 +1,29 @@
+.center {
+    text-align: center;
+  }
+  .positive {
+    background-color: green;
+    color: white;
+    transition: color 2s ease;
+    transition: background 2s ease;
+  }
+  .form-control {
+      height: 50px;
+    border-radius: 1;
+    border: 1px solid #DAE0E5;
+      font-size: 1.8rem;
+  }
+  .form-control::placeholder {
+    color: rgb(197, 191, 191);
+    font-size: 1.8rem;
+  }
+  .form-control:focus {
+    box-shadow: 0 0 2pt 0.1pt rgb(55, 172, 250);
+      outline-width: 0px;
+  }
+  .labtrack{
+    font-size: 32px;
+    text-shadow:none;
+    color: #252b3bab;
+  }
+  

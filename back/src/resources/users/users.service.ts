@@ -10,7 +10,13 @@ import {
   paginate,
   Pagination,
 } from 'nestjs-typeorm-paginate';
-import { EntityNotFoundError, ILike, Not, Repository, UpdateResult } from 'typeorm';
+import {
+  EntityNotFoundError,
+  ILike,
+  Not,
+  Repository,
+  UpdateResult,
+} from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
@@ -86,9 +92,8 @@ export class UsersService {
   }
 
   async findOne(id: number) {
-    const response = await this.userRepository.findOne(id,{
-      relations: ['employe', 'employe.agence']
-
+    const response = await this.userRepository.findOne(id, {
+      relations: ['employe', 'employe.agence'],
     });
     if (response) {
       return response;
@@ -150,13 +155,28 @@ export class UsersService {
     }
   }
 
+  // async findInformationUserOfCoursier(id: number) {
+  //   const user = await this.userRepository.findOne({
+  //     relations: ['coursier'],
+  //     where: {
+  //       coursier: {
+  //         id: id,
+  //       },
+  //     },
+  //   });
+  //   if (!user) {
+  //     throw new EntityNotFoundError(User, id);
+  //   } else {
+  //     delete user.password;
+  //     return user;
+  //   }
+  // }
+
   async findInformationUserOfCoursier(id: number) {
     const user = await this.userRepository.findOne({
       relations: ['coursier'],
       where: {
-        coursier: {
-          id: id,
-        },
+        id: id,
       },
     });
     if (!user) {
@@ -166,6 +186,7 @@ export class UsersService {
       return user;
     }
   }
+
   /**
    * update User
    * @param id

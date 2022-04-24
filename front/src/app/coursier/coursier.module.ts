@@ -9,9 +9,10 @@ import { ListShipmentsComponent } from './components/list-shipments/list-shipmen
 import { ListEchecsComponent } from './components/list-echecs/list-echecs.component';
 import { MesPaiementsComponent } from './components/mes-paiements/mes-paiements.component';
 import { DetailPaiementCoursierComponent } from './components/detail-paiement-coursier/detail-paiement-coursier.component';
+import { PickupComponent } from './components/pickup/pickup.component';
 
 @NgModule({
-  declarations: [DashboardComponent, ReceiveShipmentsComponent, ListShipmentsComponent, ListEchecsComponent, MesPaiementsComponent, DetailPaiementCoursierComponent],
+  declarations: [DashboardComponent, ReceiveShipmentsComponent, ListShipmentsComponent, ListEchecsComponent, MesPaiementsComponent, DetailPaiementCoursierComponent, PickupComponent],
   imports: [
     CommonModule,
     FormsModule,

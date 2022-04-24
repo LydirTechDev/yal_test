@@ -92,6 +92,11 @@ export class ShipmentsController {
       );
     }
   }
+  @Get('getPickupFreelance')
+  findAllShipmentsPresExpPickup(@Request() req) {
+    return this.shipmentsService.getTrackingPresExpPickup(req.user);
+  }
+
   @ApiQuery({ name: 'page', type: Number, required: false })
   @ApiQuery({ name: 'limit', type: Number, required: false })
   @ApiQuery({ name: 'searchShipmentsTerm', type: String, required: false })
@@ -196,6 +201,7 @@ export class ShipmentsController {
       searchColisTerm,
     );
   }
+
   @Get('getPaginatedShipmentsEnpreparation')
   @Roles('1976729')
   getPaginatedShipmentsEnpreparation(
@@ -266,6 +272,13 @@ export class ShipmentsController {
   async setShipmentExpedier(@Request() req, @Body('tracking') shipments) {
     return this.shipmentsService.setShipmentExpedier(req.user, shipments);
   }
+
+  @Post('setShipmentRamasser-freelance')
+  // @Roles('236429359')
+  async setShipmentRamasser(@Request() req, @Body('tracking') shipments) {
+    return this.shipmentsService.setShipmentRamasser(req.user, shipments);
+  }
+
   @Post('setReturnStation')
   setReturnStation(@Request() req, @Body('trackings') trackings) {
     return this.shipmentsService.setReturnStation(req.user, trackings);
@@ -363,7 +376,6 @@ export class ShipmentsController {
   getRecoltesCsInformation(@Request() req) {
     return this.shipmentsService.getRecoltesCsInformation(req.user);
   }
-  
 
   @Get('getShipmentsReturnStation/:coursierId')
   getShipmentsReturnStation(
@@ -378,7 +390,11 @@ export class ShipmentsController {
     @Query('dateDebut') dateDebut,
     @Query('dateFin') dateFin,
   ) {
-    return this.shipmentsService.getShipmentClassicWithIntervalOfClient(id, dateDebut, dateFin);
+    return this.shipmentsService.getShipmentClassicWithIntervalOfClient(
+      id,
+      dateDebut,
+      dateFin,
+    );
   }
 
   @Get('getSacsClientInformation/:idClient')
@@ -396,7 +412,7 @@ export class ShipmentsController {
   getShipmentLivrerByCoursierId(@Param('id', ParseIntPipe) id: number) {
     return this.shipmentsService.getShipmentsByCoursierId(id);
   }
-  
+
   @Get('paginateColisTracabiliteOfClient')
   getPaginateColisTracabiliteOfClient(
     @Request() req,
