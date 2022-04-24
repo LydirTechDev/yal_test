@@ -88,6 +88,9 @@ export class User {
   )
   recolteCoursier: Recolte;
 
+  @OneToMany(() => Recolte, (recolteCs) => recolteCs.recolteCS)
+  recolteCs: Recolte;
+
   @OneToMany(() => Recolte, (recolteReceivedBy) => recolteReceivedBy.receivedBy)
   recolteReceivedBy: Recolte[];
 

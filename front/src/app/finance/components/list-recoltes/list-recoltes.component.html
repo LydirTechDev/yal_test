@@ -35,16 +35,16 @@
                                 <th>Agence</th>
                                 <th>Date création</th>
                                 <th>Nombre de colis</th>
+                                <th>Montant (DA)</th>
                                 <th>Imprimer</th>
                             </tr>
                         </thead>
                         <tbody *ngIf="!isLoading; else spiner">
                             <tr *ngFor="let recolte of recolteData; let i=index ">
-                                <td
-                                    class="{{!recolte.receivedAt && calculateDiff(recolte.createdAt) > 
+                                <td class="{{!recolte.receivedAt && calculateDiff(recolte.createdAt) > 
                                         recolte.createdBy.employe.agence.commune.wilaya.dureeReceptionRecolte ?
                                         'text-danger': 'text-dark' }}">
-                                   <span class="text-uppercase font-weight-bold">{{recolte.tracking}}</span>
+                                    <span class="text-uppercase font-weight-bold">{{recolte.tracking}}</span>
                                 </td>
                                 <th class=" text-center py-0 mx-auto">
                                     <h3><span
@@ -64,9 +64,13 @@
                                         > recolte.createdBy.employe.agence.commune.wilaya.dureeReceptionRecolte ? 'text-danger': 'text-dark' }}">
                                     {{recolte.createdAt | date:'dd-MM-YYYY HH:mm:ss' }}</td>
                                 <td class="text-uppercase">{{recolte.shipment.length}}</td>
+                                <td class="text-uppercase">
+                                    {{recolte.montant | currency :' ':'symbol':'4.2-2':'fr'}}
+                                </td>
                                 <td class="py-0">
-                                    <button mdbBtn color="mdb-color" class=" btn-sm btn " (click)="print(recolte.id)"
-                                        mdbWavesEffect><i class="fas fa-print fa-lg"></i></button>
+                                    <button mdbBtn color="mdb-color" class=" btn-sm btn "
+                                        (click)="print(recolte.id, recolte.typeRtc)" mdbWavesEffect><i
+                                            class="fas fa-print fa-lg"></i></button>
                                 </td>
                             </tr>
                             <tr *ngIf="recolteData.length <= 0">

@@ -27,7 +27,7 @@ export class CreateRecolteCsComponent implements OnInit {
   }
 
   getRecoltesCsInformation() {
-    this.serviceClientService.getRecoltesDeskInformation().subscribe(
+    this.serviceClientService.getRecoltesCsInformation().subscribe(
       (resp) => {
         console.log('rec', resp);
         console.log(
@@ -35,7 +35,7 @@ export class CreateRecolteCsComponent implements OnInit {
           resp
         );
         this.montant = resp.montant;
-        this.listColis = resp.listColisCsLivre;
+        this.listColis = resp.listColisCs;
         this.nbrColis = this.listColis.length;
       },
       (error) => {
@@ -51,7 +51,7 @@ export class CreateRecolteCsComponent implements OnInit {
     const alertMessage = 'voulez vous confirmer la réception de la récolte!';
     const successTitle = 'Validé avec succés';
     const errorTitle = 'Validation echouée';
-    const action = this.serviceClientService.createRecolteDesk();
+    const action = this.serviceClientService.createRecolteCs();
     this.sweetalertService
       .confirmStandard(title, alertMessage, successTitle, '', null)
       .then((result) => {

@@ -1,4 +1,4 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import { CodeTarifsZonesService } from '../code-tarifs-zones/code-tarifs-zones.service';
 import { CommunesService } from '../communes/communes.service';
 import { ExpiditeurPublicService } from '../expiditeur-public/expiditeur-public.service';
@@ -16,6 +16,7 @@ import { UpdateServiceClientDto } from './dto/update-service-client.dto';
 
 @Injectable()
 export class ServiceClientService {
+  logger: Logger = new Logger(ServiceClientService.name)
   constructor(
     private readonly service: ServicesService,
     private readonly userService: UsersService,
@@ -55,29 +56,18 @@ export class ServiceClientService {
 
     // ###################### -- Classique Divers -- ######################
     const service = await this.service.findOneByName('Classique Divers');
-    console.log(
-      '🚀 ~// ###################### -- Classique Divers -- ###################### ~ line 58 ~ ServiceClientService ~ service',
-      service,
-    );
     const codeTarifId = service.codeTarif[0].id;
-    console.log(
-      '🚀 ~ file: service-client.service.ts ~ line 60 ~ ServiceClientService ~ codeTarifId',
-      codeTarifId,
-    );
-
+    this.logger.debug('###################### -- Classique Divers -- ######################',codeTarifId)
+    
     // ###################### -- Rotation -- ######################
     const userInfo = await this.userService.findInformationsEmploye(
       requestedUser.id,
-    );
-    console.log(
-      '🚀 ~ // ###################### -- Rotation -- ###################### ~ line 65 ~ ServiceClientService ~ userInfo',
-      userInfo,
     );
     const wilayaDepartId = userInfo.employe.agence.commune.wilaya.id;
     const wilayaDestination = await this.wilayaService.findOne(
       estimateTarifDto.wilayaId,
     );
-
+    this.logger.debug('// ###################### -- Rotation -- ######################')
     const wilayaDestinationId = wilayaDestination.id;
     const rotation =
       await this.rotationsService.findOneRotationByDepartId_DestinationId(
@@ -85,10 +75,6 @@ export class ServiceClientService {
         wilayaDestinationId,
       );
     const zoneId = rotation.zone.id;
-    console.log(
-      '🚀 ~ file: service-client.service.ts ~ line 64 ~ ServiceClientService ~ zoneId',
-      zoneId,
-    );
 
     // ###################### -- Plage Poids -- ######################
     const poidReel = estimateTarifDto.poids;
@@ -108,10 +94,6 @@ export class ServiceClientService {
 
     const plagePoid = await this.plagePoidService.getPlagePoids(poidTarifier);
     const plagePoidsId = plagePoid.id;
-    console.log(
-      '🚀 ~ file: service-client.service.ts ~ line 83 ~ ServiceClientService ~ plagePoidsId',
-      plagePoidsId,
-    );
 
     // ###################### -- Code Tarif Zone Poids -- ######################
 
@@ -123,10 +105,6 @@ export class ServiceClientService {
     let tarifApayer =
       tarifUnitaire[0].tarifDomicile +
       tarifUnitaire[0].tarifPoidsParKg * poidTarifier;
-    console.log(
-      '🚀 ~ file: service-client.service.ts ~ line 105 ~ ServiceClientService ~ tarifUnitaire',
-      tarifUnitaire,
-    );
     return tarifApayer;
   }
 

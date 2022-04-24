@@ -1,3 +1,4 @@
+import { type } from 'os';
 import { Agence } from 'src/resources/agences/entities/agence.entity';
 import { Shipment } from 'src/resources/shipments/entities/shipment.entity';
 import { User } from 'src/resources/users/entities/user.entity';
@@ -28,10 +29,27 @@ export class Recolte {
   })
   receivedAt: Date;
   // colis
+
+  @Column({
+    nullable: true,
+  })
+  typeRtc: string;
+
+  @Column({
+    nullable: true,
+    type: 'float',
+  })
+  montant: number;
+  
   @OneToMany(() => Shipment, (shipment) => shipment.recolte, {
     nullable: true,
   })
   shipment: Shipment[];
+
+  @OneToMany(() => Shipment, (shipment) => shipment.recolteCs, {
+    nullable: true,
+  })
+  shipmentCs: Shipment[];
 
   @ManyToOne(() => User, (createdBy) => createdBy.recolteCreateBy)
   createdBy: User;
@@ -49,7 +67,10 @@ export class Recolte {
     nullable: true,
   })
   receivedOn: Agence;
-  
+
   @ManyToOne(() => User, (coursier) => coursier.recolteCoursier)
   recolteCoursier: User;
+
+  @ManyToOne(() => User, (agentServiceClient) => agentServiceClient.recolteCs)
+  recolteCS: User;
 }

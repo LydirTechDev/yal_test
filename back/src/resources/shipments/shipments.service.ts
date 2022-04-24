@@ -43,6 +43,7 @@ import { ExcelService } from 'src/core/templates/excel/excel.service';
 import { PmtCoursierService } from '../pmt-coursier/pmt-coursier.service';
 import { FactureService } from '../facture/facture.service';
 import { CreateShipmentFromAgenceDto } from './dto/create-shipment-from-agence.dto';
+import { ServiceClientService } from '../service-client/service-client.service';
 
 /**
  *
@@ -71,6 +72,7 @@ export class ShipmentsService {
     private excelService: ExcelService,
     private pmtCoursierService: PmtCoursierService,
     private factureService: FactureService,
+    private serviceClientService: ServiceClientService,
   ) {}
 
   /**
@@ -1226,6 +1228,7 @@ export class ShipmentsService {
 
     return { montant, listColisDeskLivre };
   }
+
   async findShipmentLivreOfCoursier(coursierUserId) {
     const shipmentsCoursier = await this.shipmentRepository
       .createQueryBuilder('shipment')
@@ -1247,6 +1250,7 @@ export class ShipmentsService {
       return shipmentsCoursier;
     }
   }
+
   async findShipmentLivreDesk(user) {
     const employeInfo = await this.employeService.findOneByUserId(user.id);
     const shipments = await this.shipmentRepository
@@ -1266,6 +1270,28 @@ export class ShipmentsService {
       .getRawMany();
     return shipments;
   }
+
+  async findShipmentCreatedInDesk(user: User) {
+    const employeInfo = await this.employeService.findOneByUserId(user.id);
+    const shipments = await this.shipmentRepository
+      .createQueryBuilder('shipment')
+      .leftJoinAndSelect('shipment.createdBy', 'createdBy')
+      .leftJoinAndSelect('shipment.status', 'status')
+      .leftJoinAndSelect('status.createdOn', 'agence')
+      .leftJoinAndSelect('shipment.service', 'service')
+      .leftJoinAndSelect('shipment.commune', 'commune')
+      .leftJoinAndSelect('commune.wilaya', 'wilaya')
+      .distinctOn(['shipment.id'])
+      .where(`status.libelle = '${StatusShipmentEnum.presExpedition}'`)
+      // shipment.lastStatus = '${StatusShipmentEnum.pasPres}' and
+      .andWhere(
+        `shipment.recolteCsId is null
+        and agence.id = ${employeInfo.agence.id} `,
+      )
+      .getMany();
+    return shipments;
+  }
+
   async getShipmentsOfRecolte(id: number) {
     const listShipmentOfRecolte = await this.shipmentRepository.find({
       relations: ['recolte', 'service'],
@@ -1281,6 +1307,7 @@ export class ShipmentsService {
       return listShipmentOfRecolte;
     }
   }
+
   async getPaginatedShipmentsEnpreparation(
     user,
     options: IPaginationOptions,
@@ -2011,8 +2038,34 @@ export class ShipmentsService {
     return statistique;
   }
   //
-  getRecoltesCsInformation(user) {
+  async getRecoltesCsInformation(user) {
     let montant = 0;
+    const listColisCs = [];
+    const shipments = await this.findShipmentCreatedInDesk(user);
+    for await (const shipment of shipments) {
+      const tarifLivraison = await this.serviceClientService.getEstimateTarif(
+        user,
+        {
+          communeId: shipment.commune.id,
+          poids: shipment.poids,
+          longueur: shipment.longueur,
+          largeur: shipment.largeur,
+          hauteur: shipment.hauteur,
+          wilayaId: shipment.commune.wilaya.id,
+          livraisonDomicile: shipment.livraisonDomicile,
+          serviceId: null,
+        },
+      );
+      montant += tarifLivraison;
+      listColisCs.push({
+        tracking: shipment.tracking,
+        service: shipment.service.nom,
+        wilaya: shipment.commune.wilaya.nomLatin,
+        dateCreation: shipment.createdAt,
+        cost: tarifLivraison,
+      });
+    }
+    return { montant, listColisCs };
   }
 
   async getStatistiqueClient(user) {
@@ -2571,29 +2624,32 @@ export class ShipmentsService {
     const shipments = await this.shipmentRepository
       .createQueryBuilder('shipment')
       .leftJoinAndSelect('shipment.status', 'status')
+      .leftJoinAndSelect('shipment.service', 'service')
       .where(
         `status.libelle = '${StatusShipmentEnum.preRecolte}' and shipment.recolteId = ${recolteId}`,
       )
       .getMany();
     for await (const shipment of shipments) {
-      const lastStatus = await this.statusService.getShipmentStatusById(
-        shipment.id,
-      );
-      console.log(
-        '🚀 ~ file: shipments.service.ts ~ line 400 ~ ShipmentsService ~ forawait ~ lastStatus',
-        lastStatus[lastStatus.length - 1].libelle,
-      );
-      if (
-        lastStatus[lastStatus.length - 1].libelle ===
-        StatusShipmentEnum.preRecolte
-      ) {
-        delete shipment.status;
-        await this.statusService.create({
-          shipment: shipment,
-          user: user,
-          libelle: StatusShipmentEnum.recolte,
-          userAffect: lastStatus[lastStatus.length - 1].userAffect,
-        });
+      if (shipment.service.nom.toLowerCase() != 'classqiue divres') {
+        const lastStatus = await this.statusService.getShipmentStatusById(
+          shipment.id,
+        );
+        console.log(
+          '🚀 ~ file: shipments.service.ts ~ line 400 ~ ShipmentsService ~ forawait ~ lastStatus',
+          lastStatus[lastStatus.length - 1].libelle,
+        );
+        if (
+          lastStatus[lastStatus.length - 1].libelle ===
+          StatusShipmentEnum.preRecolte
+        ) {
+          delete shipment.status;
+          await this.statusService.create({
+            shipment: shipment,
+            user: user,
+            libelle: StatusShipmentEnum.recolte,
+            userAffect: lastStatus[lastStatus.length - 1].userAffect,
+          });
+        }
       }
     }
   }

@@ -71,9 +71,9 @@ export class ServiceClientService {
     );
   }
 
-  getRecoltesDeskInformation() {
+  getRecoltesCsInformation() {
     return this.http.get<any>(
-      `${environment.apiV1}shipments/getRecoltesDeskInformation`
+      `${environment.apiV1}shipments/getRecoltesCsInformation`
     );
   }
 
@@ -85,14 +85,14 @@ export class ServiceClientService {
     );
   }
 
-  createRecolteDesk() {
+  createRecolteCs() {
     return this.http.post(
-      `${environment.apiV1}recoltes/createRecolteDesk`,
+      `${environment.apiV1}recoltes/createRecolteCs`,
       {},
       { responseType: 'blob' }
     );
   }
-  
+
   getPaginateRecolteTracabilite() {
     return this.http.get<Pagination<any>>(
       `${environment.apiV1}recoltes/paginateRecolteOfUser`

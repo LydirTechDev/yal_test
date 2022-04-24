@@ -68,10 +68,13 @@ export class FinanceService {
     });
   }
 
-  printRecolte(id: number) {
-    return this.http.get(`${environment.apiV1}recoltes/printRecolte/${id}`, {
-      responseType: 'blob',
-    });
+  printRecolte(id: number, typeRtc: string) {
+    return this.http.get(
+      `${environment.apiV1}recoltes/printRecolte/${id}/${typeRtc}`,
+      {
+        responseType: 'blob',
+      }
+    );
   }
 
   getSoldeAgence() {
@@ -95,7 +98,6 @@ export class FinanceService {
     );
   }
 
-
   funcPaginatePmt(
     link?: string,
     page?: number,
@@ -103,11 +105,11 @@ export class FinanceService {
   ): Observable<Pagination<any>> {
     if (page && search == undefined) {
       link = `${environment.apiV1}pmt/find-all-paginate-pmt?page=${page}`;
-      return this.http.get<Pagination<any>>(link)
+      return this.http.get<Pagination<any>>(link);
     }
     if (page && search) {
       link = `${environment.apiV1}pmt/find-all-paginate-pmt?searchPmtTerm=${search}&page=${page}`;
-      return this.http.get<Pagination<any>>(link)
+      return this.http.get<Pagination<any>>(link);
     }
     if (search) {
       return this.http.get<Pagination<any>>(`${link}&searchPmtTerm=${search}`);
@@ -132,19 +134,23 @@ export class FinanceService {
   }
 
   getColisLivrerByCoursierId(id: number) {
-    return this.http.get<any>(`${environment.apiV1}shipments/colisLivrer/coursier/${id}`);
+    return this.http.get<any>(
+      `${environment.apiV1}shipments/colisLivrer/coursier/${id}`
+    );
   }
 
   payerShipmentOfCoursier(shipments: any) {
-    return this.http.patch(`${environment.apiV1}shipments/payerShipments`, shipments, { responseType: 'blob' })
+    return this.http.patch(
+      `${environment.apiV1}shipments/payerShipments`,
+      shipments,
+      { responseType: 'blob' }
+    );
   }
   getPaginatePmtc(): Observable<Pagination<any>> {
     return this.http.get<Pagination<any>>(
       `${environment.apiV1}pmtCoursier/paginatePmtc`
     );
   }
-
-
 
   funcPaginate(
     link?: string,
@@ -153,18 +159,17 @@ export class FinanceService {
   ): Observable<Pagination<any>> {
     if (page && search == undefined) {
       link = `${environment.apiV1}pmtCoursier/paginatePmtc?page=${page}`;
-      return this.http.get<Pagination<any>>(link)
+      return this.http.get<Pagination<any>>(link);
     }
     if (page && search) {
       link = `${environment.apiV1}pmtCoursier/paginatePmtc?searchPmtcTerm=${search}&page=${page}`;
-      return this.http.get<Pagination<any>>(link)
+      return this.http.get<Pagination<any>>(link);
     }
     if (search) {
       return this.http.get<Pagination<any>>(`${link}&searchPmtcTerm=${search}`);
     }
     return this.http.get<Pagination<any>>(link);
   }
-
 
   searchPmtc(searchWilayaTerm: string) {
     return this.http.get<Pagination<any>>(
@@ -173,14 +178,12 @@ export class FinanceService {
   }
 
   getAllPmtc() {
-    return this.http.get<Pagination<any>>(
-      `${environment.apiV1}pmtCoursier`
-    );
+    return this.http.get<Pagination<any>>(`${environment.apiV1}pmtCoursier`);
   }
 
   printPmtc(id: number) {
     return this.http.get(`${environment.apiV1}pmtCoursier/printPmtc/${id}`, {
       responseType: 'blob',
-    })
+    });
   }
 }

@@ -11,7 +11,7 @@
             <th scope="col">Tracking</th>
             <th scope="col">Type</th>
             <th scope="col">Wilaya</th>
-            <th scope="col">Date livraison</th>
+            <th scope="col">Date creation</th>
             <th scope="col">Prix à récolter(DA)</th>
         </tr>
     </thead>
@@ -20,7 +20,7 @@
             <td><span class="bg-light py-2 px-3 rounded text-dark font-weight-bold">{{colis.tracking}}</span>
             <td>{{colis.service}}</td>
             <td>{{colis.wilaya}}</td>
-            <td>{{colis.dateLivraison }}</td> <!-- | date:'dd-MM-YYYY HH:mm:ss' -->
+            <td>{{colis.dateCreation }}</td> <!-- | date:'dd-MM-YYYY HH:mm:ss' -->
             <td class="font-weight-bold">{{colis.cost}} DA</td>
         </tr>
     </tbody>
@@ -37,7 +37,7 @@
 
     </tfoot>
 </table>
-<div class=" d-flex justify-content-center" *ngIf="montant > 0">
+<div class=" d-flex justify-content-center" *ngIf="montant >= 0 && listColis.length > 0">
     <button class="btn btn-success" (click)="createRecolteCs()">
         <i class="ri-check-fill"></i>
         Créer la récolte

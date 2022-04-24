@@ -353,10 +353,18 @@ export class ShipmentsController {
   getRecoltesOfCoursier(@Param('coursierId') coursierId: number) {
     return this.shipmentsService.getRecoltesOfCoursier(coursierId);
   }
+
   @Get('getRecoltesDeskInformation')
   getRecoltesDeskInformation(@Request() req) {
     return this.shipmentsService.getRecoltesDeskInformation(req.user);
   }
+
+  @Get('getRecoltesCsInformation')
+  getRecoltesCsInformation(@Request() req) {
+    return this.shipmentsService.getRecoltesCsInformation(req.user);
+  }
+  
+
   @Get('getShipmentsReturnStation/:coursierId')
   getShipmentsReturnStation(
     @Request() req,

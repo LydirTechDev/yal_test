@@ -19,6 +19,8 @@ import { PmtCoursier } from 'src/resources/pmt-coursier/entities/pmt-coursier.en
 import { delaiPaiementEnum } from 'src/enums/delaiPaiementEnum';
 import { Shipment } from 'src/resources/shipments/entities/shipment.entity';
 import { ExpiditeurPublic } from 'src/resources/expiditeur-public/entities/expiditeur-public.entity';
+import { User } from 'src/resources/users/entities/user.entity';
+import { Recolte } from 'src/resources/recoltes/entities/recolte.entity';
 @Injectable()
 export class PdfService {
   async generateShipmentAgence(shipmentInfo: Shipment, tarifLivraison: number) {
@@ -2318,6 +2320,7 @@ export class PdfService {
     return dateFormat;
   }
   async printRecolteManifest(recolte, trackings, userInfo, montant) {
+    console.log("🚀 ~ file: pdf.service.ts ~ line 2321 ~ PdfService ~ printRecolteManifest ~ userInfo", userInfo)
     const tracking = trackings.join(' ');
     const dateRecolte = await this.formatDate(recolte.createdAt);
 
@@ -2358,6 +2361,112 @@ export class PdfService {
     );
     if (recolte.recolteCoursier == null) {
       firstPage.drawText('DESK', {
+        x: 30,
+        y: height - 115,
+        size: 15,
+      });
+    }
+    firstPage.drawText('Le ' + dateRecolte, {
+      x: 30,
+      y: height - 95,
+      size: 11,
+    });
+    console.log('3');
+
+    firstPage.drawText(
+      trackings.length.toString().toString() +
+        ' Colis ( ' +
+        montant.toString() +
+        'DA )',
+      {
+        x: 205,
+        y: height - 200,
+        size: 23,
+        font: helveticaFont,
+      },
+    );
+    // console.log('4');
+
+    //CODE BARRE
+    const barcodeBuffer = await bwipjs.toBuffer({
+      bcid: 'code128', // Barcode type
+      text: recolte.tracking, // Text to encode
+      scale: 3, // 3x scaling factor
+      height: 16, // Bar height, in millimeters
+      paddingheight: 0,
+      includetext: true, // Show human-readable text
+      textxalign: 'center', // Always good to set this
+    });
+
+    const barcodeImage = await pdfDoc.embedPng(barcodeBuffer);
+    const barcodeDims = barcodeImage.scaleToFit(180, 110);
+
+    firstPage.drawImage(barcodeImage, {
+      x: 490 - barcodeDims.width / 2,
+      y: height - 70 - barcodeDims.height / 2,
+      width: barcodeDims.width,
+      height: barcodeDims.height,
+    });
+    const qrcodeBuffer = await QRCode.toBuffer(tracking);
+    const qrcodeImage = await pdfDoc.embedPng(qrcodeBuffer);
+    const qrcodeDims = qrcodeImage.scaleToFit(200, 200);
+
+    firstPage.drawImage(qrcodeImage, {
+      x: 290 - qrcodeDims.width / 2,
+      y: height - 320 - qrcodeDims.height / 2,
+      width: qrcodeDims.width,
+      height: qrcodeDims.height,
+    });
+
+    const pdfBytes = await pdfDoc.save();
+    console.log('5');
+
+    fs.writeFileSync('dest', pdfBytes);
+    return pdfBytes;
+  }
+  async printRecolteCsManifest(recolte: Recolte, trackings, userInfo: User, montant) {
+    console.log("🚀 ~ file: pdf.service.ts ~ line 2321 ~ PdfService ~ printRecolteManifest ~ userInfo", userInfo)
+    const tracking = trackings.join(' ');
+    const dateRecolte = await this.formatDate(recolte.createdAt);
+    console.log("🚀 ~ file: pdf.service.ts ~ line 2431 ~ PdfService ~ printRecolteCsManifest ~ dateRecolte", dateRecolte)
+
+    const packageSlipTemplatePath = 'src/assets/recolteModelManifest.pdf';
+    const pdfTemplateBytes = fs.readFileSync(packageSlipTemplatePath);
+    const pdfDoc = await PDFDocument.load(pdfTemplateBytes);
+
+    const helveticaFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+
+    const pages = pdfDoc.getPages();
+    const firstPage = pages[0];
+    const { width, height } = firstPage.getSize();
+    console.log(userInfo);
+    firstPage.drawText(
+      userInfo.employe.agence.nom.toUpperCase() +
+        '-' +
+        userInfo.employe.agence.commune.nomLatin.toUpperCase() +
+        '/' +
+        userInfo.employe.agence.commune.wilaya.nomLatin.toUpperCase(),
+      {
+        x: 30,
+        y: height - 65,
+        size: 10,
+      },
+    );
+
+    firstPage.drawText(
+      userInfo.employe.nom.toUpperCase() +
+        ' ' +
+        userInfo.employe.prenom.toUpperCase() +
+        ' ' +
+        userInfo.employe.numTelephone,
+      {
+        x: 30,
+        y: height - 80,
+        size: 11,
+      },
+    );
+    if (recolte.recolteCS != null) {
+      firstPage.drawText('SERVICE CLIENTELE', {
         x: 30,
         y: height - 115,
         size: 15,

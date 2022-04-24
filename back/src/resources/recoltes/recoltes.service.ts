@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   IPaginationOptions,
@@ -13,6 +13,7 @@ import { EntityNotFoundError, Repository } from 'typeorm';
 import { ClientsService } from '../clients/clients.service';
 import { CoursierService } from '../coursier/coursier.service';
 import { EmployesService } from '../employes/employes.service';
+import { ServiceClientService } from '../service-client/service-client.service';
 import { ShipmentsService } from '../shipments/shipments.service';
 import { StatusService } from '../status/status.service';
 import { User } from '../users/entities/user.entity';
@@ -23,6 +24,7 @@ import { Recolte } from './entities/recolte.entity';
 
 @Injectable()
 export class RecoltesService {
+  logger: Logger = new Logger(RecoltesService.name);
   constructor(
     @InjectRepository(Recolte) private recolteRepository: Repository<Recolte>,
     private shipmentService: ShipmentsService,
@@ -32,6 +34,7 @@ export class RecoltesService {
     private employeService: EmployesService,
     private clientService: ClientsService,
     private pdfService: PdfService,
+    private readonly serviceClientService: ServiceClientService,
   ) {}
   async getPaginateRecolteOfUser(
     user,
@@ -43,6 +46,7 @@ export class RecoltesService {
       recolte = this.recolteRepository
         .createQueryBuilder('recolte')
         .leftJoinAndSelect('recolte.shipment', 'shipment')
+        .leftJoinAndSelect('recolte.shipmentCs', 'shipmentCs')
         .leftJoinAndSelect('recolte.createdBy', 'creatBy')
         .leftJoinAndSelect('recolte.recolteCoursier', 'coursier')
         .leftJoinAndSelect('coursier.coursier', 'coursierdet')
@@ -53,6 +57,7 @@ export class RecoltesService {
       recolte = this.recolteRepository
         .createQueryBuilder('recolte')
         .leftJoinAndSelect('recolte.shipment', 'shipment')
+        .leftJoinAndSelect('recolte.shipmentCs', 'shipmentCs')
         .leftJoinAndSelect('recolte.createdBy', 'creatBy')
         .leftJoinAndSelect('recolte.recolteCoursier', 'coursier')
         .leftJoinAndSelect('coursier.coursier', 'coursierdet')
@@ -73,6 +78,7 @@ export class RecoltesService {
       recolte = this.recolteRepository
         .createQueryBuilder('recolte')
         .leftJoinAndSelect('recolte.shipment', 'shipment')
+        .leftJoinAndSelect('recolte.shipmentCs', 'shipmentCs')
         .leftJoinAndSelect('recolte.createdBy', 'creatBy')
         .leftJoinAndSelect('creatBy.employe', 'employe')
         .leftJoinAndSelect('employe.agence', 'agence')
@@ -91,6 +97,7 @@ export class RecoltesService {
     } else {
       recolte = this.recolteRepository
         .createQueryBuilder('recolte')
+        .leftJoinAndSelect('recolte.shipmentCs', 'shipmentCs')
         .leftJoinAndSelect('recolte.shipment', 'shipment')
         .leftJoinAndSelect('recolte.createdBy', 'creatBy')
         .leftJoinAndSelect('creatBy.employe', 'employe')
@@ -101,11 +108,16 @@ export class RecoltesService {
         .addSelect('wilaya')
         .orderBy('recolte.createdAt', 'DESC');
     }
-    return paginate<Recolte>(recolte, {
+    const tt = paginate<Recolte>(recolte, {
       page: options.page,
       limit: options.limit,
       route: 'http://localhost:3000/recoltes/paginateAllRecolte',
     });
+    console.log(
+      '🚀 ~ file: recoltes.service.ts ~ line 115 ~ RecoltesService ~ tt',
+      await tt,
+    );
+    return tt;
   }
 
   // changer le created By avec le craetedOn
@@ -124,6 +136,7 @@ export class RecoltesService {
       recolte = this.recolteRepository
         .createQueryBuilder('recolte')
         .leftJoinAndSelect('recolte.shipment', 'shipment')
+        .leftJoinAndSelect('recolte.shipmentCs', 'shipmentCs')
         .leftJoinAndSelect('recolte.createdBy', 'creatBy')
         .leftJoinAndSelect('creatBy.employe', 'employe')
         .leftJoinAndSelect('employe.agence', 'agence')
@@ -143,6 +156,7 @@ export class RecoltesService {
       recolte = this.recolteRepository
         .createQueryBuilder('recolte')
         .leftJoinAndSelect('recolte.shipment', 'shipment')
+        .leftJoinAndSelect('recolte.shipmentCs', 'shipmentCs')
         .leftJoinAndSelect('recolte.createdBy', 'creatBy')
         .leftJoinAndSelect('creatBy.employe', 'employe')
         .leftJoinAndSelect('employe.agence', 'agence')
@@ -175,6 +189,7 @@ export class RecoltesService {
       recolte = this.recolteRepository
         .createQueryBuilder('recolte')
         .leftJoinAndSelect('recolte.shipment', 'shipment')
+        .leftJoinAndSelect('recolte.shipmentCs', 'shipmentCs')
         .leftJoinAndSelect('recolte.createdBy', 'creatBy')
         .leftJoinAndSelect('creatBy.employe', 'employe')
         .leftJoinAndSelect('employe.agence', 'agence')
@@ -194,6 +209,7 @@ export class RecoltesService {
       recolte = this.recolteRepository
         .createQueryBuilder('recolte')
         .leftJoinAndSelect('recolte.shipment', 'shipment')
+        .leftJoinAndSelect('recolte.shipmentCs', 'shipmentCs')
         .leftJoinAndSelect('recolte.createdOn', 'creatOn')
         .leftJoinAndSelect('recolte.createdBy', 'creatBy')
         .leftJoinAndSelect('creatBy.employe', 'employe')
@@ -330,19 +346,70 @@ export class RecoltesService {
       throw new NotFoundException();
     }
   }
+
+  async createRecolteCs(user: User, resp) {
+    this.logger.debug(this.createRecolteCs.name);
+    this.logger.debug(this.createRecolteCs.name);
+    this.logger.debug(this.createRecolteCs.name);
+    this.logger.debug(this.createRecolteCs.name);
+    const employeInfo = await this.userService.findInformationsEmploye(user.id);
+    const shipments = await this.shipmentService.findShipmentCreatedInDesk(
+      employeInfo,
+    );
+    let montant = 0;
+    for await (const shipment of shipments) {
+      const tarifLivraison = await this.serviceClientService.getEstimateTarif(
+        shipment.createdBy,
+        {
+          communeId: shipment.commune.id,
+          poids: shipment.poids,
+          longueur: shipment.longueur,
+          largeur: shipment.largeur,
+          hauteur: shipment.hauteur,
+          wilayaId: shipment.commune.wilaya.id,
+          livraisonDomicile: shipment.livraisonDomicile,
+          serviceId: null,
+        },
+      );
+      montant += tarifLivraison;
+    }
+    if (shipments.length > 0) {
+      const recolteSc = this.recolteRepository.create({
+        shipmentCs: shipments,
+        createdBy: employeInfo,
+        createdOn: employeInfo.employe.agence,
+        recolteCS: employeInfo,
+        montant: montant,
+        typeRtc: 'cs',
+      });
+      const recolteScSave = await this.recolteRepository.save(recolteSc);
+      const tracking = 'rec-' + (await this.generateTracking(recolteScSave.id));
+      await this.recolteRepository.update(recolteScSave.id, {
+        tracking: tracking,
+      });
+      // console.log(
+      //   '🚀 ~ file: recoltes.service.ts ~ line 360 ~ RecoltesService ~ createRecolteCs ~ recolteScSave',
+      //   recolteScSave,
+      // );
+      this.logger.error('recolteScSave');
+      return await this.printRecolteCs(recolteScSave.id, resp);
+    }
+  }
+
   addToDate(objDate) {
     const numberOfMlSeconds = objDate.getTime();
     const addMlSeconds = 1000;
     const newDateObj = new Date(numberOfMlSeconds + addMlSeconds);
     return newDateObj;
   }
+
   async getRecoltePresRecolte() {
     const listRctTrackings = [];
     const recoltes = await this.recolteRepository.find({
       where: {
         receivedBy: null,
       },
-      select: ['tracking'],
+      select: ['tracking', 'montant'],
     });
     for (const rct of recoltes) {
       listRctTrackings.push(rct.tracking);
@@ -944,8 +1011,12 @@ export class RecoltesService {
     });
     if (recolte) {
       let userInfo;
-      const listShipmentOfRecolte = await this.shipmentService.getShipmentsOfRecolte(recolte.id);
-      console.log("🚀 ~ file: recoltes.service.ts ~ line 948 ~ RecoltesService ~ printRecolteManifest ~ listShipmentOfRecolte", listShipmentOfRecolte)
+      const listShipmentOfRecolte =
+        await this.shipmentService.getShipmentsOfRecolte(recolte.id);
+      console.log(
+        '🚀 ~ file: recoltes.service.ts ~ line 948 ~ RecoltesService ~ printRecolteManifest ~ listShipmentOfRecolte',
+        listShipmentOfRecolte,
+      );
 
       if (recolte.recolteCoursier == null) {
         userInfo = await this.employeService.findOneByUserId(
@@ -986,5 +1057,55 @@ export class RecoltesService {
       res.send(buf);
       return res;
     }
+  }
+
+  async printRecolteCs(recolteId: number, res) {
+    this.logger.verbose(recolteId);
+    const listTracking = [];
+    let montant = 0;
+    const recolte = await this.recolteRepository.findOne({
+      relations: [
+        'recolteCS',
+        'createdBy',
+        'createdBy.employe',
+        'createdBy.employe.agence',
+        'createdBy.employe.agence.commune',
+        'createdBy.employe.agence.commune.wilaya',
+        'shipmentCs',
+        'shipmentCs.createdBy',
+        'shipmentCs.commune',
+        'shipmentCs.commune.wilaya',
+      ],
+      where: {
+        id: recolteId,
+      },
+    });
+    for await (const shipment of recolte.shipmentCs) {
+      const tarifLivraison = await this.serviceClientService.getEstimateTarif(
+        shipment.createdBy,
+        {
+          communeId: shipment.commune.id,
+          poids: shipment.poids,
+          longueur: shipment.longueur,
+          largeur: shipment.largeur,
+          hauteur: shipment.hauteur,
+          wilayaId: shipment.commune.wilaya.id,
+          livraisonDomicile: shipment.livraisonDomicile,
+          serviceId: null,
+        },
+      );
+      this.logger.debug('in boucle', shipment.tracking);
+      montant += tarifLivraison;
+      listTracking.push([shipment.tracking] + ' ' + tarifLivraison);
+    }
+    const buffer = await this.pdfService.printRecolteCsManifest(
+      recolte,
+      listTracking,
+      recolte.createdBy,
+      montant,
+    );
+    const buf = Buffer.from(buffer);
+    res.send(buf);
+    return res;
   }
 }

@@ -101,6 +101,11 @@ export class RecoltesController {
     return this.recoltesService.createRecolteDesk(req.user, res);
   }
 
+  @Post('createRecolteCs')
+  createRecolteCs(@Request() req, @Response() res) {
+    return this.recoltesService.createRecolteCs(req.user, res);
+  }
+
   @Post()
   create(
     @Request() req,
@@ -109,9 +114,16 @@ export class RecoltesController {
   ) {
     return this.recoltesService.create(req.user, createRecolteDto, res);
   }
-  
-  @Get('printRecolte/:idRecolte')
-  async printRecolte(@Param('idRecolte') idRecolte, @Response() res) {
+
+  @Get('printRecolte/:idRecolte/:typeRtc')
+  async printRecolte(
+    @Param('idRecolte') idRecolte,
+    @Param('typeRtc') typeRtc,
+    @Response() res,
+  ) {
+    if (typeRtc == 'cs') {
+      return await this.recoltesService.printRecolteCs(idRecolte, res);
+    }
     return await this.recoltesService.printRecolteManifest(idRecolte, res);
   }
 
