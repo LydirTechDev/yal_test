@@ -146,6 +146,7 @@ export class FinanceService {
       { responseType: 'blob' }
     );
   }
+
   getPaginatePmtc(): Observable<Pagination<any>> {
     return this.http.get<Pagination<any>>(
       `${environment.apiV1}pmtCoursier/paginatePmtc`
@@ -161,14 +162,17 @@ export class FinanceService {
       link = `${environment.apiV1}pmtCoursier/paginatePmtc?page=${page}`;
       return this.http.get<Pagination<any>>(link);
     }
+
     if (page && search) {
       link = `${environment.apiV1}pmtCoursier/paginatePmtc?searchPmtcTerm=${search}&page=${page}`;
       return this.http.get<Pagination<any>>(link);
     }
+    
     if (search) {
       return this.http.get<Pagination<any>>(`${link}&searchPmtcTerm=${search}`);
     }
     return this.http.get<Pagination<any>>(link);
+    
   }
 
   searchPmtc(searchWilayaTerm: string) {

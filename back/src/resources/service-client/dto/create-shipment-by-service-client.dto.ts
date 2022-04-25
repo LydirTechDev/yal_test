@@ -1,4 +1,5 @@
 import {
+  IsBoolean,
   isNumber,
   IsNumber,
   IsString,
@@ -65,4 +66,10 @@ export class CreateShipmentByServiceClientDto {
 
   @IsNumber()
   hauteur: number = 0;
+
+  @IsBoolean()
+  livraisonDomicile: boolean;
+
+  @IsBoolean()
+  livraisonStopDesck: boolean;
 }

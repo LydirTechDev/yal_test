@@ -150,7 +150,35 @@ export class CreateClassiqueShipmentComponent implements OnInit {
           Validators.max(2),
         ]),
       ],
+      livraisonStopDesck: [true, Validators.required],
+      livraisonDomicile: [false, Validators.required],
     });
+  }
+
+  onChangeShippmentTypeDesk(value: boolean) {
+    this.classiqueShippmentForm.controls['communeId'].reset();
+    this.classiqueShippmentForm.controls['wilayaId'].reset();
+    if (value === true) {
+      this.classiqueShippmentForm.controls['livraisonDomicile'].setValue(false);
+      this.getEstimateTarif();
+    } else {
+      this.classiqueShippmentForm.controls['livraisonDomicile'].setValue(true);
+      this.getEstimateTarif();
+    }
+  }
+
+  onChangeShippmentTypeHome(value: boolean) {
+    this.classiqueShippmentForm.controls['communeId'].reset();
+    this.classiqueShippmentForm.controls['wilayaId'].reset();
+    if (value === true) {
+      this.classiqueShippmentForm.controls['livraisonStopDesck'].setValue(
+        false
+      );
+      this.getEstimateTarif();
+    } else {
+      this.classiqueShippmentForm.controls['livraisonStopDesck'].setValue(true);
+      this.getEstimateTarif();
+    }
   }
 
   selectTypeShipments(typeShipment: string) {
@@ -184,7 +212,9 @@ export class CreateClassiqueShipmentComponent implements OnInit {
       this.classiqueShippmentForm.controls['poids'].valid &&
       this.classiqueShippmentForm.controls['longueur'].valid &&
       this.classiqueShippmentForm.controls['largeur'].valid &&
-      this.classiqueShippmentForm.controls['hauteur'].valid
+      this.classiqueShippmentForm.controls['hauteur'].valid &&
+      this.classiqueShippmentForm.controls['livraisonDomicile'].valid &&
+      this.classiqueShippmentForm.controls['livraisonStopDesck'].valid
     ) {
       this.shippmentsServiceClient
         .getEstimateTarif(this.classiqueShippmentForm.value)

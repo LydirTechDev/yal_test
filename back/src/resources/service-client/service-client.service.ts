@@ -16,7 +16,7 @@ import { UpdateServiceClientDto } from './dto/update-service-client.dto';
 
 @Injectable()
 export class ServiceClientService {
-  logger: Logger = new Logger(ServiceClientService.name)
+  logger: Logger = new Logger(ServiceClientService.name);
   constructor(
     private readonly service: ServicesService,
     private readonly userService: UsersService,
@@ -57,8 +57,11 @@ export class ServiceClientService {
     // ###################### -- Classique Divers -- ######################
     const service = await this.service.findOneByName('Classique Divers');
     const codeTarifId = service.codeTarif[0].id;
-    this.logger.debug('###################### -- Classique Divers -- ######################',codeTarifId)
-    
+    this.logger.debug(
+      '###################### -- Classique Divers -- ######################',
+      codeTarifId,
+    );
+
     // ###################### -- Rotation -- ######################
     const userInfo = await this.userService.findInformationsEmploye(
       requestedUser.id,
@@ -67,7 +70,9 @@ export class ServiceClientService {
     const wilayaDestination = await this.wilayaService.findOne(
       estimateTarifDto.wilayaId,
     );
-    this.logger.debug('// ###################### -- Rotation -- ######################')
+    this.logger.debug(
+      '// ###################### -- Rotation -- ######################',
+    );
     const wilayaDestinationId = wilayaDestination.id;
     const rotation =
       await this.rotationsService.findOneRotationByDepartId_DestinationId(
@@ -102,9 +107,17 @@ export class ServiceClientService {
       codeTarifId,
       plagePoidsId,
     );
-    let tarifApayer =
-      tarifUnitaire[0].tarifDomicile +
-      tarifUnitaire[0].tarifPoidsParKg * poidTarifier;
+    let tarifApayer = 0;
+    if (estimateTarifDto.livraisonDomicile) {
+      tarifApayer =
+        tarifUnitaire[0].tarifDomicile +
+        tarifUnitaire[0].tarifPoidsParKg * poidTarifier;
+    } else {
+      tarifApayer =
+        tarifUnitaire[0].tarifStopDesk +
+        tarifUnitaire[0].tarifPoidsParKg * poidTarifier;
+    }
+
     return tarifApayer;
   }
 
@@ -140,7 +153,8 @@ export class ServiceClientService {
       longueur: shipment.longueur,
       largeur: shipment.largeur,
       hauteur: shipment.hauteur,
-      livraisonDomicile: true,
+      livraisonDomicile: shipment.livraisonDomicile,
+      livraisonStopDesck: shipment.livraisonStopDesck,
       communeId: communeDest.id,
       wilayaId: communeDest.wilaya.id,
     });

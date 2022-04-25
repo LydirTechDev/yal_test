@@ -126,7 +126,8 @@
                 <div class="form-group row mb-1 text-right">
                     <label class="col-md-3 col-form-label">N° pièce d'identité*:</label>
                     <div class="col-md-8 text-left">
-                        <input class="form-control" formControlName="numIdentite" placeholder="000000000" type="text" mask="000000000"
+                        <input class="form-control" formControlName="numIdentite" placeholder="000000000" type="text"
+                            mask="000000000"
                             [ngClass]="{'is-invalid': classiqueShippmentForm.controls['numIdentite'].invalid && (classiqueShippmentForm.controls['numIdentite'].dirty || classiqueShippmentForm.controls['numIdentite'].touched),'is-valid': classiqueShippmentForm.controls['numIdentite'].valid && (classiqueShippmentForm.controls['numIdentite'].dirty || classiqueShippmentForm.controls['numIdentite'].touched) }">
                         <div *ngIf="classiqueShippmentForm.controls['numIdentite'].invalid" class="invalid-feedback">
                             <span *ngIf="classiqueShippmentForm.controls['numIdentite'].errors.required">Téléphone
@@ -213,8 +214,30 @@
                     </div>
                 </div>
 
+                <!-- Adresse -->
+                <div class="form-group row mb-1 text-right">
+                    <label class="col-md-3 col-form-label">Adresse*:</label>
+                    <div class="col-md-8 text-left">
+                        <input class="form-control" formControlName="adresse" placeholder="Adresse"
+                            [ngClass]="{'is-invalid': classiqueShippmentForm.controls['adresse'].invalid && (classiqueShippmentForm.controls['adresse'].dirty || classiqueShippmentForm.controls['adresse'].touched),'is-valid': classiqueShippmentForm.controls['adresse'].valid && (classiqueShippmentForm.controls['adresse'].dirty || classiqueShippmentForm.controls['adresse'].touched) }">
+                        <div *ngIf="classiqueShippmentForm.controls['adresse'].invalid" class="invalid-feedback">
+                            <span *ngIf="classiqueShippmentForm.controls['adresse'].errors.required">adresse
+                                requise</span>
+                            <span *ngIf="classiqueShippmentForm.controls['adresse'].errors.minlength">longueur
+                                minimale
+                                3
+                                characters
+                            </span>
+                            <span *ngIf="classiqueShippmentForm.controls['adresse'].errors.maxlength">longueur
+                                maximale
+                                50
+                                characters </span>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Type de livraison-->
-                <!-- <div class="col-12 p-2 mt-1">
+                <div class="col-12 p-2 mt-1">
                     <div class="row">
                         <div class="col-6 border-white border-right">
                             <div class="row">
@@ -240,27 +263,6 @@
                                     </ui-switch>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                </div> -->
-                <!-- Adresse -->
-                <div class="form-group row mb-1 text-right">
-                    <label class="col-md-3 col-form-label">Adresse*:</label>
-                        <div class="col-md-8 text-left">
-                        <input class="form-control" formControlName="adresse" placeholder="Adresse"
-                            [ngClass]="{'is-invalid': classiqueShippmentForm.controls['adresse'].invalid && (classiqueShippmentForm.controls['adresse'].dirty || classiqueShippmentForm.controls['adresse'].touched),'is-valid': classiqueShippmentForm.controls['adresse'].valid && (classiqueShippmentForm.controls['adresse'].dirty || classiqueShippmentForm.controls['adresse'].touched) }">
-                        <div *ngIf="classiqueShippmentForm.controls['adresse'].invalid" class="invalid-feedback">
-                            <span *ngIf="classiqueShippmentForm.controls['adresse'].errors.required">adresse
-                                requise</span>
-                            <span *ngIf="classiqueShippmentForm.controls['adresse'].errors.minlength">longueur
-                                minimale
-                                3
-                                characters
-                            </span>
-                            <span *ngIf="classiqueShippmentForm.controls['adresse'].errors.maxlength">longueur
-                                maximale
-                                50
-                                characters </span>
                         </div>
                     </div>
                 </div>
@@ -302,42 +304,6 @@
                             class="invalid-feedback-custom error">Commune requise</span>
                     </div>
                 </div>
-                <!-- Service -->
-                <!-- <div class="form-group row mb-1 text-right">
-                    <label class="col-md-3 col-form-label"> Service*: </label>
-                    <div class="col-sm-9 text-left">
-                        <ng-select formControlName="serviceId" placeholder="Selectionner le service">
-                            <ng-option *ngFor="let service of serviceData" [value]="service.service_id">
-                                {{ service.service_nom }}
-                            </ng-option>
-                        </ng-select>
-                        <span
-                            *ngIf="classiqueShippmentForm.controls['serviceId'].invalid && classiqueShippmentForm.controls['serviceId'].touched"
-                            class="invalid-feedback-custom">Service requie</span>
-                        <span
-                            *ngIf="classiqueShippmentForm.controls['serviceId'].valid && classiqueShippmentForm.controls['serviceId'].touched"
-                            class="valid-feedback-custom">Service valide</span>
-                    </div>
-                </div> -->
-
-                <!-- N° Commande-->
-                <!-- <div class="form-group row mb-1 ">
-                    <label class="col-md-3 col-form-label text-right">N° Commande*:</label>
-                    <div class="col-md-8">
-                        <input class="form-control" formControlName="numCommande" placeholder="N° Commande "
-                            [ngClass]="{'is-invalid': classiqueShippmentForm.controls['numCommande'].invalid && (classiqueShippmentForm.controls['numCommande'].dirty || classiqueShippmentForm.controls['numCommande'].touched),'is-valid': classiqueShippmentForm.controls['numCommande'].valid && (classiqueShippmentForm.controls['numCommande'].dirty || classiqueShippmentForm.controls['numCommande'].touched) }">
-                        <div *ngIf="classiqueShippmentForm.controls['numCommande'].invalid" class="invalid-feedback">
-                            <span *ngIf="classiqueShippmentForm.controls['numCommande'].errors.required">Numéro de commande
-                                requie</span>
-                            <span *ngIf="classiqueShippmentForm.controls['numCommande'].errors.minlength">longueur minimale
-                                3
-                                characters</span>
-                            <span *ngIf="classiqueShippmentForm.controls['numCommande'].errors.maxlength">longueur maximale
-                                50
-                                characters</span>
-                        </div>
-                    </div>
-                </div> -->
 
                 <!-- Designation -->
                 <div class="form-group row mb-1 ">

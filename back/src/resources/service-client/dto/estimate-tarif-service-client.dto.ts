@@ -20,7 +20,10 @@ export class EstimateTarifDto {
   wilayaId: number;
 
   @IsBoolean()
-  livraisonDomicile: boolean = true;
+  livraisonDomicile: boolean;
+
+  @IsBoolean()
+  livraisonStopDesck: boolean;
 
   @IsNumber({
     allowNaN: true,

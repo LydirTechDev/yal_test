@@ -2127,6 +2127,7 @@ export class ShipmentsService {
           hauteur: shipment.hauteur,
           wilayaId: shipment.commune.wilaya.id,
           livraisonDomicile: shipment.livraisonDomicile,
+          livraisonStopDesck: shipment.livraisonStopDesck,
           serviceId: null,
         },
       );

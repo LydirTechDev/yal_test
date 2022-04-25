@@ -368,6 +368,7 @@ export class RecoltesService {
           hauteur: shipment.hauteur,
           wilayaId: shipment.commune.wilaya.id,
           livraisonDomicile: shipment.livraisonDomicile,
+          livraisonStopDesck: shipment.livraisonStopDesck,
           serviceId: null,
         },
       );
@@ -1091,6 +1092,7 @@ export class RecoltesService {
           hauteur: shipment.hauteur,
           wilayaId: shipment.commune.wilaya.id,
           livraisonDomicile: shipment.livraisonDomicile,
+          livraisonStopDesck: shipment.livraisonStopDesck,
           serviceId: null,
         },
       );
