@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/nav_dashboard">
+
+    <fragment
+        android:id="@+id/nav_dashboard"
+        android:name="com.example.myapplication32.ui.dashboard.DashboardFragment"
+        android:label="@string/menu_pickup"
+        tools:layout="@layout/fragment_dashboard" />
+
+    <fragment
+        android:id="@+id/nav_pickup"
+        android:name="com.example.myapplication32.ui.pickup.PickupFragment"
+        android:label="@string/menu_pickup"
+        tools:layout="@layout/fragment_pickup" />
+
+    <fragment
+        android:id="@+id/nav_shipment_list"
+        android:name="com.example.myapplication32.ui.shipmentList.ShipmentListFragment"
+        android:label="@string/menu_shipment_list"
+        tools:layout="@layout/fragment_shipment_list" />
+</navigation>

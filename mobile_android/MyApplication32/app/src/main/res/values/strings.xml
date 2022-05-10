@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Yalidine Freelance</string>
+    <string name="title_activity_nave">NaveActivity</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Yalidine Freelance</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="menu_dashboard">Dashboard</string>
+    <string name="menu_pickup">Pickup</string>
+    <string name="menu_shipment_list">colis à livrer</string>
+    <string name="btn_login">Login</string>
+    <string name="yalidine_logo">Yalidine Logo</string>
+    <string name="bienvenue_part_1">Bienvenue à Yalidine Freelance</string>
+    <string name="bienvenue_part_2">Plateforme</string>
+    <string name="label_email">Email</string>
+    <string name="label_mdp">Mot de passe</string>
+    <string name="button_login">Connexion</string>
+    <string name="btn_scanne">button Scanne</string>
+</resources>

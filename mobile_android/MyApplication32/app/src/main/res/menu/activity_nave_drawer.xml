@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_dashboard"
+            android:icon="@drawable/ic_baseline_dashboard_24"
+            android:title="@string/menu_dashboard" />
+        <item
+            android:id="@+id/nav_pickup"
+            android:icon="@drawable/ic_baseline_local_shipping_24"
+            android:title="@string/menu_pickup" />
+        <item
+            android:id="@+id/nav_shipment_list"
+            android:icon="@drawable/ic_baseline_check_box_24"
+            android:title="@string/menu_shipment_list" />
+    </group>
+</menu>
