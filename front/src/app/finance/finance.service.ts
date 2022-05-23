@@ -17,7 +17,11 @@ export class FinanceService {
       `${environment.apiV1}recoltes/getRecoltePresRecolte`
     );
   }
-
+  getRecolteDetail(tracking) {
+    return this.http.get<any[]>(
+      `${environment.apiV1}recoltes/getRecolteDetail/${tracking}`
+    );
+  }
   setRecolteRecue(rctTracking: string[]) {
     return this.http.post(`${environment.apiV1}recoltes/receiveRecoltes`, {
       rctTracking: rctTracking,
@@ -98,6 +102,7 @@ export class FinanceService {
     );
   }
 
+
   funcPaginatePmt(
     link?: string,
     page?: number,
@@ -136,22 +141,18 @@ export class FinanceService {
   getColisLivrerByCoursierId(id: number) {
     return this.http.get<any>(
       `${environment.apiV1}shipments/colisLivrer/coursier/${id}`
-    );
+      );
   }
-
-  payerShipmentOfCoursier(shipments: any) {
-    return this.http.patch(
-      `${environment.apiV1}shipments/payerShipments`,
-      shipments,
-      { responseType: 'blob' }
-    );
+  payerShipmentOfCoursier(coursierId: number) {
+    return this.http.patch(`${environment.apiV1}shipments/payerShipmentsOfCoursier?coursierId=${coursierId}`, '', { responseType: 'blob' })
   }
-
   getPaginatePmtc(): Observable<Pagination<any>> {
     return this.http.get<Pagination<any>>(
       `${environment.apiV1}pmtCoursier/paginatePmtc`
     );
   }
+
+
 
   funcPaginate(
     link?: string,
@@ -162,18 +163,16 @@ export class FinanceService {
       link = `${environment.apiV1}pmtCoursier/paginatePmtc?page=${page}`;
       return this.http.get<Pagination<any>>(link);
     }
-
     if (page && search) {
       link = `${environment.apiV1}pmtCoursier/paginatePmtc?searchPmtcTerm=${search}&page=${page}`;
       return this.http.get<Pagination<any>>(link);
     }
-    
     if (search) {
       return this.http.get<Pagination<any>>(`${link}&searchPmtcTerm=${search}`);
     }
     return this.http.get<Pagination<any>>(link);
-    
   }
+
 
   searchPmtc(searchWilayaTerm: string) {
     return this.http.get<Pagination<any>>(
@@ -182,12 +181,14 @@ export class FinanceService {
   }
 
   getAllPmtc() {
-    return this.http.get<Pagination<any>>(`${environment.apiV1}pmtCoursier`);
+    return this.http.get<Pagination<any>>(
+      `${environment.apiV1}pmtCoursier`
+    );
   }
 
   printPmtc(id: number) {
     return this.http.get(`${environment.apiV1}pmtCoursier/printPmtc/${id}`, {
       responseType: 'blob',
-    });
+    })
   }
 }

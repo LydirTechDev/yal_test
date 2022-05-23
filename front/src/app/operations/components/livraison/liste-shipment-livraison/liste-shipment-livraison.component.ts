@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { SweetAlertService } from 'src/app/core/services/sweet-alert.service';
 import { Echecs } from 'src/app/coursier/enums/echecs';
@@ -19,11 +20,13 @@ export class ListeShipmentLivraisonComponent implements OnInit {
   tantaiveEchouer = TentativesEchouer;
   listTantaivesEchec;
   listTantaiveEchouer;
+  shippmentFormToDomicile: FormGroup
 
   constructor(
     private readonly livraisonService: LivraisonService,
     private modalService: NgbModal,
     public sweetalertService: SweetAlertService,
+    public formBuilder: FormBuilder,
   ) {
     this.listTantaivesEchec = [];
     for (const key in this.tantaivesEchec) {
@@ -37,7 +40,11 @@ export class ListeShipmentLivraisonComponent implements OnInit {
   }
 
   ngOnInit(): void {
+
     this.getShipmentToBeDelivered();
+    this.shippmentFormToDomicile = this.formBuilder.group({
+      adresse: ['', Validators.compose([Validators.required, Validators.minLength(3), Validators.maxLength(50)])],
+    })
   }
 
   getShipmentToBeDelivered() {
@@ -65,6 +72,30 @@ export class ListeShipmentLivraisonComponent implements OnInit {
       this.searchText
     );
   }
+  closeModalsetStopToDomicile() {
+    this.modalService.dismissAll()
+    this.shippmentFormToDomicile.reset()
+  }
+  setStopToDomicile(stopToDomicile,tracking){
+    console.log("🚀 ~ file: liste-shipment-livraison.component.ts ~ line 80 ~ ListeShipmentLivraisonComponent ~ setStopToDomicile ~ tracking", tracking)
+    this.selectedShipment = tracking;
+    this.modalService.open(stopToDomicile, { centered: true ,size: 'md'});
+  }
+  validateStopDeskToDomicile() {
+    if (this.shippmentFormToDomicile.controls['adresse'].valid ) {
+      this.modalService.dismissAll();
+      return this.livraisonService
+        .validateStopDeskToDomicile(this.selectedShipment, this.shippmentFormToDomicile.value['adresse'])
+        .subscribe((resp) => {
+          if (resp) {
+            this.shippmentFormToDomicile.reset()
+            this.getShipmentToBeDelivered();
+            this.selectedShipment = ''
+            this.sweetalertService.creationSucces('Colis modifié avec succes')
+          }
+        });
+    } 
+  }
 
   setStatusShipmentLivre(tracking: string) {
     const title = `Livrer le colis ${tracking}`;
@@ -79,6 +110,7 @@ export class ListeShipmentLivraisonComponent implements OnInit {
           action.toPromise().then(
             () => {
               Swal.fire(successTitle, '', 'success')
+              this.selectedShipment = ''
               this.getShipmentToBeDelivered();
             },
             (error) => Swal.fire(errorTitle, 'Erreur confirmation', 'error')
@@ -100,6 +132,7 @@ export class ListeShipmentLivraisonComponent implements OnInit {
       .subscribe(
         (data) => {
           if (data) {
+            this.selectedShipment = ''
             this.getShipmentToBeDelivered();
           }
           console.log(
@@ -121,6 +154,7 @@ export class ListeShipmentLivraisonComponent implements OnInit {
       .setStatusShipmentEchec(this.selectedShipment, msg)
       .subscribe((resp) => {
         if (resp) {
+          this.selectedShipment = ''
           this.getShipmentToBeDelivered();
         }
       });

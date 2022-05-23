@@ -35,6 +35,17 @@ import { ZonesService } from '../zones/zones.service';
 import { PoidsService } from '../poids/poids.service';
 import { CodeTarifsZonesService } from '../code-tarifs-zones/code-tarifs-zones.service';
 import { CodeTarifsZone } from '../code-tarifs-zones/entities/code-tarifs-zone.entity';
+import { ShipmentsService } from '../shipments/shipments.service';
+import { Shipment } from '../shipments/entities/shipment.entity';
+import { Status } from '../status/entities/status.entity';
+import { StatusService } from '../status/status.service';
+import { Coursier } from '../coursier/entities/coursier.entity';
+import { CoursierService } from '../coursier/coursier.service';
+import { PmtCoursier } from '../pmt-coursier/entities/pmt-coursier.entity';
+import { PmtCoursierService } from '../pmt-coursier/pmt-coursier.service';
+import { RotationsService } from '../rotations/rotations.service';
+import { Rotation } from '../rotations/entities/rotation.entity';
+import { RecolteFacture } from '../recolte-facture/entities/recolte-facture.entity';
 
 @Module({
   imports: [
@@ -55,6 +66,12 @@ import { CodeTarifsZone } from '../code-tarifs-zones/entities/code-tarifs-zone.e
       Zone,
       Poid,
       CodeTarifsZone,
+      Shipment,
+      Status,
+      Coursier,
+      PmtCoursier,
+      Rotation,
+      RecolteFacture
 
     ]),
   ],
@@ -78,7 +95,12 @@ import { CodeTarifsZone } from '../code-tarifs-zones/entities/code-tarifs-zone.e
     ZonesService,
     PoidsService,
     CodeTarifsZonesService,
+    ShipmentsService,
+    StatusService,
+    CoursierService,
+    PmtCoursierService,
+    RotationsService
 
   ],
 })
-export class FactureModule {}
+export class FactureModule { }

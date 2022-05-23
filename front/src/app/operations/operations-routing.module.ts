@@ -28,6 +28,7 @@ import { ListEchecsComponent } from '../coursier/components/list-echecs/list-ech
 import { ListeShipmentLivraisonComponent } from './components/livraison/liste-shipment-livraison/liste-shipment-livraison.component';
 import { ListeShipmentEchecLivraisonComponent } from './components/livraison/liste-shipment-echec-livraison/liste-shipment-echec-livraison.component';
 import { CreateRecolteDeskComponent } from './components/finance/create-recolte-desk/create-recolte-desk.component';
+import { ListSacsComponent } from './components/shipments/list-sacs/list-sacs.component';
 
 const routes: Routes = [
   {
@@ -63,6 +64,10 @@ const routes: Routes = [
   {
     path: 'vidé-wilaya-sac',
     component: EmptiedWilayaSacComponent,
+  },
+  {
+    path: 'listesacs',
+    component: ListSacsComponent,
   },
   {
     path: 'interne-shipment',

@@ -55,7 +55,7 @@ export class DetailAgenceComponent implements OnInit {
       Validators.compose([
         Validators.required,
         Validators.minLength(3),
-        Validators.maxLength(50),,
+        Validators.maxLength(50),
       ]),
     ],
     adresse: [
@@ -90,7 +90,13 @@ export class DetailAgenceComponent implements OnInit {
       Validators.compose([Validators.required]),
     ],
     wilayaId: ['', Validators.compose([Validators.required])],
+    prixRamassageZoneOne: [, Validators.required],
+    prixRamassageZoneTwo: [, Validators.required],
+    prixLivraisonZoneOne: [, Validators.required],
+    prixLivraisonZoneTwo: [, Validators.required],
+    communeZoneOne: [, Validators.required],
   });
+
 
   ngOnInit(): void {
     this.breadCrumbItems = [
@@ -116,6 +122,11 @@ export class DetailAgenceComponent implements OnInit {
           type: agences.type,
           communeId: agences.commune.id,
           wilayaId: agences.commune.wilaya.id,
+          prixRamassageZoneOne: agences.prixRamassageZoneOne,
+          prixRamassageZoneTwo:agences.prixRamassageZoneTwo,
+          prixLivraisonZoneOne:agences.prixLivraisonZoneOne,
+          prixLivraisonZoneTwo:agences.prixLivraisonZoneTwo,
+          communeZoneOne:agences.communeZoneOne,
         });
         this.getCommuneByWilayaId();
         this.agenceForm.disable();
@@ -130,8 +141,11 @@ export class DetailAgenceComponent implements OnInit {
   getCommuneByWilayaId() {
     this.communeService
       .getCommunsByWilayaId(this.agenceForm.get('wilayaId').value)
-      .subscribe((resp) => (this.listCommune = resp));
+      .subscribe((resp) => {
+        (this.listCommune = resp);
+        console.log("🚀 ~ file: detail-agence.component.ts ~ line 145 ~ DetailAgenceComponent ~ getCommuneByWilayaId ~ resp", resp) });
   }
+     
 
   onChangWilaya() {
     this.communeService
@@ -201,7 +215,7 @@ export class DetailAgenceComponent implements OnInit {
     this.sweetalertService
       .confirmStandard(
         alertTitle,
-        alertMessage,'','',null
+        alertMessage, '', '', null
       )
       .then((result) => {
         if (result.isConfirmed) {

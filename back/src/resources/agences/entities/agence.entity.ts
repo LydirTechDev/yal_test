@@ -17,6 +17,7 @@ import { Shipment } from 'src/resources/shipments/entities/shipment.entity';
 import { Pmt } from 'src/resources/pmt/entities/pmt.entity';
 import { PmtCoursier } from 'src/resources/pmt-coursier/entities/pmt-coursier.entity';
 import { Facture } from 'src/resources/facture/entities/facture.entity';
+import { JourSemaineEnum } from 'src/enums/JourSemaineEnum';
 
 @Entity()
 export class Agence {
@@ -117,4 +118,29 @@ export class Agence {
   pmtCoursierCreatedOn: PmtCoursier[];
   @OneToMany(() => Facture, (facture) => facture.createdOn)
   facture: Facture[];
+
+  @Column('int', {
+    nullable: true,
+    array: true,
+  })
+  communeZoneOne: number[];
+  @Column({
+    nullable: true,
+  })
+  prixRamassageZoneOne: number;
+
+  @Column({
+    nullable: true,
+  })
+  prixRamassageZoneTwo: number;
+
+  @Column({
+    nullable: true,
+  })
+  prixLivraisonZoneOne: number;
+
+  @Column({
+    nullable: true,
+  })
+  prixLivraisonZoneTwo: number;
 }

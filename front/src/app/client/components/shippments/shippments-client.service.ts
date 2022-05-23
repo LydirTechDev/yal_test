@@ -111,5 +111,9 @@ export class ShippmentsClientService {
       `${environment.apiV1}communes/wilayaId/${id}`
     );
   }
+  createShipmentByFile(service, shipments) {
+    return this.http.post<any>(`${environment.apiV1}shipments/createShipmentByFile`, { service, shipments});
+
+  }
 
 }

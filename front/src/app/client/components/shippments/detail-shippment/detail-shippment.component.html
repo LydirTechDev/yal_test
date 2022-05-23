@@ -66,7 +66,6 @@
         <div class="row ">
           <div class="col-12 mt-2">
             <div class="row m-0 p-0">
-              <p class="legend mx-auto"><span>Type de livraison</span></p>
             </div>
           </div>
           <div class="col-6 border-right border-secondary pt-3 mb-2">
@@ -133,64 +132,48 @@
               </div>
             </div>
 
-            <!-- Designation -->
-            <div class="form-group row mb-3 ">
-              <label class="col-md-3 col-form-label text-right">Désignations*:</label>
-              <div class="col-md-9">
-                <input class="form-control" formControlName="designationProduit" placeholder="Désignation Produit "
-                  [ngClass]="{'is-invalid': shippmentForm.controls['designationProduit'].invalid && (shippmentForm.controls['designationProduit'].dirty || shippmentForm.controls['designationProduit'].touched),'is-valid': shippmentForm.controls['designationProduit'].valid && (shippmentForm.controls['designationProduit'].dirty || shippmentForm.controls['designationProduit'].touched) }">
-                <div *ngIf="shippmentForm.controls['designationProduit'].invalid" class="invalid-feedback">
-                  <span *ngIf="shippmentForm.controls['designationProduit'].errors.required">Designation produit
-                    requise</span>
-                  <span *ngIf="shippmentForm.controls['designationProduit'].errors.minlength">longueur minimale 3
-                    characters</span>
-                  <span *ngIf="shippmentForm.controls['designationProduit'].errors.maxlength">longueur maximale 50
-                    characters</span>
-                </div>
-              </div>
+      <!-- Prix Produit-->
+      <div class="form-group row mb-3 ">
+        <label class="col-md-3 col-form-label text-right">Prix du produit*:</label>
+        <div class="col-md-9">
+          <div class="input-group">
+            <input type="number" class="form-control" formControlName="prixVente" placeholder="Prix de vante du Produit "
+              (keyup)="setValuePrixEstimer()"
+              [ngClass]="{'is-invalid': shippmentForm.controls['prixVente'].invalid && (shippmentForm.controls['prixVente'].dirty || shippmentForm.controls['prixVente'].touched),'is-valid': shippmentForm.controls['prixVente'].valid && (shippmentForm.controls['prixVente'].dirty || shippmentForm.controls['prixVente'].touched) }">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="validationTooltipUsernamePrepend">DA</span>
             </div>
-
-    <!-- Prix Produit-->
-    <div class="form-group row mb-3 ">
-      <label class="col-md-3 col-form-label text-right">Prix du produit*:</label>
-      <div class="col-md-9">
-        <div class="input-group">
-          <input class="form-control" formControlName="prixVente" placeholder="Prix de vante du Produit "
-            [ngClass]="{'is-invalid': shippmentForm.controls['prixVente'].invalid && (shippmentForm.controls['prixVente'].dirty || shippmentForm.controls['prixVente'].touched),'is-valid': shippmentForm.controls['prixVente'].valid && (shippmentForm.controls['prixVente'].dirty || shippmentForm.controls['prixVente'].touched) }">
-          <div class="input-group-prepend">
-            <span class="input-group-text" id="validationTooltipUsernamePrepend">DA</span>
-          </div>
-          <div *ngIf="shippmentForm.controls['prixVente'].invalid" class="invalid-feedback">
-            <span *ngIf="shippmentForm.controls['prixVente'].errors.required">prixVente requie</span>
-            <span *ngIf="shippmentForm.controls['prixVente'].errors.minlength">longueur minimale 3
-              characters.</span>
-            <span *ngIf="shippmentForm.controls['prixVente'].errors.maxlength">longueur maximale 50
-              characters.</span>
+            <div *ngIf="shippmentForm.controls['prixVente'].invalid" class="invalid-feedback">
+              <span *ngIf="shippmentForm.controls['prixVente'].errors.required">prix de vente requis</span>
+              <span *ngIf="shippmentForm.controls['prixVente'].errors.minlength">longueur minimale 3
+                characters.</span>
+              <span *ngIf="shippmentForm.controls['prixVente'].errors.maxlength">longueur maximale 50
+                characters.</span>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    <!-- Prix Estimer-->
-    <div class="form-group row mb-3 ">
-      <label class="col-md-3 col-form-label text-right">Prix estimé*:</label>
-      <div class="col-md-9">
-        <div class="input-group">
-          <input type="number" min="1000" class="form-control" formControlName="prixEstimer"
-            placeholder="Prix de vante du Produit "
-            [ngClass]="{'is-invalid': shippmentForm.controls['prixEstimer'].invalid && (shippmentForm.controls['prixEstimer'].dirty || shippmentForm.controls['prixEstimer'].touched),'is-valid': shippmentForm.controls['prixEstimer'].valid && (shippmentForm.controls['prixEstimer'].dirty || shippmentForm.controls['prixEstimer'].touched) }">
-          <div class="input-group-prepend">
-            <span class="input-group-text" id="validationTooltipUsernamePrepend">DA</span>
-          </div>
-          <div *ngIf="shippmentForm.controls['prixEstimer'].invalid" class="invalid-feedback">
-            <span *ngIf="shippmentForm.controls['prixEstimer'].errors.required">prix de vente requis</span>
-            <span *ngIf="shippmentForm.controls['prixEstimer'].errors.minlength">longueur minimale 3
-              characters.</span>
-            <span *ngIf="shippmentForm.controls['prixEstimer'].errors.maxlength">longueur maximale 50
-              characters.</span>
-          </div>
-        </div>
-      </div>
-    </div>
+                      <!-- Prix Estimer-->
+                      <div class="form-group row mb-3 ">
+                        <label class="col-md-3 col-form-label text-right">Prix estimé*:</label>
+                        <div class="col-md-9">
+                          <div class="input-group">
+                            <input type="number" min="1000" class="form-control" formControlName="prixEstimer"
+                              placeholder="Prix de vante du Produit "
+                              [ngClass]="{'is-invalid': shippmentForm.controls['prixEstimer'].invalid && (shippmentForm.controls['prixEstimer'].dirty || shippmentForm.controls['prixEstimer'].touched),'is-valid': shippmentForm.controls['prixEstimer'].valid && (shippmentForm.controls['prixEstimer'].dirty || shippmentForm.controls['prixEstimer'].touched) }">
+                            <div class="input-group-prepend">
+                              <span class="input-group-text" id="validationTooltipUsernamePrepend">DA</span>
+                            </div>
+                            <div *ngIf="shippmentForm.controls['prixEstimer'].invalid" class="invalid-feedback">
+                              <span *ngIf="shippmentForm.controls['prixEstimer'].errors.required">prix de vente requis</span>
+                              <span *ngIf="shippmentForm.controls['prixEstimer'].errors.minlength">longueur minimale 3
+                                characters.</span>
+                              <span *ngIf="shippmentForm.controls['prixEstimer'].errors.maxlength">longueur maximale 50
+                                characters.</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
           </div>
 
           <div class="col-6 border-left pt-3 mb-2">
@@ -270,6 +253,79 @@
                     characters</span>
                   <span *ngIf="shippmentForm.controls['numCommande'].errors.maxlength">longueur maximale 50
                     characters</span>
+                </div>
+              </div>
+            </div>
+<!-- Designation -->
+<div class="form-group row mb-3 ">
+  <label class="col-md-3 col-form-label text-right">Désignations*:</label>
+  <div class="col-md-9">
+    <input class="form-control" formControlName="designationProduit" placeholder="Désignation Produit "
+      [ngClass]="{'is-invalid': shippmentForm.controls['designationProduit'].invalid && (shippmentForm.controls['designationProduit'].dirty || shippmentForm.controls['designationProduit'].touched),'is-valid': shippmentForm.controls['designationProduit'].valid && (shippmentForm.controls['designationProduit'].dirty || shippmentForm.controls['designationProduit'].touched) }">
+    <div *ngIf="shippmentForm.controls['designationProduit'].invalid" class="invalid-feedback">
+      <span *ngIf="shippmentForm.controls['designationProduit'].errors.required">Designation produit
+        requise</span>
+      <span *ngIf="shippmentForm.controls['designationProduit'].errors.minlength">longueur minimale 5
+        characters</span>
+      <span *ngIf="shippmentForm.controls['designationProduit'].errors.maxlength">longueur maximale 50
+        characters</span>
+    </div>
+  </div>
+</div>
+          </div>
+
+        </div>
+    <p class="col-12 text-center mt-3"><span class="mx-2">Dimensions</span></p>
+        
+        <div class="row">
+          <div class="col-6">
+            <div class="form-group row mb-3 ">
+              <label class="col-md-3 col-form-label text-right">Poids (Kg)*:</label>
+              <div class="col-md-6">
+                <input type="number" min="0" max="150" class="form-control" formControlName="poids"
+                  placeholder="Poids (Kg)"
+                  [ngClass]="{'is-invalid': shippmentForm.controls['poids'].invalid && (shippmentForm.controls['poids'].dirty || shippmentForm.controls['poids'].touched),'is-valid': shippmentForm.controls['poids'].valid && (shippmentForm.controls['poids'].dirty || shippmentForm.controls['poids'].touched) }">
+                <div *ngIf="shippmentForm.controls['poids'].invalid" class="invalid-feedback">
+                  <span *ngIf="shippmentForm.controls['poids'].errors.required">poids
+                    requie</span>
+                </div>
+              </div>
+            </div>
+            <div class="form-group row mb-3 ">
+              <label class="col-md-3 col-form-label text-right">Largeur (m):</label>
+              <div class="col-md-6">
+                <input type="number" step="0.1" min="0" max="2" class="form-control" formControlName="largeur"
+                  placeholder="largeur (m)"
+                  [ngClass]="{'is-invalid': shippmentForm.controls['largeur'].invalid && (shippmentForm.controls['largeur'].dirty || shippmentForm.controls['largeur'].touched),'is-valid': shippmentForm.controls['largeur'].valid && (shippmentForm.controls['largeur'].dirty || shippmentForm.controls['largeur'].touched) }">
+                <div *ngIf="shippmentForm.controls['largeur'].invalid" class="invalid-feedback">
+                  <span *ngIf="shippmentForm.controls['largeur'].errors.required">largeur
+                    requie</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="form-group row mb-3 ">
+              <label class="col-md-3 col-form-label text-right">longueur (m)*:</label>
+              <div class="col-md-6">
+                <input type="number" step="0.1" min="0" max="2" class="form-control" formControlName="longueur"
+                  placeholder="longueur (m) "
+                  [ngClass]="{'is-invalid': shippmentForm.controls['longueur'].invalid && (shippmentForm.controls['longueur'].dirty || shippmentForm.controls['longueur'].touched),'is-valid': shippmentForm.controls['longueur'].valid && (shippmentForm.controls['longueur'].dirty || shippmentForm.controls['longueur'].touched) }">
+                <div *ngIf="shippmentForm.controls['longueur'].invalid" class="invalid-feedback">
+                  <span *ngIf="shippmentForm.controls['longueur'].errors.required">longueur
+                    requie</span>
+                </div>
+              </div>
+            </div>
+            <div class="form-group row mb-3 ">
+              <label class="col-md-3 col-form-label text-right">Hauteur (m)*:</label>
+              <div class="col-md-6">
+                <input type="number" step="0.1" min="0" max="2" class="form-control" formControlName="hauteur"
+                  placeholder="Hauteur (m) "
+                  [ngClass]="{'is-invalid': shippmentForm.controls['hauteur'].invalid && (shippmentForm.controls['hauteur'].dirty || shippmentForm.controls['hauteur'].touched),'is-valid': shippmentForm.controls['hauteur'].valid && (shippmentForm.controls['hauteur'].dirty || shippmentForm.controls['hauteur'].touched) }">
+                <div *ngIf="shippmentForm.controls['hauteur'].invalid" class="invalid-feedback">
+                  <span *ngIf="shippmentForm.controls['hauteur'].errors.required">hauteur
+                    requie</span>
                 </div>
               </div>
             </div>

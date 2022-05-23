@@ -25,7 +25,7 @@ export class ReceiveRecoltesComponent implements OnInit {
   ngOnInit(): void {
     this.getRecoltePresRecolte();
   }
-
+  
   recieveRecoltesCheck() {
     const express_reg = new RegExp(/^rec-\d{8}$/, 'i');
     const track = this.formdata.value['rctTracking'];
@@ -41,7 +41,6 @@ export class ReceiveRecoltesComponent implements OnInit {
         this.listRctRecoltes.splice(index, 1);
         this.count += 1;
         this.arrOfRct.push(track);
-        console.log("🚀 ~ file: receive-recoltes.component.ts ~ line 44 ~ ReceiveRecoltesComponent ~ recieveRecoltesCheck ~ track", track)
         this.formdata.reset();
         this.sweetAlertService.backgroundGreen();
         console.log('last', this.listRctRecoltes);
@@ -53,10 +52,7 @@ export class ReceiveRecoltesComponent implements OnInit {
 
   getRecoltePresRecolte() {
     return this.financeService.getRecoltePresRecolte().subscribe((resp) => {
-      console.log(
-        '🚀 ~ file: receive-recoltes.component.ts ~ line 55 ~ ReceiveRecoltesComponent ~ returnthis.financeService.getRecoltePresRecolte ~ resp',
-        resp
-      );
+      console.log("🚀 ~ file: receive-recoltes.component.ts ~ line 55 ~ ReceiveRecoltesComponent ~ returnthis.financeService.getRecoltePresRecolte ~ resp", resp)
       if (resp == null) {
         this.listRctRecoltes = [];
       } else {

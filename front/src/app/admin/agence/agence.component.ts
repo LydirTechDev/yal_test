@@ -158,6 +158,11 @@ export class AgenceComponent implements OnInit {
       nis: [, [Validators.required]],
       nAI: [, [Validators.required]],
       communeId: [, Validators.required],
+      prixRamassageZoneOne:[, Validators.required],
+      prixRamassageZoneTwo:[, Validators.required],
+      prixLivraisonZoneOne: [, Validators.required],
+      prixLivraisonZoneTwo: [, Validators.required],
+      communeZoneOne:[, Validators.required],
     });
 
     /**
@@ -327,6 +332,7 @@ export class AgenceComponent implements OnInit {
    * @param response
    */
   private _agencesResponse(response: Pagination<IAgence>) {
+    console.log("🚀 ~ file: agence.component.ts ~ line 330 ~ AgenceComponent ~ _agencesResponse ~ response", response)
     this.agenceData = response.items;
     this.metaData = response.meta;
     this.metaLinks = response.links;
@@ -364,13 +370,32 @@ export class AgenceComponent implements OnInit {
    * @returns
    */
   private _validateFirstStep(): boolean {
-    if (this.agenceForm.valid) {
+    if (this.agenceForm.get('wilaya').valid &&
+      this.agenceForm.get('nom').valid &&
+      this.agenceForm.get('adresse').valid &&
+      this.agenceForm.get('type').valid &&
+      this.agenceForm.get('nrc').valid &&
+      this.agenceForm.get('nis').valid &&
+      this.agenceForm.get('nif').valid &&
+      this.agenceForm.get('nAI').valid &&
+      this.agenceForm.get('communeId').valid ) {
       this.wilayaAgence = this._filterWilayaById(
         this.agenceForm.get('wilaya').value
       ).nomLatin;
       this.communeAgence = this._filterCommuneById(
         this.agenceForm.get('communeId').value
       ).nomLatin;
+      return true;
+    }
+    return false;
+  }
+
+  private _validateSecondStep(): boolean {
+    if (this.agenceForm.get('prixRamassageZoneOne').valid &&
+      this.agenceForm.get('prixRamassageZoneTwo').valid &&
+      this.agenceForm.get('prixLivraisonZoneOne').valid &&
+      this.agenceForm.get('prixLivraisonZoneTwo').valid &&
+      this.agenceForm.get('communeZoneOne').valid) {
       return true;
     }
     return false;
@@ -395,6 +420,10 @@ export class AgenceComponent implements OnInit {
   }
   get validateFirstStep(): boolean {
     return this._validateFirstStep();
+  }
+
+  get validateSecondStep(): boolean {
+    return this._validateSecondStep();
   }
   get form() {
     return this.agenceForm.controls;

@@ -137,7 +137,6 @@ export class ClientsComponent implements OnInit {
         .confirmStandard(alertTitle, alertMessage, '', '', null)
         .then((result) => {
           if (result.isConfirmed) {
-
             this.clientService.updateActivityClient(id,req).subscribe(
               (response)=>{
                 this.sweetAlertService.modificationSucces("client activé avec succès")

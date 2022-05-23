@@ -1,0 +1,444 @@
+<div class="row">
+    <div class="col-12 mb-1">
+        <h6 class="text-uppercase">Statistiques operationnels par status</h6>
+    </div>
+</div>
+<form [formGroup]="dateForm" class="row col-12 py-0 my-0 ">
+    <div class="row col-12 py-0 my-0 ">
+        <div class="form-group row col-12 py-0 my-0 col-lg-6 col-xl-4">
+            <label class="col-md-4 col-form-label text-right" for="dateDebut">Date debut*:</label>
+            <div class="col-md-8">
+                <input class="form-control" formControlName="dateDebut" type="date" placeholder="Date de debut"
+                    (change)="compare()" (change)="enableDisableDatefin()" (change)="compareToDateDebut()"
+                    [ngClass]="{'is-invalid': (dateDebutError || dateForm.controls['dateDebut'].invalid) && (dateForm.controls['dateDebut'].dirty || dateForm.controls['dateDebut'].touched),'is-valid': dateForm.controls['dateDebut'].valid && (dateForm.controls['dateDebut'].dirty || dateForm.controls['dateDebut'].touched) }">
+                <div *ngIf="dateForm.controls['dateDebut'].invalid" class="invalid-feedback">
+                    <span *ngIf="dateForm.controls['dateDebut'].errors.required">Date debut requise</span>
+                </div>
+                <span *ngIf="dateDebutError" class="text-danger error">Date de début supérieure à la date
+                    actuelle</span> <br>
+                <span *ngIf="intervalError" class="text-danger error">Interval incorrecte</span>
+
+            </div>
+        </div>
+        <div class="form-group row col-12 py-0 my-0 col-lg-6 col-xl-4">
+            <label class="col-md-4 col-form-label text-right" for="dateFin">Date fin*:</label>
+            <div class="col-md-8">
+                <input class="form-control" formControlName="dateFin" type="date" placeholder="Date de fin"
+                    (change)="compare()" (change)="compareToDateDebut()"
+                    [ngClass]="{'is-invalid': (dateFinError || dateForm.controls['dateFin'].invalid) && (dateForm.controls['dateFin'].dirty || dateForm.controls['dateFin'].touched),'is-valid': dateForm.controls['dateFin'].valid && (dateForm.controls['dateFin'].dirty || dateForm.controls['dateFin'].touched) }">
+                <div *ngIf="dateForm.controls['dateFin'].invalid" class="invalid-feedback">
+                    <span *ngIf="dateForm.controls['dateFin'].errors.required">Date fin requise</span>
+                </div>
+                <span *ngIf="dateFinError" class="text-danger error">Date de fin supérieure à la date
+                    actuelle</span><br>
+                <span *ngIf="intervalError" class="text-danger error">Interval incorrecte</span>
+            </div>
+        </div>
+        <div class="form-group row col-12 py-0 my-0 col-lg-6 col-xl-4">
+            <h6 class="col-md-4 col-form-label text-right" for="stationSelected">Agence:</h6>
+            <div class="col-8">
+                <ng-select formControlName="stationSelected" placeholder=" Selectionner une agence" [clearable]="false"
+                    appendTo="body">
+                    <ng-option value="all">
+                        Toutes les agences
+                    </ng-option>
+
+                    <ng-option *ngFor="let station of StationData" [value]="station.id">
+                        {{station.nom}}
+                    </ng-option>
+                </ng-select>
+            </div>
+        </div>
+        <div class="form-group col-12 col-lg-6 col-xl-4">
+            <div class=" ">
+                <button class="btn btn-sm btn-danger" [disabled]="dateForm.invalid"
+                    (click)="getStatistiquesStatusOPs()">
+                    Filtrer
+
+                </button>
+
+            </div>
+        </div>
+    </div>
+
+</form>
+<hr class="mt-0">
+<div class="container-fluid">
+    <section>
+        <div class="row">
+            <div class="col-xl-3 col-sm-6 col-12 mb-0">
+                <div class="card bg-success">
+                    <div class="card-body py-0 my-2">
+                        <div class="d-flex justify-content-between px-md-1">
+                            <div class="align-self-center">
+                                <h6>Livré</h6>
+                            </div>
+                            <span class="">{{statistique.total > 0 ?( statistique.livre*100/statistique.total|currency:'%':'symbol' :'1.0-2' :'fr'):0}}
+                                </span>
+                            <div class="text-end row">
+                                <h5> {{statistique.livre}} </h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-sm-6 col-12 mb-0">
+                <div class="card  bg-danger">
+                    <div class="card-body py-0 my-2">
+                        <div class="d-flex justify-content-between px-md-1">
+                            <div class="align-self-center">
+                                <h6>
+                                    Echec livraison
+                                </h6>
+                            </div>
+                            <span class="">{{statistique.total > 0 ?( statistique.echecLivraison*100/statistique.total|currency:'%':'symbol' :'1.0-2' :'fr') :0
+                                }}</span>
+                            <div class="text-end row">
+                                <h5>{{statistique.echecLivraison}}</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-sm-6 col-12 mb-0">
+                <div class="card">
+                    <div class="card-body py-0 my-2">
+                        <div class="d-flex justify-content-between px-md-1">
+                            <div class="align-self-center">
+                                <h6>
+                                    Tentative échouée
+                                </h6>
+                            </div>
+                            <span class="">{{statistique.total > 0 ?( statistique.tentativeEchouee*100/statistique.total|currency:'%':'symbol' :'1.0-2' :'fr')
+                                :0 }}</span>
+                            <div class="text-end row">
+                                <h5>{{statistique.tentativeEchouee}}</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-sm-6 col-12 mb-0">
+                <div class="card">
+                    <div class="card-body py-0 my-2">
+                        <div class="d-flex justify-content-between px-md-1">
+                            <div class="align-self-center">
+                                <h6>
+                                    Sorti en livraison
+                                </h6>
+                            </div>
+                            <span class="">{{statistique.total > 0 ?( statistique.sortiEnLivraison*100/statistique.total|currency:'%':'symbol' :'1.0-2' :'fr')
+                                :0 }}</span>
+                            <div class="text-end">
+                                <h5>{{statistique.sortiEnLivraison}}</h5>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xl-3 col-sm-6 col-12 mb-0">
+                <div class="card">
+                    <div class="card-body py-0 my-2">
+                        <div class="d-flex justify-content-between px-md-1">
+                            <div class="align-self-center">
+                                <h6>En preparation</h6>
+                            </div>
+                            <span class="">{{statistique.total > 0 ?( statistique.enPreparation*100/statistique.total|currency:'%':'symbol' :'1.0-2' :'fr') :0
+                                }}</span>
+                            <div class="text-end row">
+                                <h5>{{statistique.enPreparation}}</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-sm-6 col-12 mb-0">
+                <div class="card">
+                    <div class="card-body py-0 my-2">
+                        <div class="d-flex justify-content-between px-md-1">
+                            <div class="align-self-center">
+                                <h6>
+                                    Prés à expidier
+                                </h6>
+                            </div>
+                            <span class="">{{statistique.total > 0 ?( statistique.presExpidier*100/statistique.total|currency:'%':'symbol' :'1.0-2' :'fr') : 0
+                                }}</span>
+                            <div class="text-end row">
+                                <h5>{{statistique.presExpidier}}</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-sm-6 col-12 mb-0">
+                <div class="card">
+                    <div class="card-body py-0 my-2">
+                        <div class="d-flex justify-content-between px-md-1">
+                            <div class="align-self-center">
+                                <h6>
+                                    Expidier
+                                </h6>
+                            </div>
+                            <span class="">{{statistique.total > 0 ?( statistique.expidier*100/statistique.total|currency:'%':'symbol' :'1.0-2' :'fr') :0}}</span>
+                            <div class="text-end row">
+                                <h5>{{statistique.expidier}}</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-sm-6 col-12 mb-0">
+                <div class="card">
+                    <div class="card-body py-0 my-2">
+                        <div class="d-flex justify-content-between px-md-1">
+                            <div class="align-self-center">
+                                <h6>
+                                    Transfert
+                                </h6>
+                            </div>
+                            
+                            <span class="">{{statistique.total > 0 ?( statistique.transfert*100/statistique.total|currency:'%':'symbol' :'1.0-2' :'fr') :0 }}</span>
+                            <div class="text-end row">
+                                <h5>{{statistique.transfert}}</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xl-3 col-sm-6 col-12 mb-0">
+                <div class="card">
+                    <div class="card-body py-0 my-2">
+                        <div class="d-flex justify-content-between px-md-1">
+                            <div class="align-self-center">
+                                <h6>Centre</h6>
+                            </div>
+                            <span class="">{{statistique.total > 0 ?( statistique.centre*100/statistique.total|currency:'%':'symbol' :'1.0-2' :'fr') : 0}}
+                                %</span>
+                            <div class="text-end row">
+                                <h5>{{statistique.centre}}</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-sm-6 col-12 mb-0">
+                <div class="card">
+                    <div class="card-body py-0 my-2">
+                        <div class="d-flex justify-content-between px-md-1">
+                            <div class="align-self-center">
+                                <h6>
+                                    Vers wilaya
+                                </h6>
+                            </div>
+                            <span class="">{{statistique.total > 0 ?( statistique.versWilaya*100/statistique.total|currency:'%':'symbol' :'1.0-2' :'fr') : 0 }}</span>
+                            <div class="text-end row">
+                                <h5>{{statistique.versWilaya}}</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-sm-6 col-12 mb-0">
+                <div class="card">
+                    <div class="card-body py-0 my-2">
+                        <div class="d-flex justify-content-between px-md-1">
+                            <div class="align-self-center">
+                                <h6>
+                                    Reçu wilaya
+                                </h6>
+                            </div>
+                            <span class="">{{statistique.total > 0 ?( statistique.recuWilaya*100/statistique.total|currency:'%':'symbol' :'1.0-2' :'fr') : 0 }}</span>
+                            <div class="text-end row">
+                                <h5>{{statistique.recuWilaya}}</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-sm-6 col-12 mb-0">
+                <div class="card">
+                    <div class="card-body py-0 my-2">
+                        <div class="d-flex justify-content-between px-md-1">
+                            <div class="align-self-center">
+                                <h6>
+                                    Vers Agence
+                                </h6>
+                            </div>
+                            <span class="">{{statistique.total > 0 ?( statistique.versAgence*100/statistique.total|currency:'%':'symbol' :'1.0-2' :'fr') : 0 }}</span>
+                            <div class="text-end row">
+                                <h5>{{statistique.versAgence}}</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xl-3 col-sm-6 col-12 mb-0">
+                <div class="card">
+                    <div class="card-body py-0 my-2">
+                        <div class="d-flex justify-content-between px-md-1">
+                            <div class="align-self-center">
+                                <h6>Reçu agence</h6>
+                            </div>
+                            <span class="">{{statistique.total > 0 ?( statistique.recuAgence*100/statistique.total|currency:'%':'symbol' :'1.0-2' :'fr') :0 }}</span>
+                            <div class="text-end row">
+                                <h5>{{statistique.recuAgence}}</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-sm-6 col-12 mb-0">
+                <div class="card">
+                    <div class="card-body py-0 my-2">
+                        <div class="d-flex justify-content-between px-md-1">
+                            <div class="align-self-center">
+                                <h6>
+                                    Retour vers centre
+                                </h6>
+                            </div>
+                            <span class="">{{statistique.total > 0 ?( statistique.retourVersCentre*100/statistique.total|currency:'%':'symbol' :'1.0-2' :'fr')
+                                :0 }}</span>
+                            <div class="text-end row">
+                                <h5>{{statistique.retourVersCentre}}</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-sm-6 col-12 mb-0">
+                <div class="card">
+                    <div class="card-body py-0 my-2">
+                        <div class="d-flex justify-content-between px-md-1">
+                            <div class="align-self-center">
+                                <h6>
+                                    Retourné au centre
+                                </h6>
+                            </div>
+                            <span class="">{{statistique.total > 0 ?( statistique.retourneAuCentre*100/statistique.total|currency:'%':'symbol' :'1.0-2' :'fr')
+                                :0 }}</span>
+                            <div class="text-end row">
+                                <h5>{{statistique.retourneAuCentre}}</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-sm-6 col-12 mb-0">
+                <div class="card">
+                    <div class="card-body py-0 my-2">
+                        <div class="d-flex justify-content-between px-md-1">
+                            <div class="align-self-center">
+                                <h6>
+                                    Retour vers wilaya
+                                </h6>
+                            </div>
+                            <span class="">{{statistique.total > 0 ?( statistique.retourVersWilaya*100/statistique.total|currency:'%':'symbol' :'1.0-2' :'fr'):
+                                0 }}</span>
+                            <div class="text-end row">
+                                <h5>{{statistique.retourVersWilaya}}</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xl-3 col-sm-6 col-12 mb-0">
+                <div class="card">
+                    <div class="card-body py-0 my-2">
+                        <div class="d-flex justify-content-between px-md-1">
+                            <div class="align-self-center">
+                                <h6>Retour reçu wilaya</h6>
+                            </div>
+                            <span class="">{{statistique.total > 0 ?( statistique.retourRecuWilaya*100/statistique.total|currency:'%':'symbol' :'1.0-2' :'fr')
+                                :0 }}</span>
+                            <div class="text-end row">
+                                <h5>{{statistique.retourRecuWilaya}}</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-sm-6 col-12 mb-0">
+                <div class="card">
+                    <div class="card-body py-0 my-2">
+                        <div class="d-flex justify-content-between px-md-1">
+                            <div class="align-self-center">
+                                <h6>
+                                    Retour vers agence
+                                </h6>
+                            </div>
+                            <span class="">{{statistique.total > 0 ?( statistique.retourVersAgence*100/statistique.total|currency:'%':'symbol' :'1.0-2' :'fr')
+                                :0 }}</span>
+                            <div class="text-end row">
+                                <h5>{{statistique.retourVersAgence}}</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-sm-6 col-12 mb-0">
+                <div class="card">
+                    <div class="card-body py-0 my-2">
+                        <div class="d-flex justify-content-between px-md-1">
+                            <div class="align-self-center">
+                                <h6>
+                                    Retour reçu agence
+                                </h6>
+                            </div>
+                            <span class="">{{statistique.total > 0 ?( statistique.retourRecuAgence*100/statistique.total|currency:'%':'symbol' :'1.0-2' :'fr')
+                                :0 }}</span>
+                            <div class="text-end row">
+                                <h5>{{statistique.retourRecuAgence}}</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-sm-6 col-12 mb-0">
+                <div class="card bg-warning">
+                    <div class="card-body py-0 my-2">
+                        <div class="d-flex justify-content-between px-md-1">
+                            <div class="align-self-center">
+                                <h6>
+                                    Retour à retirer
+                                </h6>
+                            </div>
+                            <span class="">{{statistique.total > 0 ?( statistique.retourARetirer*100/statistique.total|currency:'%':'symbol' :'1.0-2' :'fr') :0}}</span>
+                            <div class="text-end row">
+                                <h5>{{statistique.retourARetirer}}</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xl-3 col-sm-6 col-12 mb-0  ">
+                <div class="card bg-secondary">
+                    <div class="card-body py-0 my-2 ">
+                        <div class="d-flex justify-content-between px-md-1">
+                            <div class="align-self-center ">
+                                <h6 class="text-white">Retour retiré</h6>
+                            </div>
+                            <span class=" text-white">{{statistique.total > 0
+                                ?(statistique.retourRetire*100/statistique.total|currency:'%':'symbol' :'1.0-2' :'fr') :0 }}</span>
+                            <div class="text-end row">
+                                <h5 class="text-white"> {{statistique.retourRetire}} </h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+</div>

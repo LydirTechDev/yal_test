@@ -25,7 +25,7 @@ export class ServicesController {
     private readonly zoneService: ZonesService,
     private readonly poidsService: PoidsService,
     private readonly codeTarifsService: CodeTarifService,
-    ) {}
+  ) {}
 
   /**
    * create new service
@@ -45,7 +45,7 @@ export class ServicesController {
   findAllServices(): Promise<Service[]> {
     return this.servicesService.findAllServices();
   }
-  
+
   @Get('chekIfServiceExist/:serviceName')
   chekIfServiceExist(
     @Param('serviceName') serviceName: string,
@@ -59,7 +59,11 @@ export class ServicesController {
    */
   @Get('findServicesOfUser')
   async findServicesOfUser(@Request() req) {
-    return await this.servicesService.findServicesOfUser(req);
+    console.log(
+      '🚀 ~ file: services.controller.ts ~ line 62 ~ ServicesController ~ findServicesOfUser ~ req',
+      req.user,
+    );
+    return await this.servicesService.findServicesOfUser(req.user);
   }
 
   /**

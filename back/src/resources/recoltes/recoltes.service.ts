@@ -23,7 +23,7 @@ import { UpdateRecolteDto } from './dto/update-recolte.dto';
 import { Recolte } from './entities/recolte.entity';
 
 @Injectable()
-export class RecoltesService {
+export class RecoltesService {  
   logger: Logger = new Logger(RecoltesService.name);
   constructor(
     @InjectRepository(Recolte) private recolteRepository: Repository<Recolte>,
@@ -33,7 +33,7 @@ export class RecoltesService {
     private coursierService: CoursierService,
     private employeService: EmployesService,
     private clientService: ClientsService,
-    private pdfService: PdfService,
+    private pdfService: PdfService,    
     private readonly serviceClientService: ServiceClientService,
   ) {}
   async getPaginateRecolteOfUser(
@@ -108,16 +108,11 @@ export class RecoltesService {
         .addSelect('wilaya')
         .orderBy('recolte.createdAt', 'DESC');
     }
-    const tt = paginate<Recolte>(recolte, {
+    return paginate<Recolte>(recolte, {
       page: options.page,
       limit: options.limit,
       route: 'http://localhost:3000/recoltes/paginateAllRecolte',
     });
-    console.log(
-      '🚀 ~ file: recoltes.service.ts ~ line 115 ~ RecoltesService ~ tt',
-      await tt,
-    );
-    return tt;
   }
 
   // changer le created By avec le craetedOn
@@ -284,7 +279,7 @@ export class RecoltesService {
       throw new NotFoundException();
     }
   }
-
+  
   async createRecolteDesk(user, resp) {
     const dateRecolte = new Date();
     const listOfRecolte: string[] = [];
@@ -346,7 +341,7 @@ export class RecoltesService {
       throw new NotFoundException();
     }
   }
-
+  
   async createRecolteCs(user: User, resp) {
     this.logger.debug(this.createRecolteCs.name);
     this.logger.debug(this.createRecolteCs.name);
@@ -403,8 +398,8 @@ export class RecoltesService {
     const newDateObj = new Date(numberOfMlSeconds + addMlSeconds);
     return newDateObj;
   }
-
   async getRecoltePresRecolte() {
+    console.log('88888888888888888888888888888888888888')
     const listRctTrackings = [];
     const recoltes = await this.recolteRepository.find({
       where: {
@@ -454,8 +449,10 @@ export class RecoltesService {
   }
 
   async getRecolteAgencePresRecolte(user: User) {
+    console.log('4444444444444444444444444')
     const listRctTrackings = [];
     const userStation = await this.userService.findInformationsEmploye(user.id);
+    console.log("🚀 ~ file: recoltes.service.ts ~ line 393 ~ RecoltesService ~ getRecolteAgencePresRecolte ~ userStation", userStation)
     const recoltes = await this.recolteRepository.find({
       relations: ['createdOn', 'createdOn.commune', 'createdOn.commune.wilaya'],
       where: {
@@ -464,6 +461,7 @@ export class RecoltesService {
       },
       select: ['tracking'],
     });
+    console.log("🚀 ~ file: recoltes.service.ts ~ line 402 ~ RecoltesService ~ getRecolteAgencePresRecolte ~ recoltes", recoltes)
     for (const rct of recoltes) {
       listRctTrackings.push(rct.tracking);
     }
@@ -660,9 +658,9 @@ export class RecoltesService {
             shipment.prixVente,
             clientInfo.client_c_o_d_ApartirDe,
           );
-          if (shipment.prixVente > clientInfo.client_c_o_d_ApartirDe) {
+          if (shipment.prixEstimer > clientInfo.client_c_o_d_ApartirDe) {
             totalFraiCOD +=
-              (clientInfo.client_tauxCOD / 100) * shipment.prixVente;
+              (clientInfo.client_tauxCOD / 100) * shipment.prixEstimer;
           }
           netClient += tarifsBordereau - tarifLivraison - totalFraiCOD;
           gain += tarifLivraison;
@@ -730,10 +728,10 @@ export class RecoltesService {
       recoltes = await this.recolteRepository
         .createQueryBuilder('recolte')
         .leftJoinAndSelect('recolte.shipment', 'shipment')
-        .leftJoinAndSelect('shipment.status', 'status')
+        .leftJoinAndSelect('shipment.createdBy', 'createdBy')
         .leftJoinAndSelect('recolte.receivedOn', 'agence')
         .where(
-          `recolte.receivedBy is not null and status.libelle = '${StatusShipmentEnum.pretAPayer}'`,
+          `recolte.receivedBy is not null and shipment.lastStatus = '${StatusShipmentEnum.pretAPayer}'`,
         )
         .andWhere(`agence.id=${userStation.employe.agence.id}`)
         .getMany();
@@ -741,12 +739,12 @@ export class RecoltesService {
       recoltes = await this.recolteRepository
         .createQueryBuilder('recolte')
         .leftJoinAndSelect('recolte.shipment', 'shipment')
-        .leftJoinAndSelect('shipment.status', 'status')
+        .leftJoinAndSelect('shipment.createdBy', 'createdBy')
         .leftJoinAndSelect('recolte.createdOn', 'agence')
         .leftJoinAndSelect('agence.commune', 'commune')
         .leftJoinAndSelect('commune.wilaya', 'wilaya')
         .where(
-          `recolte.receivedBy is not null and status.libelle = '${StatusShipmentEnum.pretAPayer}'`,
+          `recolte.receivedBy is not null and shipment.lastStatus = '${StatusShipmentEnum.pretAPayer}'`,
         )
         .andWhere(`wilaya.caisseRegional=${userStation.employe.agence.id}`)
         .getMany();
@@ -754,9 +752,9 @@ export class RecoltesService {
       recoltes = await this.recolteRepository
         .createQueryBuilder('recolte')
         .leftJoinAndSelect('recolte.shipment', 'shipment')
-        .leftJoinAndSelect('shipment.status', 'status')
+        .leftJoinAndSelect('shipment.createdBy', 'createdBy')
         .where(
-          `recolte.receivedBy is not null and status.libelle = '${StatusShipmentEnum.pretAPayer}'`,
+          `recolte.receivedBy is not null and shipment.lastStatus = '${StatusShipmentEnum.pretAPayer}'`,
         )
         .getMany();
       console.log(
@@ -767,70 +765,71 @@ export class RecoltesService {
 
     for await (const recolte of recoltes) {
       for await (const shipment of recolte.shipment) {
-        const statusShipment = await this.statusService.getShipmentStatusById(
-          shipment.id,
-        );
         if (
-          statusShipment[statusShipment.length - 1].libelle ===
+          shipment.lastStatus ===
           StatusShipmentEnum.pretAPayer
         ) {
           let tarifsBordereau = 0;
           const tarifLivraison =
             await this.shipmentService.calculTarifslivraison(shipment.tracking);
 
-          const clientInfo = await this.clientService.findOne(
-            statusShipment[0].user.id,
-          );
+          if (tarifLivraison >= shipment.prixVente) {
+            console.log("🚀 ~ file: recoltes.service.ts ~ line 714 ~ RecoltesService ~ forawait ~ tarifLivraison", tarifLivraison)
 
-          const client = {
-            id: clientInfo.client_id,
-            nomCommercial: clientInfo.client_nomCommercial,
-          };
-
-          if (!listClients.some((c) => c.id === client.id)) {
-            listClients.push(client);
-          }
-
-          if (shipment.livraisonGratuite) {
-            tarifsBordereau = shipment.prixVente;
-            totalRamasse += shipment.prixVente;
-          } else {
-            tarifsBordereau = shipment.prixVente + tarifLivraison;
-            totalRamasse += tarifLivraison + shipment.prixVente;
-          }
-          let totalFraiCOD = 0;
-          if (shipment.prixVente > clientInfo.client_c_o_d_ApartirDe) {
-            totalFraiCOD +=
-              (clientInfo.client_tauxCOD / 100) * shipment.prixVente;
-          }
-
-          netClient += tarifsBordereau - tarifLivraison - totalFraiCOD;
-          gain += tarifLivraison;
-          nbrColis += 1;
-
-          if (
-            recolte.shipment.length > 0 &&
-            !listRecolte.includes(recolte.tracking)
-          ) {
-            listRecolte.push(recolte.tracking);
-          }
-
-          if (
-            !listDateRecolte.includes(
-              recolte.receivedAt.toLocaleDateString('fr-CA', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-              }),
-            )
-          ) {
-            listDateRecolte.push(
-              recolte.receivedAt.toLocaleDateString('fr-CA', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-              }),
+            const clientInfo = await this.clientService.findOne(
+              shipment.createdBy.id,
             );
+
+            const client = {
+              id: clientInfo.client_id,
+              nomCommercial: clientInfo.client_nomCommercial,
+            };
+
+            if (!listClients.some((c) => c.id === client.id)) {
+              listClients.push(client);
+            }
+
+            if (shipment.livraisonGratuite) {
+              tarifsBordereau = shipment.prixVente;
+              totalRamasse += shipment.prixVente;
+            } else {
+              tarifsBordereau = shipment.prixVente + tarifLivraison;
+              totalRamasse += tarifLivraison + shipment.prixVente;
+            }
+            let totalFraiCOD = 0;
+            if (shipment.prixEstimer > clientInfo.client_c_o_d_ApartirDe) {
+              totalFraiCOD +=
+                (clientInfo.client_tauxCOD / 100) * shipment.prixEstimer;
+            }
+
+            netClient += tarifsBordereau - tarifLivraison - totalFraiCOD;
+            gain += tarifLivraison;
+            nbrColis += 1;
+
+            if (
+              recolte.shipment.length > 0 &&
+              !listRecolte.includes(recolte.tracking)
+            ) {
+              listRecolte.push(recolte.tracking);
+            }
+
+            if (
+              !listDateRecolte.includes(
+                recolte.receivedAt.toLocaleDateString('fr-CA', {
+                  year: 'numeric',
+                  month: '2-digit',
+                  day: '2-digit',
+                }),
+              )
+            ) {
+              listDateRecolte.push(
+                recolte.receivedAt.toLocaleDateString('fr-CA', {
+                  year: 'numeric',
+                  month: '2-digit',
+                  day: '2-digit',
+                }),
+              );
+            }
           }
         }
       }
@@ -1000,6 +999,39 @@ export class RecoltesService {
     return code.toLowerCase();
   }
   //
+  async getRecolteDetail(tracking) {
+    const listColis = []
+    const recolte = await this.recolteRepository.findOne({
+      relations: ['recolteCoursier', 'createdBy', 'createdBy.employe' , 'shipment'],
+      where: {
+        tracking: tracking,
+      },
+    });
+    if (recolte) {
+      for await (const shipment of recolte.shipment) {
+        console.log("🚀 ~ file: recoltes.service.ts ~ line 945 ~ RecoltesService ~ forawait ~ shipment", shipment.tracking)
+        let cost = 0;
+        const tarifLivraison = await this.shipmentService.calculTarifslivraison(
+          shipment.tracking,
+        );
+        console.log("🚀 ~ file: recoltes.service.ts ~ line 950 ~ RecoltesService ~ forawait ~ tarifLivraison", tarifLivraison)
+        if (shipment.livraisonGratuite) {
+          cost += shipment.prixVente;
+        } else {
+          cost += tarifLivraison + shipment.prixVente;
+        }
+        
+        shipment['recouvrement'] = cost
+        listColis.push(shipment);
+      }
+      console.log(listColis)
+      return [recolte ,listColis]
+    }
+     else {
+       throw new EntityNotFoundError(Recolte, tracking);
+     }
+  }
+  //
   async printRecolteManifest(recolteId, res) {
     console.log(recolteId, 'hakim');
     const listTracking = [];
@@ -1014,10 +1046,6 @@ export class RecoltesService {
       let userInfo;
       const listShipmentOfRecolte =
         await this.shipmentService.getShipmentsOfRecolte(recolte.id);
-      console.log(
-        '🚀 ~ file: recoltes.service.ts ~ line 948 ~ RecoltesService ~ printRecolteManifest ~ listShipmentOfRecolte',
-        listShipmentOfRecolte,
-      );
 
       if (recolte.recolteCoursier == null) {
         userInfo = await this.employeService.findOneByUserId(
@@ -1059,7 +1087,6 @@ export class RecoltesService {
       return res;
     }
   }
-
   async printRecolteCs(recolteId: number, res) {
     this.logger.verbose(recolteId);
     const listTracking = [];

@@ -17,6 +17,7 @@ import { MenuItem } from './menu.model';
 import { AuthService } from 'src/app/auth/auth.service';
 import { MENUFINANCE } from './menuFinance';
 import { MENUSEVICECLIENT } from './menuServiceClientAgent';
+import { MENUMANAGER } from './menuManager';
 // import { EventService } from 'src/app/core/services/event.service';
 // import { AuthService } from 'src/app/auth/auth.service';
 
@@ -152,6 +153,9 @@ export class SidebarComponent implements OnInit, AfterViewInit {
       this.menuItems = MENUFINANCE;
     } else if (user.typeUser === '2363594520') {
       this.menuItems = MENUSEVICECLIENT;
+    }
+    else if (user.typeUser === '48653128185') {
+      this.menuItems = MENUMANAGER;
     }
   }
 

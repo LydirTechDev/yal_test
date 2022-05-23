@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
 
 import { environment } from '../../../../environments/environment';
 import { AuthService } from 'src/app/auth/auth.service';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { SweetAlertService } from 'src/app/core/services/sweet-alert.service';
 // import { LanguageService } from 'src/app/core/services/language.service';
 // import { AuthService } from 'src/app/auth/auth.service';
@@ -42,7 +42,7 @@ export class TopbarComponent implements OnInit {
   // public languageService: LanguageService,
   public cookiesService: CookieService) {
     this.searchForm = new FormGroup({
-      search: new FormControl(),
+      search: new FormControl('', Validators.compose([Validators.required, Validators.minLength(8), Validators.maxLength(8)])),
     })
    }
 

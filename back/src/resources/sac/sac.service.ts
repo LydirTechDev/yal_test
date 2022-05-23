@@ -6,6 +6,11 @@ import {
   Logger,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import {
+  IPaginationOptions,
+  paginate,
+  Pagination,
+} from 'nestjs-typeorm-paginate';
 import { PdfService } from 'src/core/templates/pdf.service';
 import { AgencesTypesEnum } from 'src/enums/agencesTypesEnum';
 import { SacTypeEnum } from 'src/enums/sacTypeEnum';
@@ -108,22 +113,21 @@ export class SacService {
     const listPackageSlipToSac: string[] = [];
     const dateTransfert = new Date();
     const employeInfo = await this.employesService.findOneByUserId(user.id);
-    let trackingSac = await this.generateYal();
     const wilayaStationSelected = await this.agenceService.getWilayaFromeAgence(
       agenceSelected,
     );
-    const checkTrackingExist = await this.findOneByTracking(trackingSac);
-    while (checkTrackingExist) {
-      trackingSac = await this.generateYal();
-    }
+
     const saveSac = await this.create({
-      tracking: trackingSac,
+      tracking: '',
       typeSac: SacTypeEnum.transfert,
       userId: user,
       agenceDestination: agenceSelected,
       wilayaDestination: wilayaStationSelected.wilaya_id, // j'ai changer la wilaya_id par commune.wilaya.id
     });
-
+    const trackingSac = 'sac-' + (await this.generateTracking(saveSac.id));
+    await this.sacRepository.update(saveSac.id, {
+      tracking: trackingSac,
+    });
     for await (const tracking of trackings) {
       const shipment = await this.shipmentService.findOneShipmnetByTraking(
         tracking,
@@ -168,20 +172,22 @@ export class SacService {
     }
 
     if (listShipmentsToSac.length > 0) {
-      let trakingSac = await this.generateYal();
-
-      const checkIfTrackingExist = await this.findOneByTracking(trakingSac);
-
-      while (checkIfTrackingExist) {
-        trakingSac = await this.generateYal();
-      }
-
-      const createNewSac = await this.create({
-        tracking: trakingSac,
+      const saveSac = await this.create({
+        tracking: '',
         typeSac: SacTypeEnum.versWilaya,
         userId: user,
         wilayaDestination: whilayaDestinationId,
       });
+      console.log('🚀 ~ file: sac.service.ts ~ line 178 ~ SacService', saveSac);
+      const trackingSac = 'sac-' + (await this.generateTracking(saveSac.id));
+      await this.sacRepository.update(saveSac.id, {
+        tracking: trackingSac,
+      });
+      console.log(
+        '🚀 ~ file: sac.service.ts ~ line 181 ~ SacService ~ trackingSac',
+        trackingSac,
+        saveSac,
+      );
 
       for await (const tracking of listShipmentsToSac) {
         const shipment = await this.shipmentService.findOneShipmnetByTraking(
@@ -197,55 +203,25 @@ export class SacService {
 
         const sacShipment = await this.createSacShipment({
           shipmentId: shipment.id,
-          sacId: createNewSac.id,
+          sacId: saveSac.id,
         });
       }
 
-      const buffer = await this.printSac(trakingSac, res);
+      const buffer = await this.printSac(trackingSac, res);
     }
   }
-  async generateYal() {
-    const x1 = 'sac-';
-    let x2 = '';
-    let x3 = '';
-    for (let i = 0; i < 3; i++) {
-      x2 += Math.floor(Math.random() * 10);
-    }
-    for (let i = 0; i < 3; i++) {
-      const alph = [
-        'A',
-        'B',
-        'C',
-        'D',
-        'E',
-        'F',
-        'G',
-        'H',
-        'I',
-        'J',
-        'K',
-        'L',
-        'M',
-        'N',
-        'O',
-        'P',
-        'Q',
-        'R',
-        'S',
-        'T',
-        'U',
-        'V',
-        'W',
-        'X',
-        'Y',
-        'Z',
-      ];
-      x3 += alph[Math.floor(Math.random() * 25)];
-    }
-    return (x1 + x2 + x3).toLowerCase();
+
+  async generateTracking(id) {
+    let code = id.toString();
+    while (code.length < 8) code = '0' + code;
+    return code.toLowerCase();
   }
 
   async printSac(trackingSac, res) {
+    console.log(
+      '🚀 ~ file: sac.service.ts ~ line 216 ~ SacService ~ printSac ~ trackingSac',
+      trackingSac,
+    );
     const infoSac = await this.sacRepository
       .createQueryBuilder('sac')
       .leftJoinAndSelect('sac.sacShipment', 'sacShipment')
@@ -260,6 +236,10 @@ export class SacService {
       .leftJoinAndSelect('commune.wilaya', 'wilaya_depart')
       .where(`sac.tracking = '${trackingSac}'`)
       .getRawMany();
+    console.log(
+      '🚀 ~ file: sac.service.ts ~ line 233 ~ SacService ~ printSac ~ infoSac',
+      infoSac,
+    );
     const listTracking = [];
     for (const shipment of infoSac) {
       listTracking.push(shipment.shipment_tracking);
@@ -271,8 +251,12 @@ export class SacService {
   }
 
   async create(createSacDto: CreateSacDto) {
+    console.log(
+      '🚀 ~ file: sac.service.ts ~ line 268 ~ SacService ~ create ~ createSacDto',
+      createSacDto,
+    );
     const newSacCreate = this.sacRepository.create();
-    newSacCreate.tracking = createSacDto.tracking;
+    newSacCreate.tracking = null;
     newSacCreate.typeSac = createSacDto.typeSac;
     newSacCreate.user = await this.userService.findOne(createSacDto.userId);
     newSacCreate.wilayaDestination = await this.wilayaService.findOne(
@@ -648,14 +632,17 @@ export class SacService {
     const wilayasRetour = await this.wilayaService.findByAgenceRetourId(
       stationSelected,
     );
-    const trackingSac = await this.generateYal();
     const newSacCreate = this.sacRepository.create();
-    newSacCreate.tracking = trackingSac;
+    newSacCreate.tracking = '';
     newSacCreate.typeSac = SacTypeEnum.transfertRetour;
     newSacCreate.user = user;
     newSacCreate.wilayaDestination = wilayaStationSelected.commune.wilaya;
     newSacCreate.agenceDestination = stationSelected;
     const saveSac = await this.sacRepository.save(newSacCreate);
+    const trackingSac = 'sac-' + (await this.generateTracking(saveSac.id));
+    await this.sacRepository.update(saveSac.id, {
+      tracking: trackingSac,
+    });
     for await (const tracking of trackings) {
       const shipment = await this.shipmentService.findOneShipmnetByTraking(
         tracking.toLowerCase(),
@@ -672,7 +659,8 @@ export class SacService {
           shipment.livraisonStopDesck == true) ||
         (shipment.livraisonStopDesck == true &&
           shipment.echange == false &&
-          shipment.shipmentRelation && shipment.lastStatus == StatusShipmentEnum.echange)
+          shipment.shipmentRelation &&
+          shipment.lastStatus == StatusShipmentEnum.echange)
       ) {
         const clientInfo =
           await this.clientService.getClientInformationsByShipmentAndUser(
@@ -704,14 +692,16 @@ export class SacService {
     const employeInfo = await this.employesService.findOneByUserId(user.id);
     const checkWilaya = await this.wilayaService.findOne(wilayaSelected);
     if (checkWilaya) {
-      const trackingSac = await this.generateYal();
       const newSacCreate = this.sacRepository.create();
-      newSacCreate.tracking = trackingSac;
+      newSacCreate.tracking = '';
       newSacCreate.typeSac = SacTypeEnum.retourVersWilaya;
       newSacCreate.user = user;
       newSacCreate.wilayaDestination = checkWilaya;
-
       const saveSac = await this.sacRepository.save(newSacCreate);
+      const trackingSac = 'sac-' + (await this.generateTracking(saveSac.id));
+      await this.sacRepository.update(saveSac.id, {
+        tracking: trackingSac,
+      });
       for await (const tracking of trackings) {
         const shipment = await this.shipmentService.findOneShipmnetByTraking(
           tracking.toLowerCase(),
@@ -749,17 +739,20 @@ export class SacService {
     );
     if (checkStation) {
       const employeInfo = await this.employesService.findOneByUserId(user.id);
-      const trackingSac = await this.generateYal();
       const wilayaStationSelected = await this.agenceService.findOneV2(
         stationSelected,
       );
       const newSacCreate = this.sacRepository.create();
-      newSacCreate.tracking = trackingSac;
+      newSacCreate.tracking = '';
       newSacCreate.typeSac = SacTypeEnum.retourVersAgence;
       newSacCreate.user = user;
       newSacCreate.wilayaDestination = wilayaStationSelected.commune.wilaya;
       newSacCreate.agenceDestination = checkStation;
       const saveSac = await this.sacRepository.save(newSacCreate);
+      const trackingSac = 'sac-' + (await this.generateTracking(saveSac.id));
+      await this.sacRepository.update(saveSac.id, {
+        tracking: trackingSac,
+      });
       for await (const tracking of trackings) {
         const shipment = await this.shipmentService.findOneShipmnetByTraking(
           tracking.toLowerCase(),
@@ -805,16 +798,19 @@ export class SacService {
     }
   }
   async createSacRetourClient(user, res, trackings) {
-    const trackingSac = await this.generateYal();
     const employeInfo = await this.employesService.findOneByUserId(user.id);
     const newSacCreate = this.sacRepository.create();
-    newSacCreate.tracking = trackingSac;
+    newSacCreate.tracking = '';
     newSacCreate.typeSac = SacTypeEnum.retourVersVendeur;
     newSacCreate.user = user;
     newSacCreate.wilayaDestination = employeInfo.agence.commune.wilaya;
     newSacCreate.agenceDestination = employeInfo.agence;
 
     const saveSac = await this.sacRepository.save(newSacCreate);
+    const trackingSac = 'sac-' + (await this.generateTracking(saveSac.id));
+    await this.sacRepository.update(saveSac.id, {
+      tracking: trackingSac,
+    });
     for await (const tracking of trackings) {
       const shipment = await this.shipmentService.findOneShipmnetByTraking(
         tracking.toLowerCase(),
@@ -929,6 +925,72 @@ export class SacService {
     }
     return listTrackingOfSac;
   }
+  //
+  async findPaginateAllShipments(
+    options: IPaginationOptions,
+    searchSacTerm: string,
+  ): Promise<Pagination<Sac>> {
+    console.log(
+      '🚀 ~ file: sac.service.ts ~ line 933 ~ SacService ~ searchSacTerm',
+      searchSacTerm,
+    );
+    let listSacs;
+
+    if (searchSacTerm && Number(searchSacTerm) != NaN) {
+      listSacs = this.sacRepository
+        .createQueryBuilder('sac')
+        .leftJoinAndSelect('sac.sacShipment', 'sacShipment')
+        .leftJoinAndSelect('sacShipment.shipment', 'shipment')
+        .leftJoinAndSelect('sac.user', 'user')
+        .leftJoinAndSelect('user.employe', 'employe')
+        .leftJoinAndSelect('employe.agence', 'agence')
+        .distinctOn(['sac.id']).where(` 
+        sac.tracking ilike  '%${searchSacTerm}%' or
+        CAST(sac.typeSac as text) ilike '%${searchSacTerm}%' or
+        agence.nom ilike '%${searchSacTerm}%'
+        `);
+    } else {
+      listSacs = this.sacRepository
+        .createQueryBuilder('sac')
+        .leftJoinAndSelect('sac.sacShipment', 'sacShipment')
+        .leftJoinAndSelect('sacShipment.shipment', 'shipment')
+        .leftJoinAndSelect('sac.user', 'user')
+        .leftJoinAndSelect('user.employe', 'employe')
+        .leftJoinAndSelect('employe.agence', 'agence')
+        .distinctOn(['sac.id']);
+    }
+    return await paginate<any>(listSacs, {
+      page: options.page,
+      limit: options.limit,
+      route: 'http://localhost:3000/sac/paginateSac',
+    });
+  }
+  //
+  async printManifestSac(idSac, res) {
+    const sac = await this.sacRepository.findOne({
+      where: {
+        id: idSac,
+      },
+    });
+    let buffer;
+    if (sac.typeSac === SacTypeEnum.accuseDeReceptionRetourClient) {
+      buffer = await this.printManifestRetourClient(sac.tracking, res);
+    } else if (
+      sac.typeSac === SacTypeEnum.versWilaya ||
+      sac.typeSac === SacTypeEnum.transfert ||
+      sac.typeSac === SacTypeEnum.versAgence ||
+      sac.typeSac == SacTypeEnum.transfertRetour ||
+      sac.typeSac == SacTypeEnum.retourVersVendeur ||
+      sac.typeSac == SacTypeEnum.retourVersWilaya ||
+      sac.typeSac == SacTypeEnum.retourVersAgence
+    ) {
+      buffer = await this.printSac(sac.tracking, res);
+    } else if (sac.typeSac === SacTypeEnum.retourVersVendeur) {
+      buffer = await this.printSacVersVendeur(sac.tracking, res);
+    }
+    return buffer;
+  }
+  //
   async accReceptShipmentClient(
     user,
     trackings: string,
@@ -937,15 +999,18 @@ export class SacService {
     res,
   ) {
     const listColisValide: string[] = [];
-    const trackingAcc = await this.generateYalAcc();
     const employeInfo = await this.employesService.findOneByUserId(user.id);
     const newSacCreate = this.sacRepository.create();
-    newSacCreate.tracking = trackingAcc;
+    newSacCreate.tracking = '';
     newSacCreate.typeSac = SacTypeEnum.accuseDeReceptionRetourClient;
     newSacCreate.user = user;
     newSacCreate.wilayaDestination = employeInfo.agence.commune.wilaya;
     newSacCreate.agenceDestination = employeInfo.agence;
     const saveSac = await this.sacRepository.save(newSacCreate);
+    const trackingAcc = 'acc-' + (await this.generateTracking(saveSac.id));
+    await this.sacRepository.update(saveSac.id, {
+      tracking: trackingAcc,
+    });
     const clientInfo = await this.clientService.findUserOfClient(idClient);
     for await (const tracking of trackings) {
       const shipment = await this.shipmentService.findOneShipmnetByTraking(
@@ -995,46 +1060,7 @@ export class SacService {
     }
     const buffer = await this.printManifestRetourClient(trackingAcc, res);
   }
-  async generateYalAcc() {
-    const x1 = 'acc-';
-    let x2 = '';
-    let x3 = '';
-    for (let i = 0; i < 3; i++) {
-      x2 += Math.floor(Math.random() * 10);
-    }
-    for (let i = 0; i < 3; i++) {
-      const alph = [
-        'A',
-        'B',
-        'C',
-        'D',
-        'E',
-        'F',
-        'G',
-        'H',
-        'I',
-        'J',
-        'K',
-        'L',
-        'M',
-        'N',
-        'O',
-        'P',
-        'Q',
-        'R',
-        'S',
-        'T',
-        'U',
-        'V',
-        'W',
-        'X',
-        'Y',
-        'Z',
-      ];
-      x3 += alph[Math.floor(Math.random() * 25)];
-    }
-    return (x1 + x2 + x3).toLowerCase();
-  }
+
   async printManifestRetourClient(trackingSac, res) {
     console.log(
       '🚀 ~ file: sac.service.ts ~ line 394 ~ SacService ~ printManifestRetourClient ~ trackingSac',
@@ -1194,27 +1220,21 @@ export class SacService {
   async createSacVersAgence(user, res, trackings, stationSelected) {
     const date = new Date();
     const employe = await this.employesService.findOneByUserId(user.id);
-    let trackingSac = await this.generateYal();
-    const checkTrackingExist = await this.sacRepository.findOne({
-      where: {
-        tracking: trackingSac,
-      },
-    });
-    while (checkTrackingExist) {
-      trackingSac = await this.generateYal();
-    }
     const wilayaStationSelected = await this.agenceService.getWilayaFromeAgence(
       stationSelected,
     );
     const newSacCreate = this.sacRepository.create();
-    newSacCreate.tracking = trackingSac;
+    newSacCreate.tracking = '';
     newSacCreate.typeSac = SacTypeEnum.versAgence;
     newSacCreate.user = user.id;
     newSacCreate.wilayaDestination = wilayaStationSelected.wilaya_id;
     newSacCreate.agenceDestination = stationSelected;
 
     const saveSac = await this.sacRepository.save(newSacCreate);
-
+    const trackingSac = 'sac-' + (await this.generateTracking(saveSac.id));
+    await this.sacRepository.update(saveSac.id, {
+      tracking: trackingSac,
+    });
     for await (const tracking of trackings) {
       const shipment = await this.shipmentService.findOneShipmnetByTraking(
         tracking.toLowerCase(),
@@ -1247,7 +1267,7 @@ export class SacService {
         }
       }
     }
-    const buffer = await this.printSac(saveSac.tracking, res);
+    const buffer = await this.printSac(trackingSac, res);
   }
   async getTrackingVersAgence(tracking: any, user: any) {
     const listeShipmentsVersAgence: string[] = [];

@@ -32,6 +32,30 @@ export class FactureController {
     return this.factureService.findAll();
   }
 
+  @Get('printFactureClassique/:id')
+  async printFactureClassique(@Param('id') idFacture, @Response() res) {
+    const buffer = await this.factureService.prinFactureClassique(idFacture);
+    const buf = Buffer.from(buffer);
+    res.send(buf);
+    return res;
+  }
+
+  @Get('printFactureEcommerceDetail/:id')
+  async printFactureEcommerceDetail(@Param('id') idFacture, @Response() res) {
+    const buffer = await this.factureService.prinFactureEcommerceDetail(idFacture);
+    const buf = Buffer.from(buffer);
+    res.send(buf);
+    return res;
+  }
+
+  @Get('printFactureEcommerceSimplifier/:id')
+  async printFactureEcommerceSimplifier(@Param('id') idFacture, @Response() res) {
+    const buffer = await this.factureService.prinFactureEcommerceSimplifie(idFacture);
+    const buf = Buffer.from(buffer);
+    res.send(buf);
+    return res;
+  }
+
   @ApiQuery({ name: 'page', type: Number, required: false })
   @ApiQuery({ name: 'limit', type: Number, required: false })
   @ApiQuery({ name: 'searchFactureTerm', type: String, required: false })
@@ -41,6 +65,7 @@ export class FactureController {
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit,
     @Query('searchFactureTerm') searchFactureTerm: string,
     @Query('payer') payer: string,
+    @Query('type') type: string,
   ): Promise<Pagination<Facture>> {
     let paiement: boolean;
     if (payer == 'oui') {
@@ -55,25 +80,31 @@ export class FactureController {
       },
       searchFactureTerm,
       paiement,
+      type,
     );
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.factureService.findOne(+id);
+  @Get('factureClassique/:id')
+  findOneFactureClassique(@Param('id') id: string) {
+    return this.factureService.findOneFactureClassique(+id);
+  }
+
+  @Get('factureEcommerce/:id')
+  findOneFactureEcommerce(@Param('id') id: string) {
+    return this.factureService.findOneFactureEcommerce(+id);
+  }
+
+  @Get('statistique')
+  getStatistique() {
+    return this.factureService.getStatistique();
   }
 
   @Patch('payer/:id')
-  async payer(
+  payer(
     @Param('id') id: string,
     @Body() paiementInfo: any,
-    @Response() res,
   ) {
-    const buffer = await this.factureService.payerFacture(+id, paiementInfo);
-    const buf = Buffer.from(buffer);
-    res.send(buf);
-    return res;
-    
+    return this.factureService.payerFacture(+id, paiementInfo);    
   }
 
   

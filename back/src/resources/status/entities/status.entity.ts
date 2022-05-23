@@ -43,12 +43,10 @@ export class Status {
     nullable: true,
   })
   comment: string;
-
   @ManyToOne(() => Agence, (agence) => agence.id, {
     nullable: true,
   })
   createdOn: number;
-  
   @CreateDateColumn({
     primary: true,
     select: true,

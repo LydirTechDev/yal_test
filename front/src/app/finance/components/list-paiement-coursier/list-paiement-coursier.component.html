@@ -35,10 +35,11 @@
                             <tbody *ngIf="!isLoading; else spiner">
 
                                 <tr *ngFor="let pmtc of pmtcData">
-                                    <td>
-                                        <a class="text-dark font-weight-bold">
-                                            {{ pmtc.id }}
-                                        </a>
+                                    <td class="hover" (click)="detailPmt(pmtc.tracking)">
+                                        <h4><span class="px-3 text-white badge badge-secondary">
+                                                {{pmtc.tracking}}
+                                            </span>
+                                        </h4>
                                     </td>
                                     <td>
                                         {{ pmtc.tracking }}

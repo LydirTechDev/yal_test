@@ -44,14 +44,14 @@ export class PoidsService {
   }
 
   async chekSurpoids(poids: number, volume: number) {
-    if (poids > volume) {
+    if (poids > volume && poids < 150 && volume < 150) {
       return await this.poidsRepository.findOne({
         where: {
           min: LessThanOrEqual(poids),
           max: MoreThanOrEqual(poids),
         },
       });
-    } else {
+    } else if (poids <= volume && poids < 150 && volume < 150){
       return await this.poidsRepository.findOne({
         where: {
           min: LessThanOrEqual(volume),

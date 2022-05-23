@@ -1,11 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   IPaginationOptions,
   paginate,
   Pagination,
 } from 'nestjs-typeorm-paginate';
+import { NotFoundError } from 'rxjs';
 import { PdfService } from 'src/core/templates/pdf.service';
+import { TypeUserEnum } from 'src/enums/TypeUserEnum';
 import { EntityNotFoundError, ILike, Repository } from 'typeorm';
 import { Agence } from '../agences/entities/agence.entity';
 import { CoursierService } from '../coursier/coursier.service';
@@ -72,20 +74,65 @@ export class PmtCoursierService {
     const infoPmt = await this.findOne(PmtCoursierId);
     return await this.pdfService.printPmtCoursier(infoPmt);
   }
-  async getPaiementDetailsCoursier(tracking) {
-    const listShipment = [];
-    const pmt = await this.pmtCoursierRepository.findOne({
-      relations: ['coursier', 'shipments'],
-      where: { tracking: tracking },
-    });
-    for await (const shipment of pmt.shipments) {
-      listShipment.push({
-        tracking: shipment.tracking,
-        nomPrenom: shipment.nom + ' ' + shipment.prenom,
-        numero: shipment.telephone,
+  async getPaiementDetailsCoursier(user, tracking) {
+    if (user.typeUser == TypeUserEnum.coursier) {
+      const listShipment = [];
+      const pmt = await this.pmtCoursierRepository.findOne({
+        relations: ['coursier', 'coursier.user', 'shipments'],
+        where: {
+          tracking: tracking,
+          coursier: {
+            user: {
+              id: user.id,
+            },
+          },
+        },
       });
+      if (pmt) {
+        for await (const shipment of pmt.shipments) {
+          listShipment.push({
+            tracking: shipment.tracking,
+            nomPrenom: shipment.nom + ' ' + shipment.prenom,
+            numero: shipment.telephone,
+          });
+        }
+        return listShipment;
+      } else {
+        throw new HttpException(
+          {
+            status: HttpStatus.FORBIDDEN,
+            error: 'Objet n"existe pas',
+          },
+          HttpStatus.FORBIDDEN,
+        );
+      }
+    } else if (
+      user.typeUser == TypeUserEnum.caissierRegional ||
+      user.typeUser == TypeUserEnum.caissierAgence ||
+      user.typeUser == TypeUserEnum.finance
+    ) {
+      const listShipment = [];
+      const pmt = await this.pmtCoursierRepository.findOne({
+        relations: ['coursier', 'shipments'],
+        where: { tracking: tracking },
+      });
+      for await (const shipment of pmt.shipments) {
+        listShipment.push({
+          tracking: shipment.tracking,
+          nomPrenom: shipment.nom + ' ' + shipment.prenom,
+          numero: shipment.telephone,
+        });
+      }
+      return listShipment;
+    } else {
+      throw new HttpException(
+        {
+          status: HttpStatus.FORBIDDEN,
+          error: 'Objet n"existe pas',
+        },
+        HttpStatus.FORBIDDEN,
+      );
     }
-    return listShipment;
   }
   update(id: number, updatePmtCoursierDto: UpdatePmtCoursierDto) {
     return `This action updates a #${id} pmtCoursier`;

@@ -47,13 +47,16 @@ export class AgencesService {
     const commune = await this.communeService.findOne(
       createAgenceDto.communeId,
     );
+    for await (const communeZone of createAgenceDto.communeZoneOne) {
+      await this.communeService.findOne(communeZone);
+    }
+
     const lasteAgence = await this.agenceRepository.count();
     const agence = this.agenceRepository.create(createAgenceDto);
     agence.code = lasteAgence + '-' + commune.codePostal;
     agence.commune = commune;
     return this.agenceRepository.save(agence);
   }
-
 
   /**
    * get wilaya frome agence by agenceId
@@ -89,6 +92,10 @@ export class AgencesService {
     const agences = await this.agenceRepository.find({
       relations: ['commune.wilaya', 'commune'],
     });
+    console.log(
+      '🚀 ~ file: agences.service.ts ~ line 92 ~ AgencesService ~ findAllAgence ~ agences',
+      agences,
+    );
     if (agences.length < 0) {
       throw new EntityNotFoundError(Agence, 'agence is empty');
     }
@@ -223,6 +230,27 @@ export class AgencesService {
     }
   }
 
+
+  async findOneAgenceByIdV3(id: number) {
+    const communes = [];
+    const agence = await this.agenceRepository.findOne(id, {
+      relations: ['commune', 'commune.wilaya'],
+    });
+    for await (const communeZone of agence.communeZoneOne) {
+      const commune=await this.communeService.findOne(communeZone);
+      communes.push(commune)
+
+    }
+    if (agence) {
+      return communes;
+    } else {
+      throw new EntityNotFoundError(
+        Agence,
+        `l'agence d'id ${id} n'existe  pas`,
+      );
+    }
+  }
+
   async findOneV2(id: number): Promise<Agence> {
     const agence = await this.agenceRepository.findOne(id, {
       relations: ['commune', 'commune.wilaya'],
@@ -312,7 +340,7 @@ export class AgencesService {
           },
         },
       },
-    })
+    });
     return agences;
   }
 }

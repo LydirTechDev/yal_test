@@ -6,6 +6,7 @@ import {
   Pagination,
 } from 'nestjs-typeorm-paginate';
 import { NotFoundError } from 'rxjs';
+import { ExcelService } from 'src/core/templates/excel/excel.service';
 import { AgencesTypesEnum } from 'src/enums/agencesTypesEnum';
 import { EntityNotFoundError, ILike, Repository, UpdateResult } from 'typeorm';
 import { AgencesService } from '../agences/agences.service';
@@ -28,6 +29,7 @@ export class WilayasService {
     private employeService: EmployesService,
     @Inject(forwardRef(() => AgencesService))
     private agenceService: AgencesService,
+    private excelService: ExcelService,
   ) {}
   /**
    * create and sav new wilaya instance
@@ -48,7 +50,6 @@ export class WilayasService {
     return await this.wilayaRepository.save(wilaya);
   }
   async createWilayaByFile(createWilayasDto: CreateWilayaDto[]) {
-
     for await (const createWilayaDto of createWilayasDto) {
       const wilaya = await this.wilayaRepository.findOne({
         where: {
@@ -63,7 +64,7 @@ export class WilayasService {
         console.log('hakim');
         const wilaya = this.wilayaRepository.create(createWilayaDto);
         wilaya.agenceRetour = null;
-      await this.wilayaRepository.save(wilaya);
+        await this.wilayaRepository.save(wilaya);
       }
     }
     return true;
@@ -204,5 +205,18 @@ export class WilayasService {
       return await this.wilayaRepository.update(id, wilaya);
     }
     return await this.wilayaRepository.update(id, wilayaUpdateDto);
+  }
+
+  async getAllwilayaToExport(): Promise<any> {
+    const wilayas = await this.wilayaRepository
+      .createQueryBuilder('wilaya')
+      .select('wilaya.nomLatin', 'Nom Latin')
+      .getRawMany();
+    return wilayas;
+  }
+
+  async exportWilayas(res: any, term: string) {
+    const data = await this.getAllwilayaToExport();
+    this.excelService.exportToExcel(res, term, data);
   }
 }

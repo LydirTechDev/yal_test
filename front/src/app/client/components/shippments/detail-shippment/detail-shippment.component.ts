@@ -29,25 +29,25 @@ export class DetailShippmentComponent implements OnInit, OnDestroy {
     console.log("🚀 ~ file: detail-shippment.component.ts ~ line 28 ~ DetailShippmentComponent ~ this.route", this.route)
     this.shipmenId = parseInt(this.route.params.id)
     this.shippmentForm = this.formBuilder.group({
-      raisonSociale: ['', Validators.compose([Validators.minLength(3), Validators.maxLength(30), Validators.pattern('[a-zA-Z0-9]+')])],
-      nom: ['', Validators.compose([Validators.required, Validators.minLength(3), Validators.maxLength(50), Validators.pattern('[a-zA-Z]+')])],
-      prenom: ['', Validators.compose([Validators.required, Validators.minLength(3), Validators.maxLength(50), Validators.pattern('[a-zA-Z]+')])],
+      raisonSociale: ['', Validators.compose([Validators.minLength(3), Validators.maxLength(50)])],
+      nom: ['', Validators.compose([Validators.required, Validators.minLength(3), Validators.maxLength(50)])],
+      prenom: ['', Validators.compose([Validators.required, Validators.minLength(3), Validators.maxLength(50)])],
       telephone: ['', Validators.compose([Validators.required, Validators.maxLength(10)])],
       wilayaId: [, Validators.compose([Validators.required])],
       communeId: [, Validators.compose([Validators.required])],
       adresse: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
       serviceId: [, Validators.compose([Validators.required])],
-      numCommande: ['', Validators.compose([Validators.required, Validators.minLength(1), Validators.maxLength(15), Validators.pattern('[a-zA-Z0-9]+')])],
+      numCommande: ['', Validators.compose([Validators.required, Validators.minLength(3), Validators.maxLength(15)])],
       /**
        * , Validators.pattern('[a-zA-Z0-9]+')
        */
       designationProduit: ['', Validators.compose([Validators.required, Validators.minLength(5), Validators.maxLength(50)])],
-      prixVente: [0, Validators.compose([Validators.required, Validators.pattern('[0-9]+')])],
+      prixVente: [0, Validators.compose([Validators.required])],
       prixEstimer: [1000, Validators.compose([Validators.required])],
-      poids: [0, Validators.compose([Validators.required, Validators.pattern('[0-9]+')])],
-      longueur: [0, Validators.compose([Validators.required, Validators.pattern('[0-9]+')])],
-      largeur: [0, Validators.compose([Validators.required, Validators.pattern('[0-9]+')])],
-      hauteur: [0, Validators.compose([Validators.required, Validators.pattern('[0-9]+')])],
+      poids: [0, Validators.compose([Validators.required, Validators.min(0), Validators.max(150)])],
+      longueur: [0, Validators.compose([Validators.required, Validators.min(0), Validators.max(2)])],
+      largeur: [0, Validators.compose([Validators.required, Validators.min(0), Validators.max(2)])],
+      hauteur: [0, Validators.compose([Validators.required, Validators.min(0), Validators.max(2)])],
       livraisonGratuite: [false, Validators.required],
       ouvrireColis: [false, Validators.required],
       livraisonStopDesck: [true, Validators.required],
@@ -57,6 +57,7 @@ export class DetailShippmentComponent implements OnInit, OnDestroy {
   }
   ngOnDestroy(): void {
     this.shippmentForm.reset();
+    this.shippmentForm.get('prixEstimer').disable()
   }
 
   ngOnInit(): void {
@@ -78,11 +79,7 @@ export class DetailShippmentComponent implements OnInit, OnDestroy {
         this.wilayasData = data;
       }
     )
-
-   
-        
     
-
     this.shippmentsClientService.getShipment(this.shipmenId).then(
       (responce) => {
         this.shippmentForm.get('raisonSociale').setValue(responce.raisonSociale),
@@ -106,6 +103,7 @@ export class DetailShippmentComponent implements OnInit, OnDestroy {
           this.shippmentForm.get('ouvrireColis').setValue(responce.ouvrireColis),
           this.shippmentForm.get('livraisonStopDesck').setValue(responce.livraisonStopDesck),
           this.shippmentForm.get('livraisonDomicile').setValue(responce.livraisonDomicile),
+
           /**
            * init num commande
            */
@@ -131,6 +129,7 @@ export class DetailShippmentComponent implements OnInit, OnDestroy {
       }
     )
   }
+
 
   onChangeShippmentTypeDesk(value: boolean) {
     this.shippmentForm.controls['communeId'].reset()
@@ -173,6 +172,8 @@ export class DetailShippmentComponent implements OnInit, OnDestroy {
       this.shippmentForm.get('adresse').setValidators([Validators.required, Validators.minLength(3), Validators.maxLength(50)]);
       this.shippmentForm.get('adresse').updateValueAndValidity();
     }
+    console.log("🚀 ~ file: detail-shippment.component.ts ~ line 194 ~ DetailShippmentComponent ~ updateShipment ~ this.shippmentForm.valid", this.shippmentForm.valid)
+
 
     if (this.shippmentForm.valid) {
       console.log("🚀 ~ file: detail-shippment.component.ts ~ line 159 ~ DetailShippmentComponent ~ updateShipment ~ this.shippmentForm", this.shippmentForm.value)

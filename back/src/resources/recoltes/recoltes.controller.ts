@@ -99,13 +99,11 @@ export class RecoltesController {
   @Post('createRecolteDesk')
   createRecolteDesk(@Request() req, @Response() res) {
     return this.recoltesService.createRecolteDesk(req.user, res);
-  }
-
+  }  
   @Post('createRecolteCs')
   createRecolteCs(@Request() req, @Response() res) {
     return this.recoltesService.createRecolteCs(req.user, res);
   }
-
   @Post()
   create(
     @Request() req,
@@ -114,7 +112,6 @@ export class RecoltesController {
   ) {
     return this.recoltesService.create(req.user, createRecolteDto, res);
   }
-
   @Get('printRecolte/:idRecolte/:typeRtc')
   async printRecolte(
     @Param('idRecolte') idRecolte,
@@ -125,6 +122,10 @@ export class RecoltesController {
       return await this.recoltesService.printRecolteCs(idRecolte, res);
     }
     return await this.recoltesService.printRecolteManifest(idRecolte, res);
+  }
+  @Get('getRecolteDetail/:tracking')
+  getRecolteDetail(@Param('tracking') tracking) {
+    return  this.recoltesService.getRecolteDetail(tracking);
   }
 
   @Get('getInformationsPaiementToLiberer')

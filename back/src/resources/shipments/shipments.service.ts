@@ -43,6 +43,9 @@ import { ExcelService } from 'src/core/templates/excel/excel.service';
 import { PmtCoursierService } from '../pmt-coursier/pmt-coursier.service';
 import { FactureService } from '../facture/facture.service';
 import { CreateShipmentFromAgenceDto } from './dto/create-shipment-from-agence.dto';
+import { RotationsService } from '../rotations/rotations.service';
+import { CreateAspirationShipmentDto } from './dto/createAspirationShipmentDto';
+import { Facture } from '../facture/entities/facture.entity';
 import { ServiceClientService } from '../service-client/service-client.service';
 
 /**
@@ -51,6 +54,7 @@ import { ServiceClientService } from '../service-client/service-client.service';
 @Injectable()
 export class ShipmentsService {
   logger = new Logger(ShipmentsService.name);
+
   constructor(
     @InjectRepository(Shipment)
     private shipmentRepository: Repository<Shipment>,
@@ -72,6 +76,7 @@ export class ShipmentsService {
     private excelService: ExcelService,
     private pmtCoursierService: PmtCoursierService,
     private factureService: FactureService,
+    private rotationService: RotationsService,
     private serviceClientService: ServiceClientService,
   ) {}
 
@@ -126,7 +131,162 @@ export class ShipmentsService {
     }
     return true;
   }
+  async createShipmentByFile(
+    user,
+    serviceSelected,
+    shipmentAdded: CreateAspirationShipmentDto[],
+  ) {
+    const countEchec = [];
+    const listServiceClient = await this.servicesService.findServicesOfUser(
+      user,
+    );
 
+    if (
+      listServiceClient.some(
+        (service) => service.service_id === serviceSelected,
+      )
+    ) {
+      const clientInfo = await this.clientService.infoClientByUserId(user.id);
+      for await (const shipment of shipmentAdded) {
+        shipment.createdBy = user;
+        const newShipment = this.shipmentRepository.create();
+        const service = await this.servicesService.findOne(serviceSelected);
+        const communeDestination = await this.communeService.findOneByNomLatin(
+          shipment.commune,
+        );
+        const volume =
+          shipment.longueur * shipment.largeur * shipment.hauteur * 200;
+
+        if (
+          shipment.poids <= 150 &&
+          volume <= 150 &&
+          shipment.raisonSociale.length < 50 &&
+          shipment.nom.length < 50 &&
+          shipment.prenom.length < 50 &&
+          shipment.nom.length >= 3 &&
+          shipment.prenom.length >= 3 &&
+          shipment.adresse.length < 50 &&
+          (shipment.telephone.length == 10 || shipment.telephone.length == 9) &&
+          shipment.numCommande.length < 15 &&
+          shipment.designationProduit.length >= 3 &&
+          shipment.designationProduit.length < 50 &&
+          shipment.commune.length >= 3 &&
+          shipment.longueur >= 0 &&
+          shipment.largeur >= 0 &&
+          shipment.hauteur >= 0 &&
+          shipment.poids >= 0 &&
+          shipment.objetRecuperer.length <= 50
+        ) {
+          if (communeDestination) {
+            const findRotation =
+              await this.rotationService.findOneRotationByDepartId_DestinationId(
+                clientInfo.communeDepart.wilaya.id,
+                communeDestination.wilaya.id,
+              );
+            if (findRotation) {
+              if (shipment.prixVente < 1000) {
+                shipment.prixEstimer = 1000;
+              } else {
+                shipment.prixEstimer = shipment.prixVente;
+              }
+              newShipment.tracking = null;
+              newShipment.service = service;
+              newShipment.createdBy = user;
+              newShipment.raisonSociale = shipment.raisonSociale;
+              newShipment.nom = shipment.nom;
+              newShipment.prenom = shipment.prenom;
+              newShipment.telephone = shipment.telephone;
+              newShipment.numCommande = shipment.numCommande;
+              newShipment.designationProduit = shipment.designationProduit;
+              newShipment.livraisonStopDesck = shipment.livraisonStopDesck;
+              newShipment.livraisonDomicile = !shipment.livraisonStopDesck;
+              newShipment.commune = communeDestination;
+              newShipment.adresse = shipment.adresse;
+              newShipment.prixVente = shipment.prixVente;
+              newShipment.prixEstimer = shipment.prixEstimer;
+              newShipment.livraisonGratuite = shipment.livraisonGratuite;
+              newShipment.poids = shipment.poids;
+              newShipment.largeur = shipment.largeur;
+              newShipment.longueur = shipment.longueur;
+              newShipment.hauteur = shipment.hauteur;
+              newShipment.echange =
+                shipment.echange != null ? shipment.echange : false;
+              newShipment.ouvrireColis = false;
+              newShipment.objetRecuperer = shipment.objetRecuperer;
+              const saveShipment = await this.shipmentRepository.save(
+                newShipment,
+              );
+              const saveStatus = await this.statusService.create({
+                shipment: saveShipment,
+                user: user,
+                libelle: StatusShipmentEnum.enPreparation,
+              });
+              if (shipment.echange) {
+                shipment.createdBy = user;
+                const newShipmentechange = this.shipmentRepository.create();
+                const service = await this.servicesService.findOne(
+                  shipment.serviceId,
+                );
+                const commune = await this.communeService.findOne(
+                  communeDestination.id,
+                );
+                newShipmentechange.createdBy = user;
+                newShipmentechange.raisonSociale = shipment.raisonSociale;
+                newShipmentechange.nom = shipment.nom;
+                newShipmentechange.prenom = shipment.prenom;
+                newShipmentechange.telephone = shipment.telephone;
+                newShipmentechange.numCommande = shipment.numCommande;
+                newShipmentechange.designationProduit =
+                  shipment.designationProduit;
+                newShipmentechange.livraisonStopDesck =
+                  shipment.livraisonStopDesck;
+                newShipmentechange.livraisonDomicile =
+                  !shipment.livraisonStopDesck;
+                newShipmentechange.commune = communeDestination;
+                newShipmentechange.adresse = shipment.adresse;
+                newShipmentechange.prixVente = shipment.prixVente;
+                newShipmentechange.prixEstimer = shipment.prixEstimer;
+                newShipmentechange.livraisonGratuite =
+                  shipment.livraisonGratuite;
+                newShipmentechange.poids = shipment.poids;
+                newShipmentechange.largeur = shipment.largeur;
+                newShipmentechange.longueur = shipment.longueur;
+                newShipmentechange.hauteur = shipment.hauteur;
+                newShipmentechange.service = service;
+                newShipmentechange.commune = commune;
+                newShipmentechange.echange = false;
+                newShipmentechange.objetRecuperer = null;
+                newShipmentechange.shipmentRelation = saveShipment;
+
+                const saveShipmentEchange = await this.shipmentRepository.save(
+                  newShipmentechange,
+                );
+                const saveStatusEchange = await this.statusService.create({
+                  shipment: saveShipmentEchange,
+                  user: user,
+                  libelle: StatusShipmentEnum.enAttenteDeChangement,
+                });
+                saveShipment.shipmentRelation = saveShipmentEchange;
+                await this.shipmentRepository.save(saveShipment);
+              }
+            } else {
+              countEchec.push({ shipment: shipment.idRaw });
+            }
+          } else {
+            countEchec.push({ shipment: shipment.idRaw });
+          }
+        } else {
+          countEchec.push({ shipment: shipment.idRaw });
+        }
+      }
+    }
+    console.log('echec', countEchec);
+    if (countEchec.length == 0) {
+      return true;
+    } else {
+      return countEchec;
+    }
+  }
   timertoTentativeEchouee: any;
   async toTentativeEchouee(shipment: Shipment, user: User, msg: string) {
     let userInfo;
@@ -213,7 +373,10 @@ export class ShipmentsService {
       shipmentStatus[shipmentStatus.length - 1].libelle ==
         StatusShipmentEnum.recueAgence ||
       shipmentStatus[shipmentStatus.length - 1].libelle ==
-        StatusShipmentEnum.recueWilaya
+        StatusShipmentEnum.recueWilaya ||
+      (shipmentStatus[shipmentStatus.length - 1].libelle ==
+        StatusShipmentEnum.expidie &&
+        shipment.commune.wilaya.id == userInfo.agence.commune.wilaya.id)
     ) {
       const newStatus = await this.statusService.create({
         shipment: shipment,
@@ -249,6 +412,9 @@ export class ShipmentsService {
     );
 
     if (
+      (shipmentStatus[shipmentStatus.length - 1].libelle ==
+        StatusShipmentEnum.expidie &&
+        shipment.commune.wilaya.id == userInfo.agence.commune.wilaya.id) ||
       shipmentStatus[shipmentStatus.length - 1].libelle ==
         StatusShipmentEnum.sortiEnLivraison ||
       shipmentStatus[shipmentStatus.length - 1].libelle ==
@@ -447,10 +613,6 @@ export class ShipmentsService {
     return listShipments;
   }
   async getTrackingCoursierReceive(user: User) {
-    console.log(
-      '🚀 ~ file: shipments.service.ts ~ line 448 ~ ShipmentsService ~ getTrackingCoursierReceive ~ user',
-      user,
-    );
     const listShipmentsReseive: string[] = [];
     const shipments = await this.shipmentRepository
       .createQueryBuilder('shipment')
@@ -468,35 +630,35 @@ export class ShipmentsService {
           shipment,
           user,
         );
-      if (shipment.service.nom.toLowerCase() == 'classique divers') {
-        console.log(
-          '🚀 ~ file: shipments.service.ts ~ line 469 ~ ShipmentsService ~ forawait ~ shipment.service.nom',
-          shipment.service.nom,
-        );
-        if (
-          shipmentStatus[shipmentStatus.length - 1].libelle ==
-            StatusShipmentEnum.affectedToCoursier &&
-          shipmentStatus.length <= 3
-        ) {
-          listShipmentsReseive.push(shipment.tracking);
-        }
-      } else {
-        const client = await this.clientService.findClientByShipment(shipment);
-        console.log(
-          '🚀 ~ file: shipments.service.ts ~ line 143 ~ ShipmentsService ~ forawait ~ client',
-          client,
-        );
-        if (
-          shipmentStatus[shipmentStatus.length - 1].libelle ==
-            StatusShipmentEnum.affectedToCoursier &&
-          shipmentStatus.length <= client.nbTentative
-        ) {
-          listShipmentsReseive.push(shipment.tracking);
+        if (shipment.service.nom.toLowerCase() == 'classique divers') {
+          console.log(
+            '🚀 ~ file: shipments.service.ts ~ line 469 ~ ShipmentsService ~ forawait ~ shipment.service.nom',
+            shipment.service.nom,
+          );
+          if (
+            shipmentStatus[shipmentStatus.length - 1].libelle ==
+              StatusShipmentEnum.affectedToCoursier &&
+            shipmentStatus.length <= 3
+          ) {
+            listShipmentsReseive.push(shipment.tracking);
+          }
+        } else {
+          const client = await this.clientService.findClientByShipment(shipment);
+          console.log(
+            '🚀 ~ file: shipments.service.ts ~ line 143 ~ ShipmentsService ~ forawait ~ client',
+            client,
+          );
+          if (
+            shipmentStatus[shipmentStatus.length - 1].libelle ==
+              StatusShipmentEnum.affectedToCoursier &&
+            shipmentStatus.length <= client.nbTentative
+          ) {
+            listShipmentsReseive.push(shipment.tracking);
+          }
         }
       }
+      return listShipmentsReseive;
     }
-    return listShipmentsReseive;
-  }
 
   async receiveShipmentCoursier(user: User, trackings: string[]) {
     const employeInfo = await this.employeService.findOneByUserId(user.id);
@@ -613,10 +775,18 @@ export class ShipmentsService {
 
   async remove(id: number, userId: number) {
     const shipment = await this.findOneById(id);
+    console.log(
+      '🚀 ~ file: shipments.service.ts ~ line 732 ~ ShipmentsService ~ remove ~ shipment.tracking',
+      shipment.id,
+    );
     if (shipment) {
+      console.log(1);
       if (await this.statusService.remove(shipment.id, userId)) {
-        return await this.shipmentRepository.delete(shipment.id);
+        console.log(2);
+        return await this.shipmentRepository.softRemove(shipment);
       }
+      console.log(3);
+
       return await this.shipmentRepository.softRemove(shipment);
     }
   }
@@ -646,7 +816,6 @@ export class ShipmentsService {
       return shipment;
     }
   }
-
   async setShipmentRamasser(user: any, trackings: any) {
     const coursierInfo = await this.userService.findInformationUserOfCoursier(
       user.id,
@@ -676,7 +845,6 @@ export class ShipmentsService {
       return true;
     }
   }
-
   async setShipmentExpedier(user: any, trackings: any) {
     const employeInfo = await this.employeService.findOneByUserId(user.id);
     if (trackings.length != null) {
@@ -690,9 +858,9 @@ export class ShipmentsService {
               await this.statusService.getShipmentStatusById(shipment.id);
             if (
               statusShipment[statusShipment.length - 1].libelle ==
-                StatusShipmentEnum.presExpedition ||
-              statusShipment[statusShipment.length - 1].libelle ==
-                StatusShipmentEnum.ramasse
+              StatusShipmentEnum.presExpedition ||
+            statusShipment[statusShipment.length - 1].libelle ==
+              StatusShipmentEnum.ramasse
             ) {
               const createStautsShipment = await this.statusService.create({
                 user: user,
@@ -735,6 +903,10 @@ export class ShipmentsService {
             user: user.user.id,
             libelle: StatusShipmentEnum.presExpedition,
           });
+          console.log(
+            '🚀 ~ file: shipments.service.ts ~ line 862 ~ ShipmentsService ~ forawait ~ saveShipmentStatus',
+            saveShipmentStatus,
+          );
           if (shipmentInfo.echange == true) {
             const shipmentInfoEchange = await this.findOneById(
               shipmentInfo.shipmentRelation.id,
@@ -788,6 +960,10 @@ export class ShipmentsService {
     }
   }
   async printBordereau(shipmentId: number, userRequest) {
+    console.log(
+      '🚀 ~ file: shipments.service.ts ~ line 824 ~ ShipmentsService ~ printBordereau ~ shipmentId',
+      shipmentId,
+    );
     const shipmentsStatus = await this.statusService.getShipmentStatusById(
       shipmentId,
     );
@@ -810,6 +986,10 @@ export class ShipmentsService {
         .leftJoinAndSelect('commune.wilaya', 'wilaya')
         .where(`user.id = ${user} and shipment.id = '${shipmentId}'`)
         .getRawOne();
+      console.log(
+        '🚀 ~ file: shipments.service.ts ~ line 847 ~ ShipmentsService ~ printBordereau ~ shipmentInfo',
+        shipmentInfo,
+      );
 
       //diferencier le colis interne par raport au autre
       if (shipmentInfo.service_id === 1) {
@@ -827,7 +1007,6 @@ export class ShipmentsService {
           detinataireInfo,
           datePresExpedition,
         );
-        this.logger.debug(this.printBordereau.name, 'after pdfService');
         return buffer;
       } else {
         this.logger.debug(userRequest.user);
@@ -857,31 +1036,45 @@ export class ShipmentsService {
   }
 
   async update(id: number, updateShipmentDto: UpdateShipmentDto) {
-    const shipment = await this.shipmentRepository.findOne(id);
+    console.log(
+      '🚀 ~ file: shipments.service.ts ~ line 938 ~ ShipmentsService ~ update ~ updateShipmentDto',
+      updateShipmentDto,
+    );
+    const shipment = await this.shipmentRepository.findOne(id, {
+      relations: ['createdBy'],
+    });
+    const client = shipment.createdBy;
+    const shipmentToUpdate = this.shipmentRepository.create(updateShipmentDto);
     const commune = await this.communeService.findOne(
       updateShipmentDto.communeId,
     );
     const service = await this.servicesService.findOne(
       updateShipmentDto.serviceId,
     );
-    shipment.nom = updateShipmentDto.nom;
-    shipment.prenom = updateShipmentDto.prenom;
-    shipment.telephone = updateShipmentDto.telephone;
-    shipment.designationProduit = updateShipmentDto.designationProduit;
-    shipment.prixVente = updateShipmentDto.prixVente;
-    shipment.numCommande = updateShipmentDto.numCommande;
-    shipment.adresse = updateShipmentDto.adresse;
-    shipment.livraisonDomicile = updateShipmentDto.livraisonDomicile;
-    shipment.livraisonStopDesck = updateShipmentDto.livraisonStopDesck;
-    shipment.livraisonGratuite = updateShipmentDto.livraisonGratuite;
-    shipment.service = service;
-    shipment.commune = commune;
-    const responce = await this.shipmentRepository.update(id, shipment);
+
+    if (updateShipmentDto.prixVente < 1000) {
+      updateShipmentDto.prixEstimer = 1000;
+    } else {
+      updateShipmentDto.prixEstimer = updateShipmentDto.prixVente;
+    }
+
+    shipmentToUpdate.createdBy = client;
+    shipmentToUpdate.service = service;
+    shipmentToUpdate.commune = commune;
+    const responce = await this.shipmentRepository.update(id, shipmentToUpdate);
     return responce;
   }
+
   async updateShipmentRecolteId(id: number, recolte: Recolte) {
     const shipmentInfo = await this.shipmentRepository.findOneOrFail(id);
     shipmentInfo.recolte = recolte;
+    return await this.shipmentRepository.update(id, shipmentInfo);
+  }
+  async updateStopDeskToDomicile(id: number, adresse: string) {
+    const shipmentInfo = await this.shipmentRepository.findOneOrFail(id);
+    shipmentInfo.adresse = adresse;
+    shipmentInfo.livraisonStopDesck = false;
+    shipmentInfo.livraisonDomicile = true;
     return await this.shipmentRepository.update(id, shipmentInfo);
   }
   async updateShipmentLastStatus(
@@ -964,10 +1157,7 @@ export class ShipmentsService {
       )
       .select(['shipment', 'client'])
       .getRawOne();
-    console.log(
-      '🚀 ~ file: shipments.service.ts ~ line 695 ~ ShipmentsService ~ calculTarifslivraison ~ shipment',
-      shipment,
-    );
+
     const codeTarif = await this.clientTarifService.getCodeTarif(
       shipment.shipment_serviceId,
       shipment.client_id,
@@ -987,30 +1177,26 @@ export class ShipmentsService {
     );
     // surpoids
     const poids = shipment.shipment_poids;
-    console.log(
-      '🚀 ~ file: shipments.service.ts ~ line 528 ~ ShipmentsService ~ calculTarifslivraison ~ poids',
-      poids,
-    );
 
     const volume =
       shipment.shipment_longueur *
       shipment.shipment_largeur *
       shipment.shipment_hauteur *
       200;
-    console.log(
-      '🚀 ~ file: shipments.service.ts ~ line 528 ~ ShipmentsService ~ calculTarifslivraison ~ volume',
-      volume,
-    );
 
     const chekSurpoids = await this.poidsService.chekSurpoids(poids, volume);
-
     //find tarifs
     const codeTarifZone = await this.codeTarifsZonesService.findCodeTarifZone(
       zone.zone_id,
       codeTarif.codeTarif_id,
       chekSurpoids.id,
     );
-
+    const codeTarifZoneConv =
+      await this.codeTarifsZonesService.findCodeTarifZone(
+        zone.zone_id,
+        codeTarif.codeTarif_id,
+        2,
+      );
     /**
      * codetarifZoneQurpoids id changed
      */
@@ -1027,10 +1213,25 @@ export class ShipmentsService {
       tarifsLivraison =
         costSurpoids + codeTarifZone.codeTarifZone_tarifDomicile;
     } else {
-      tarifsLivraison =
-        costSurpoids + codeTarifZone.codeTarifZone_tarifStopDesk;
+      if (shipment.client_poidsBase <= 30) {
+        tarifsLivraison =
+          costSurpoids + codeTarifZone.codeTarifZone_tarifStopDesk;
+      } else {
+        const surpoidsConventionne = await this.calculeSurpoidsConvention(
+          shipment.client_poidsBase,
+          shipment.client_poidsBase,
+           codeTarifZoneConv.codeTarifZone_tarifPoidsParKg,
+        );
+        console.log(
+          '🚀 ~ file: shipments.service.ts ~ line 1166 ~ ShipmentsService ~ calculTarifslivraison ~ surpoidsConventionne',
+          surpoidsConventionne,
+        );
+        tarifsLivraison =
+          costSurpoids +
+          (codeTarifZone.codeTarifZone_tarifStopDesk + surpoidsConventionne) -
+        (shipment.client_poidsBase * codeTarifZoneConv.codeTarifZone_tarifPoidsParKg) / 5;
+      }
     }
-
     return tarifsLivraison;
   }
 
@@ -1050,7 +1251,21 @@ export class ShipmentsService {
     }
     return 0;
   }
+  async calculeSurpoidsConvention(
+    poids: number,
+    volume: number,
+    poidsKG: number,
+  ) {
+    const costPoids = poids * poidsKG - 5 * poidsKG;
+    const costVolume = volume * poidsKG - 5 * poidsKG;
 
+    if (costPoids > costVolume && costPoids >= 0) {
+      return costPoids;
+    } else if (costPoids <= costVolume && costVolume >= 0) {
+      return costVolume;
+    }
+    return 0;
+  }
   async findAllShipments() {
     const shipments = await this.shipmentRepository.find();
     if (!shipments) {
@@ -1060,9 +1275,15 @@ export class ShipmentsService {
     }
   }
 
-  async getTrackingPresExp() {
+  async getTrackingPresExp(user) {
+    const infoEmploye = await this.employeService.findOneByUserId(user);
+    console.log(
+      '🚀 ~ file: shipments.service.ts ~ line 1155 ~ ShipmentsService ~ getTrackingPresExp ~ infoEmploye',
+      infoEmploye,
+    );
     const listTracking: string[] = [];
     const shipments = await this.shipmentRepository.find({
+      relations: ['commune', 'commune.wilaya', 'createdBy'],
       where: [
         {
           lastStatus: StatusShipmentEnum.presExpedition,
@@ -1073,15 +1294,14 @@ export class ShipmentsService {
       ],
     });
     for await (const shipment of shipments) {
-      const statusShipment = await this.statusService.getShipmentStatusById(
-        shipment.id,
+      const inforClient = await this.clientService.infoClientByUserId(
+        shipment.createdBy.id,
       );
+
       if (
-        (statusShipment[statusShipment.length - 1].libelle ===
-          StatusShipmentEnum.presExpedition ||
-          statusShipment[statusShipment.length - 1].libelle ===
-            StatusShipmentEnum.ramasse) &&
-        !listTracking.includes(shipment.tracking)
+        !listTracking.includes(shipment.tracking) &&
+        infoEmploye.agence.commune.wilaya.id ===
+          inforClient.communeDepart.wilaya.id
       ) {
         listTracking.push(shipment.tracking);
       }
@@ -1124,7 +1344,6 @@ export class ShipmentsService {
     console.log(listTracking);
     return listTracking;
   }
-
   async getShipmentsPresTransfert(user: any) {
     const listshipmentPresTransfert: string[] = [];
 
@@ -1228,10 +1447,6 @@ export class ShipmentsService {
         shipment.recolteId is null`,
       )
       .getRawMany();
-    console.log(
-      '🚀 ~ file: shipments.service.ts ~ line 1155 ~ ShipmentsService ~ getRecoltesOfCoursier ~ shipmentsCoursier',
-      shipmentsCoursier,
-    );
     for (const shipment of shipmentsCoursier) {
       const statusShipment = await this.statusService.getShipmentStatusById(
         shipment.shipment_id,
@@ -1274,11 +1489,9 @@ export class ShipmentsService {
     const shipments = await this.findShipmentLivreDesk(user);
     for await (const shipment of shipments) {
       let cost = 0;
-
       const tarifLivraison = await this.calculTarifslivraison(
         shipment.shipment_tracking,
       );
-
       if (shipment.shipment_livraisonGratuite) {
         cost += shipment.shipment_prixVente;
         montant += cost;
@@ -1302,7 +1515,6 @@ export class ShipmentsService {
 
     return { montant, listColisDeskLivre };
   }
-
   async findShipmentLivreOfCoursier(coursierUserId) {
     const shipmentsCoursier = await this.shipmentRepository
       .createQueryBuilder('shipment')
@@ -1324,7 +1536,6 @@ export class ShipmentsService {
       return shipmentsCoursier;
     }
   }
-
   async findShipmentLivreDesk(user) {
     const employeInfo = await this.employeService.findOneByUserId(user.id);
     const shipments = await this.shipmentRepository
@@ -1344,7 +1555,6 @@ export class ShipmentsService {
       .getRawMany();
     return shipments;
   }
-
   async findShipmentCreatedInDesk(user: User) {
     const employeInfo = await this.employeService.findOneByUserId(user.id);
     const shipments = await this.shipmentRepository
@@ -1365,7 +1575,6 @@ export class ShipmentsService {
       .getMany();
     return shipments;
   }
-
   async getShipmentsOfRecolte(id: number) {
     const listShipmentOfRecolte = await this.shipmentRepository.find({
       relations: ['recolte', 'service'],
@@ -1381,7 +1590,6 @@ export class ShipmentsService {
       return listShipmentOfRecolte;
     }
   }
-
   async getPaginatedShipmentsEnpreparation(
     user,
     options: IPaginationOptions,
@@ -1396,6 +1604,7 @@ export class ShipmentsService {
         .leftJoinAndSelect('shipment.commune', 'commune')
         .leftJoinAndSelect('commune.wilaya', 'wilaya')
         .distinctOn(['shipment.id'])
+        .orderBy('shipment.id', 'DESC')
         .where(
           `
            (shipment.nom  ILike '%${searchColisTerm}%' or
@@ -1415,6 +1624,7 @@ export class ShipmentsService {
         .leftJoinAndSelect('shipment.commune', 'commune')
         .leftJoinAndSelect('commune.wilaya', 'wilaya')
         .distinctOn(['shipment.id'])
+        .orderBy('shipment.id', 'DESC')
         .where(
           `shipment.createdBy = '${user.id}' and shipment.lastStatus = '${StatusShipmentEnum.enPreparation}'`,
         );
@@ -2012,7 +2222,6 @@ export class ShipmentsService {
       .getMany();
     return shipments;
   }
-
   async getStatistiqueShipmentCoursier(user) {
     const statistique = {
       total: 0,
@@ -2021,32 +2230,28 @@ export class ShipmentsService {
       echange: 0,
       enAttente: 0,
       montant: 0,
-      gain: 0,
+        gain: 0,
     };
     const shipmentsOfCoursier = await this.shipmentRepository
       .createQueryBuilder('shipment')
       .leftJoinAndSelect('shipment.status', 'status')
-      .leftJoinAndSelect('shipment.service', 'service')
       .leftJoinAndSelect('shipment.shipmentRelation', 'shipmentRelation')
       .where(
-        `status.libelle = '${StatusShipmentEnum.affectedToCoursier}' and 
+        `
+      status.libelle = '${StatusShipmentEnum.affectedToCoursier}' and 
           status.userAffectId = ${user.id}`,
       )
       .getMany();
-    const freelanceInfo =
+      const freelanceInfo =
       await this.coursierService.findInformationOfCoursierByUserId(user.id);
     for await (const shipment of shipmentsOfCoursier) {
       const status = await this.statusService.getShipmentStatusById(
         shipment.id,
       );
-      console.log(
-        '🚀 ~ file: shipments.service.ts ~ line 1937 ~ ShipmentsService ~ forawait ~ shipment',
-        status[status.length - 1].libelle,
-      );
-      // const gainParShipment = await this.client
+      console.log(statistique);
       switch (status[status.length - 1].libelle) {
         case StatusShipmentEnum.affectedToCoursier:
-          statistique.total += 1;
+          // statistique.total += 1;
           statistique.enAttente += 1;
           //
           break;
@@ -2062,17 +2267,14 @@ export class ShipmentsService {
         case StatusShipmentEnum.pasPres:
           // statistique.total += 1;
           if (
-            shipment.shipmentRelation != null &&
+            shipment.shipmentRelation &&
             shipment.shipmentRelation.lastStatus == StatusShipmentEnum.echange
           ) {
             statistique.echange += 1;
             statistique.total += 1;
           }
+
           statistique.livre += 1;
-          console.log(
-            '🚀 ~ file: shipments.service.ts ~ line 1968 ~ ShipmentsService ~ forawait ~ statistique',
-            shipment,
-          );
           if (shipment.service.nom.toLowerCase() == 'classique divers') {
           } else {
             const tarifLivraison = await this.calculTarifslivraison(
@@ -2089,12 +2291,12 @@ export class ShipmentsService {
           }
           //
           break;
-        case StatusShipmentEnum.preRecolte:
-          if (!shipment.payer) {
-            statistique.gain += freelanceInfo.montantLivraison;
-          }
-          break;
-        //
+          case StatusShipmentEnum.preRecolte:
+            if (!shipment.payer) {
+              statistique.gain += freelanceInfo.montantLivraison;
+            }
+            break;
+          //
         case StatusShipmentEnum.tentativeEchoue:
           statistique.total += 1;
           //
@@ -2142,7 +2344,7 @@ export class ShipmentsService {
     }
     return { montant, listColisCs };
   }
-
+  
   async getStatistiqueClient(user) {
     const statusAller = [
       StatusShipmentEnum.enPreparation,
@@ -2212,6 +2414,8 @@ export class ShipmentsService {
     return statistique;
   }
   //
+
+  //
   async getPaginateColisTracabiliteOfClient(
     user,
     options: IPaginationOptions,
@@ -2242,8 +2446,10 @@ export class ShipmentsService {
             CAST(shipment.lastStatus as text) ILike '%${searchColisTerm}%' or
 
             wilaya.nomLatin ILike '%${searchColisTerm}%')and 
-             shipment.lastStatus != '${StatusShipmentEnum.enPreparation}' and user.id = ${user.id}`,
-        );
+             shipment.lastStatus != '${StatusShipmentEnum.enPreparation}' and user.id = ${user.id} and (shipment.shipmentRelation is null or
+            shipment.echange is true)`,
+        )
+        .orderBy('shipment.id', 'DESC');
     } else {
       listShipments = this.shipmentRepository
         .createQueryBuilder('shipment')
@@ -2254,8 +2460,10 @@ export class ShipmentsService {
         .leftJoinAndSelect('commune.wilaya', 'wilaya')
         .distinctOn(['shipment.id'])
         .where(
-          ` shipment.lastStatus != '${StatusShipmentEnum.enPreparation}' and user.id = ${user.id}`,
-        );
+          ` shipment.lastStatus != '${StatusShipmentEnum.enPreparation}' and user.id = ${user.id} and (shipment.shipmentRelation is null or 
+            shipment.echange is true)`,
+        )
+        .orderBy('shipment.id', 'DESC');
     }
     return paginate<any>(listShipments, {
       page: options.page,
@@ -2299,8 +2507,11 @@ export class ShipmentsService {
     return listColisPresVersAgence;
   }
   //
-  async getShipmentsByCoursierId(id: number) {
-    return await this.shipmentRepository
+  async getShipmentsByCoursierId(id: number): Promise<any> {
+    let montantTotal = 0;
+    let prixLivraison = 0;
+    const coursierInfo = await this.coursierService.findOne(id);
+    const shipments = await this.shipmentRepository
       .createQueryBuilder('shipment')
       .innerJoinAndSelect('shipment.status', 'status')
       .innerJoin('status.userAffect', 'user')
@@ -2314,25 +2525,63 @@ export class ShipmentsService {
       .andWhere(`status.libelle= '${StatusShipmentEnum.preRecolte}'`)
       .andWhere(`shipment.payer=false`)
       .getRawMany();
+
+    for await (const shipment of shipments) {
+      console.log(shipment.shipment_communeId);
+      if (
+        coursierInfo.agence.communeZoneOne.some(
+          (commune) => commune === shipment.shipment_communeId,
+        )
+      ) {
+        prixLivraison =
+          coursierInfo.agence.prixLivraisonZoneOne +
+          shipment.coursier_montantLivraison;
+      } else {
+        prixLivraison =
+          coursierInfo.agence.prixLivraisonZoneTwo +
+          shipment.coursier_montantLivraison;
+      }
+      montantTotal += prixLivraison;
+      shipment['tarifsLivraison'] = prixLivraison;
+    }
+    return [shipments, { montantTotal: montantTotal }];
   }
-  async payerCoursier(shipments: any, req: any) {
-    const shipment = await this.getShipmentsByCoursierId(
-      shipments[0].coursier_id,
+  async payerCoursier(coursierId: number, req: any) {
+    console.log(
+      '🚀 ~ file: shipments.service.ts ~ line 2390 ~ ShipmentsService ~ payerCoursier ~ coursierId',
+      coursierId,
     );
-    if (shipment.length) {
+    const shipment = await this.getShipmentsByCoursierId(coursierId);
+    console.log(
+      '🚀 ~ file: shipments.service.ts ~ line 2392 ~ ShipmentsService ~ payerCoursier ~ shipment',
+      shipment,
+    );
+    if (shipment[0].length) {
       const createPmtCoursierDto = {
-        coursierId: shipment[0].coursier_id,
+        coursierId: coursierId,
         employeId: req.user.id,
-        nbrColis: shipment.length,
-        montantTotal: shipment.length * shipment[0].coursier_montantLivraison,
+        nbrColis: shipment[0].length,
+        montantTotal: shipment[1].montantTotal,
       };
+      console.log(
+        '🚀 ~ file: shipments.service.ts ~ line 2399 ~ ShipmentsService ~ payerCoursier ~ createPmtCoursierDto',
+        createPmtCoursierDto,
+      );
       const pmtCoursierToSave = await this.pmtCoursierService.create(
         createPmtCoursierDto,
+      );
+      console.log(
+        '🚀 ~ file: shipments.service.ts ~ line 2402 ~ ShipmentsService ~ payerCoursier ~ pmtCoursierToSave',
+        pmtCoursierToSave,
       );
       const pmtCoursier = await this.pmtCoursierService.findOne(
         pmtCoursierToSave.id,
       );
-      for await (const colis of shipment) {
+      console.log(
+        '🚀 ~ file: shipments.service.ts ~ line 2405 ~ ShipmentsService ~ payerCoursier ~ pmtCoursier',
+        pmtCoursier,
+      );
+      for await (const colis of shipment[0]) {
         const shipmentPayer = await this.findOne(colis.shipment_id);
         if (shipmentPayer) {
           // const shipmentToSetPayer = this.shipmentRepository.create();
@@ -2531,8 +2780,8 @@ export class ShipmentsService {
           );
           totalTarifLivraisonStopDesk += tarifLivraisonStopDesk;
         }
-        if (shipment.prixVente > clientInfo.c_o_d_ApartirDe) {
-          totalFraiCOD += (clientInfo.tauxCOD / 100) * shipment.prixVente;
+        if (shipment.prixEstimer > clientInfo.c_o_d_ApartirDe) {
+          totalFraiCOD += (clientInfo.tauxCOD / 100) * shipment.prixEstimer;
         }
         prixVenteShipment +=
           shipment.prixVente -
@@ -2552,8 +2801,8 @@ export class ShipmentsService {
           );
           totalTarifLivraisonStopDesk += tarifLivraisonStopDesk;
         }
-        if (shipment.prixVente > clientInfo.c_o_d_ApartirDe) {
-          totalFraiCOD += (clientInfo.tauxCOD / 100) * shipment.prixVente;
+        if (shipment.prixEstimer > clientInfo.c_o_d_ApartirDe) {
+          totalFraiCOD += (clientInfo.tauxCOD / 100) * shipment.prixEstimer;
         }
         prixVenteShipment += shipment.prixVente - totalFraiCOD;
       }
@@ -2630,8 +2879,8 @@ export class ShipmentsService {
       netClient += shipment.prixVente;
 
       if (shipment.livraisonGratuite) {
-        if (shipment.prixVente > clientInfo.c_o_d_ApartirDe) {
-          totalFraiCOD += (clientInfo.tauxCOD / 100) * shipment.prixVente;
+        if (shipment.prixEstimer > clientInfo.c_o_d_ApartirDe) {
+          totalFraiCOD += (clientInfo.tauxCOD / 100) * shipment.prixEstimer;
         }
         if (shipment.livraisonDomicile) {
           const tarifLivraisonDomicile = await this.calculTarifslivraison(
@@ -2652,8 +2901,8 @@ export class ShipmentsService {
           recolter += shipment.prixVente;
         }
       } else {
-        if (shipment.prixVente > clientInfo.c_o_d_ApartirDe) {
-          totalFraiCOD += (clientInfo.tauxCOD / 100) * shipment.prixVente;
+        if (shipment.prixEstimer > clientInfo.c_o_d_ApartirDe) {
+          totalFraiCOD += (clientInfo.tauxCOD / 100) * shipment.prixEstimer;
         }
         if (shipment.livraisonDomicile) {
           const tarifLivraisonDomicile = await this.calculTarifslivraison(
@@ -2706,24 +2955,24 @@ export class ShipmentsService {
       .getMany();
     for await (const shipment of shipments) {
       if (shipment.service.nom.toLowerCase() != 'classqiue divres') {
-        const lastStatus = await this.statusService.getShipmentStatusById(
-          shipment.id,
-        );
-        console.log(
-          '🚀 ~ file: shipments.service.ts ~ line 400 ~ ShipmentsService ~ forawait ~ lastStatus',
-          lastStatus[lastStatus.length - 1].libelle,
-        );
-        if (
-          lastStatus[lastStatus.length - 1].libelle ===
-          StatusShipmentEnum.preRecolte
-        ) {
-          delete shipment.status;
-          await this.statusService.create({
-            shipment: shipment,
-            user: user,
-            libelle: StatusShipmentEnum.recolte,
-            userAffect: lastStatus[lastStatus.length - 1].userAffect,
-          });
+      const lastStatus = await this.statusService.getShipmentStatusById(
+        shipment.id,
+      );
+      console.log(
+        '🚀 ~ file: shipments.service.ts ~ line 400 ~ ShipmentsService ~ forawait ~ lastStatus',
+        lastStatus[lastStatus.length - 1].libelle,
+      );
+      if (
+        lastStatus[lastStatus.length - 1].libelle ===
+        StatusShipmentEnum.preRecolte
+      ) {
+        delete shipment.status;
+        await this.statusService.create({
+          shipment: shipment,
+          user: user,
+          libelle: StatusShipmentEnum.recolte,
+          userAffect: lastStatus[lastStatus.length - 1].userAffect,
+        });
         }
       }
     }
@@ -2833,11 +3082,32 @@ export class ShipmentsService {
     const data = await this.getShipmentsToExportBySearch(term);
     this.excelService.exportToExcel(res, term, data);
   }
+  //
+  async getStatistiquesStatusOPS(StationId, dateDebut, dateFin) {
+    return await this.statusService.getStatistiquesStatusOPS(
+      StationId,
+      dateDebut,
+      dateFin,
+    );
+  }
+  //
+  async getStatistiquesStatusFinance(StationId, dateDebut, dateFin) {
+    return await this.statusService.getStatistiquesStatusFinance(
+      StationId,
+      dateDebut,
+      dateFin,
+    );
+  }
+  //
+
   async getShipmentClassicWithIntervalOfClient(
     id: number,
     dateDebut,
     dateFin,
+    espece,
   ): Promise<any> {
+    let montantHT = 0;
+    let montantTimbre;
     const date = new Date(dateFin);
     date.setHours(23, 59, 59);
     dateFin = date.toISOString();
@@ -2856,7 +3126,7 @@ export class ShipmentsService {
     and shipment.createdBy = ${userClient.user.id}`,
       )
       .andWhere(
-        `status.libelle = '${StatusShipmentEnum.expidie}' and shipment.facture IsNull`,
+        `status.libelle = '${StatusShipmentEnum.pasPres}' and shipment.facture IsNull`,
       )
       .andWhere('status.createdAt >= :dateDebut', { dateDebut: `${dateDebut}` })
       .andWhere('status.createdAt <= :dateFin', { dateFin: `${dateFin}` })
@@ -2883,30 +3153,78 @@ export class ShipmentsService {
         shipment.shipment_tracking,
       );
       shipment.tarifLivraison = tarifs;
+      montantHT = montantHT + tarifs;
     }
+    const montantTva = (montantHT * 19) / 100;
+    const montantTtc = montantHT + montantTva;
+    if (espece == 'oui') {
+      montantTimbre = (montantTtc * 1) / 100;
+      if (montantTimbre < 5) {
+        montantTimbre = 5;
+      } else if (montantTimbre > 2500) {
+        montantTimbre = 2500;
+      }
+    } else if (espece == 'non') {
+      montantTimbre = 0;
+    }
+    const montantTotal = montantTtc + montantTimbre;
 
-    return shipments;
+    return [
+      shipments,
+      {
+        montantHT: montantHT,
+        montantTva: montantTva,
+        montantTtc: montantTtc,
+        montantTimbre: montantTimbre,
+        montantTotal: montantTotal,
+      },
+    ];
   }
-  async facturerShipments(shipment: any, req: any) {
+  async facturerShipmentsClassique(
+    req: any,
+    clientId: number,
+    dateDebut,
+    dateFin,
+    espesse,
+  ) {
+    const shipment = await this.getShipmentClassicWithIntervalOfClient(
+      clientId,
+      dateDebut,
+      dateFin,
+      espesse,
+    );
+
     let espece: boolean;
-    if (shipment[0].espece == 'oui') {
+    let montantTotal = shipment[1].montantTotal;
+    let montantTva = shipment[1].montantTva;
+    let montantTtc = shipment[1].montantTtc;
+    let montantTimbre = shipment[1].montantTimbre;
+    let montantHoreTaxe = shipment[1].montantHT;
+    if (espesse == 'oui') {
       espece = true;
-    } else if (shipment[0].espece == 'non') {
+    } else if (espesse == 'non') {
       espece = false;
     }
-    if (shipment.length) {
+
+    if (shipment[0].length) {
       const createFacturerDto = {
-        clientId: shipment[0].client_id,
+        clientId: clientId,
         employeId: req.user.id,
-        nbrColis: shipment.length,
-        montantTotal: shipment[0].montantTotal,
+        nbrColis: shipment[0].length,
+        montantTotal: montantTotal,
+        montantTva: montantTva,
+        montantTtc: montantTtc,
+        montantTimbre: montantTimbre,
+        montantHoreTaxe: montantHoreTaxe,
         espece: espece,
+        payer: false,
+        typeFacture: 'classique',
       };
       const factureToSave = await this.factureService.create(createFacturerDto);
       const facture = await this.factureService.findOne(factureToSave.id);
       const user = await this.userService.findOne(req.user.id);
       const agence = user.employe.agence;
-      for await (const colis of shipment) {
+      for await (const colis of shipment[0]) {
         const shipmentPayer = await this.findOne(colis.shipment_id);
         if (shipmentPayer) {
           const shipmentToSetPayer =
@@ -2924,6 +3242,372 @@ export class ShipmentsService {
           });
         }
       }
+      console.log(
+        '🚀 ~ file: shipments.service.ts ~ line 2803 ~ ShipmentsService ~ facturerShipments ~ factureToSave.id',
+        factureToSave.id,
+      );
+
+      return this.factureService.prinFactureClassique(factureToSave.id);
     }
+    throw new EntityNotFoundError(Facture, 'id');
+  }
+
+  async getShipmentEcommerceWithIntervalOfClient(
+    id: number,
+    dateDebut,
+    dateFin,
+    espece,
+  ): Promise<any> {
+    let montantHT = 0;
+    let montantTimbre;
+    let montantTotalColis = 0;
+    let tarifLivraison = 0;
+    let tarifRetour = 0;
+    let prixCod = 0;
+    const date = new Date(dateFin);
+    date.setHours(23, 59, 59);
+    dateFin = date.toISOString();
+    const userClient = await this.clientService.findUserOfClient(id);
+    const shipments = await this.shipmentRepository
+      .createQueryBuilder('shipment')
+      .leftJoinAndSelect('shipment.status', 'status')
+      .leftJoinAndSelect('shipment.createdBy', 'createdBy')
+      .leftJoinAndSelect('createdBy.client', 'client')
+      .leftJoinAndSelect('shipment.commune', 'commune')
+      .leftJoinAndSelect('commune.wilaya', 'wilaya')
+      .leftJoin('status.user', 'user')
+      .leftJoinAndSelect('shipment.service', 'service')
+      .where(
+        `(service.nom='E-Commerce Express Divers' or service.nom ='E-Commerce Economy Entreprise'
+         or service.nom='E-Commerce Express Entreprise'
+         or service.nom='E-Commerce Economy Divers') and (shipment.prixVente != 0 or shipment.livraisonGratuite=false)    and shipment.createdBy = ${userClient.user.id}`,
+      )
+      .andWhere(
+        `(status.libelle = '${StatusShipmentEnum.livre}' or  status.libelle = '${StatusShipmentEnum.retirer}' ) and shipment.facture IsNull`,
+      )
+      .andWhere('status.createdAt >= :dateDebut', { dateDebut: `${dateDebut}` })
+      .andWhere('status.createdAt <= :dateFin', { dateFin: `${dateFin}` })
+      .distinctOn(['shipment.id'])
+      .getRawMany();
+
+    for await (const shipment of shipments) {
+      if (
+        shipment.shipment_poids >
+        shipment.shipment_longueur *
+          shipment.shipment_largeur *
+          shipment.shipment_hauteur *
+          200
+      ) {
+        shipment.poids = shipment.shipment_poids;
+      } else {
+        shipment.poids =
+          shipment.shipment_longueur *
+          shipment.shipment_largeur *
+          shipment.shipment_hauteur *
+          200;
+      }
+      if (shipment.status_libelle == StatusShipmentEnum.livre) {
+        const tarifs = await this.calculTarifslivraison(
+          shipment.shipment_tracking,
+        );
+        tarifLivraison = tarifs;
+        shipment.tarifLivraison = tarifLivraison;
+        tarifRetour = 0;
+        shipment.tarifRetour = tarifRetour;
+        prixCod =
+          (shipment.shipment_prixEstimer * shipment.client_tauxCOD) / 100;
+      } else if (shipment.status_libelle == StatusShipmentEnum.retirer) {
+        tarifLivraison = 0;
+        shipment.tarifLivraison = tarifLivraison;
+        tarifRetour = shipment.client_tarifRetour;
+        shipment.tarifRetour = tarifRetour;
+        prixCod = 0;
+      }
+
+      shipment.montantCOD = prixCod;
+      montantTotalColis = prixCod + tarifLivraison + tarifRetour;
+      shipment.montantTotalColis = montantTotalColis;
+      montantHT = montantHT + montantTotalColis;
+    }
+
+    const montantTva = (montantHT * 19) / 100;
+    const montantTtc = montantHT + montantTva;
+    if (espece == 'oui') {
+      montantTimbre = (montantTtc * 1) / 100;
+      if (montantTimbre < 5) {
+        montantTimbre = 5;
+      } else if (montantTimbre > 2500) {
+        montantTimbre = 2500;
+      }
+    } else if (espece == 'non') {
+      montantTimbre = 0;
+    }
+    const montantTotal = montantTtc + montantTimbre;
+
+    return [
+      shipments,
+      {
+        montantHT: montantHT,
+        montantTva: montantTva,
+        montantTtc: montantTtc,
+        montantTimbre: montantTimbre,
+        montantTotal: montantTotal,
+      },
+    ];
+  }
+
+  async facturerShipmentnsEcommerce(
+    req: any,
+    clientId: number,
+    dateDebut,
+    dateFin,
+    espesse,
+    type,
+  ) {
+    const datePaiement = new Date();
+    const shipment = await this.getShipmentEcommerceWithIntervalOfClient(
+      clientId,
+      dateDebut,
+      dateFin,
+      espesse,
+    );
+
+    let espece: boolean;
+    let montantTotal = shipment[1].montantTotal;
+    let montantTva = shipment[1].montantTva;
+    let montantTtc = shipment[1].montantTtc;
+    let montantTimbre = shipment[1].montantTimbre;
+    let montantHoreTaxe = shipment[1].montantHT;
+    if (espesse == 'oui') {
+      espece = true;
+    } else if (espesse == 'non') {
+      espece = false;
+    }
+
+    if (shipment[0].length) {
+      const createFacturerDto = {
+        clientId: clientId,
+        employeId: req.user.id,
+        nbrColis: shipment[0].length,
+        montantTotal: montantTotal,
+        montantTva: montantTva,
+        montantTtc: montantTtc,
+        montantTimbre: montantTimbre,
+        montantHoreTaxe: montantHoreTaxe,
+        espece: espece,
+        payer: true,
+        datePaiement: datePaiement,
+        typeFacture: 'ecommerce',
+      };
+      const factureToSave = await this.factureService.create(createFacturerDto);
+      const facture = await this.factureService.findOne(factureToSave.id);
+      const user = await this.userService.findOne(req.user.id);
+      const agence = user.employe.agence;
+      for await (const colis of shipment[0]) {
+        const shipmentPayer = await this.findOne(colis.shipment_id);
+        if (shipmentPayer) {
+          const shipmentToSetPayer =
+            this.shipmentRepository.create(shipmentPayer);
+          shipmentToSetPayer.facture = facture;
+          await this.shipmentRepository.update(
+            colis.shipment_id,
+            shipmentToSetPayer,
+          );
+          // const createStautsShipment = await this.statusService.create({
+          //   user: user,
+          //   shipment: shipmentPayer,
+          //   libelle: StatusShipmentEnum.facturer,
+          //   createdOn: agence,
+          // });
+        }
+      }
+      if (type == 'detail') {
+        return this.factureService.prinFactureEcommerceDetail(factureToSave.id);
+      } else if (type == 'simple') {
+        return this.factureService.prinFactureEcommerceSimplifie(
+          factureToSave.id,
+        );
+      }
+    }
+    throw new EntityNotFoundError(Facture, 'id');
+  }
+
+  async getShipmentEcommerceZeroWithIntervalOfClient(
+    id: number,
+    dateDebut,
+    dateFin,
+    espece,
+  ): Promise<any> {
+    let montantHT = 0;
+    let montantTimbre;
+    let montantTotalColis = 0;
+    let tarifLivraison = 0;
+    let tarifRetour = 0;
+    let prixCod = 0;
+    const date = new Date(dateFin);
+    date.setHours(23, 59, 59);
+    dateFin = date.toISOString();
+    const userClient = await this.clientService.findUserOfClient(id);
+    const shipments = await this.shipmentRepository
+      .createQueryBuilder('shipment')
+      .leftJoinAndSelect('shipment.status', 'status')
+      .leftJoinAndSelect('shipment.createdBy', 'createdBy')
+      .leftJoinAndSelect('createdBy.client', 'client')
+      .leftJoinAndSelect('shipment.commune', 'commune')
+      .leftJoinAndSelect('commune.wilaya', 'wilaya')
+      .leftJoin('status.user', 'user')
+      .leftJoinAndSelect('shipment.service', 'service')
+      .where(
+        `(service.nom='E-Commerce Express Divers' or service.nom ='E-Commerce Economy Entreprise'
+         or service.nom='E-Commerce Express Entreprise'
+         or service.nom='E-Commerce Economy Divers')    and shipment.createdBy = ${userClient.user.id} and shipment.prixVente=0 and shipment.livraisonGratuite=true`,
+      )
+      .andWhere(
+        `(status.libelle = '${StatusShipmentEnum.livre}' or  status.libelle = '${StatusShipmentEnum.retirer}' ) and shipment.facture IsNull`,
+      )
+      .andWhere('status.createdAt >= :dateDebut', { dateDebut: `${dateDebut}` })
+      .andWhere('status.createdAt <= :dateFin', { dateFin: `${dateFin}` })
+      .distinctOn(['shipment.id'])
+      .getRawMany();
+
+    for await (const shipment of shipments) {
+      if (
+        shipment.shipment_poids >
+        shipment.shipment_longueur *
+          shipment.shipment_largeur *
+          shipment.shipment_hauteur *
+          200
+      ) {
+        shipment.poids = shipment.shipment_poids;
+      } else {
+        shipment.poids =
+          shipment.shipment_longueur *
+          shipment.shipment_largeur *
+          shipment.shipment_hauteur *
+          200;
+      }
+      if (shipment.status_libelle == StatusShipmentEnum.livre) {
+        const tarifs = await this.calculTarifslivraison(
+          shipment.shipment_tracking,
+        );
+        tarifLivraison = tarifs;
+        shipment.tarifLivraison = tarifLivraison;
+        tarifRetour = 0;
+        shipment.tarifRetour = tarifRetour;
+        prixCod =
+          (shipment.shipment_prixEstimer * shipment.client_tauxCOD) / 100;
+      } else if (shipment.status_libelle == StatusShipmentEnum.retirer) {
+        tarifLivraison = 0;
+        shipment.tarifLivraison = tarifLivraison;
+        tarifRetour = shipment.client_tarifRetour;
+        shipment.tarifRetour = tarifRetour;
+        prixCod = 0;
+      }
+
+      shipment.montantCOD = prixCod;
+      montantTotalColis = prixCod + tarifLivraison + tarifRetour;
+      shipment.montantTotalColis = montantTotalColis;
+      montantHT = montantHT + montantTotalColis;
+    }
+    const montantTva = (montantHT * 19) / 100;
+    const montantTtc = montantHT + montantTva;
+    if (espece == 'oui') {
+      montantTimbre = (montantTtc * 1) / 100;
+      if (montantTimbre < 5) {
+        montantTimbre = 5;
+      } else if (montantTimbre > 2500) {
+        montantTimbre = 2500;
+      }
+    } else if (espece == 'non') {
+      montantTimbre = 0;
+    }
+    const montantTotal = montantTtc + montantTimbre;
+
+    return [
+      shipments,
+      {
+        montantHT: montantHT,
+        montantTva: montantTva,
+        montantTtc: montantTtc,
+        montantTimbre: montantTimbre,
+        montantTotal: montantTotal,
+      },
+    ];
+  }
+
+  async facturerShipmentnsEcommerceZero(
+    req: any,
+    clientId: number,
+    dateDebut,
+    dateFin,
+    espesse,
+    type,
+  ) {
+    const datePaiement = new Date();
+    const shipment = await this.getShipmentEcommerceZeroWithIntervalOfClient(
+      clientId,
+      dateDebut,
+      dateFin,
+      espesse,
+    );
+
+    let espece: boolean;
+    let montantTotal = shipment[1].montantTotal;
+    let montantTva = shipment[1].montantTva;
+    let montantTtc = shipment[1].montantTtc;
+    let montantTimbre = shipment[1].montantTimbre;
+    let montantHoreTaxe = shipment[1].montantHT;
+    if (espesse == 'oui') {
+      espece = true;
+    } else if (espesse == 'non') {
+      espece = false;
+    }
+
+    if (shipment[0].length) {
+      const createFacturerDto = {
+        clientId: clientId,
+        employeId: req.user.id,
+        nbrColis: shipment[0].length,
+        montantTotal: montantTotal,
+        montantTva: montantTva,
+        montantTtc: montantTtc,
+        montantTimbre: montantTimbre,
+        montantHoreTaxe: montantHoreTaxe,
+        espece: espece,
+        payer: false,
+        datePaiement: datePaiement,
+        typeFacture: 'ecommerceZero',
+      };
+      const factureToSave = await this.factureService.create(createFacturerDto);
+      const facture = await this.factureService.findOne(factureToSave.id);
+      const user = await this.userService.findOne(req.user.id);
+      const agence = user.employe.agence;
+      for await (const colis of shipment[0]) {
+        const shipmentPayer = await this.findOne(colis.shipment_id);
+        if (shipmentPayer) {
+          const shipmentToSetPayer =
+            this.shipmentRepository.create(shipmentPayer);
+          shipmentToSetPayer.facture = facture;
+          await this.shipmentRepository.update(
+            colis.shipment_id,
+            shipmentToSetPayer,
+          );
+          // const createStautsShipment = await this.statusService.create({
+          //   user: user,
+          //   shipment: shipmentPayer,
+          //   libelle: StatusShipmentEnum.facturer,
+          //   createdOn: agence,
+          // });
+        }
+      }
+      if (type == 'detail') {
+        return this.factureService.prinFactureEcommerceDetail(factureToSave.id);
+      } else if (type == 'simple') {
+        return this.factureService.prinFactureEcommerceSimplifie(
+          factureToSave.id,
+        );
+      }
+    }
+    throw new EntityNotFoundError(Facture, 'id');
   }
 }

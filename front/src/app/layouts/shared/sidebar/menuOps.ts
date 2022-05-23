@@ -85,6 +85,13 @@ export const MENUOPS: MenuItem[] = [
         link: '/operations/vider-agence-sac',
         parentId: 7,
       },
+      {
+        id: 25,
+        label: 'Tous les sacs',
+        link: '/operations/listesacs',
+        parentId: 7,
+      },
+      
     ],
   },
   {

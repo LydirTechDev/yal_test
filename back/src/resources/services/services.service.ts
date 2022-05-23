@@ -110,18 +110,15 @@ export class ServicesService {
     return (await this.serviceRepository.count()) - 1;
   }
 
-  async findServicesOfUser(req) {
-    console.log(
-      '🚀 ~ file: services.service.ts ~ line 32 ~ ServicesService ~ findServicesOfUser ~ req',
-      req.user,
-    );
+  async findServicesOfUser(user) {
+
     const serives = await this.serviceRepository
       .createQueryBuilder('service')
       .leftJoinAndSelect('service.codeTarif', 'codeTarif')
       .leftJoinAndSelect('codeTarif.clientsTarifs', 'clientsTarif')
       .leftJoinAndSelect('clientsTarif.client', 'client')
       .leftJoinAndSelect('client.user', 'user')
-      .where(`user.id = '${req.user.id}'`)
+      .where(`user.id = '${user.id}'`)
       .select('service')
       .getRawMany();
     console.log(serives);

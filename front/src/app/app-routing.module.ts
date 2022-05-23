@@ -51,6 +51,13 @@ const routes: Routes = [
     canActivate: [AuthGuard],
   },
   {
+    path: 'manager',
+    component: LayoutComponent,
+    loadChildren: () =>
+      import('./manager/manager.module').then((m) => m.ManagerModule),
+    canActivate: [AuthGuard],
+  },
+  {
     path: 'recherche/:tracking',
     component: LayoutComponent,
     children: [

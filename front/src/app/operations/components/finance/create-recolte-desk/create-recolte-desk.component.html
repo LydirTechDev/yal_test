@@ -5,7 +5,8 @@
             </h3>
     </div>
     <hr class=" mx-auto">
-<table class="table table-bordered table-centered bg-white" *ngIf="montant > 0">
+    <!--<table class="table table-bordered table-centered bg-white" *ngIf="montant > 0">-->
+<table class="table table-bordered table-centered bg-white" *ngIf="nbrColis > 0">
     <thead class="">
         <tr>
             <th scope="col">Tracking</th>
@@ -37,7 +38,8 @@
 
     </tfoot>
 </table>
-<div class=" d-flex justify-content-center" *ngIf="montant > 0">
+<!--<div class=" d-flex justify-content-center" *ngIf="montant > 0">-->
+<div class=" d-flex justify-content-center" *ngIf="nbrColis > 0">
     <button class="btn btn-success" (click)="createRecolteDesk()">
         <i class="ri-check-fill"></i>
         Créer la récolte

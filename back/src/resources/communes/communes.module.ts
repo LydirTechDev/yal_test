@@ -17,6 +17,7 @@ import { Agence } from '../agences/entities/agence.entity';
 import { Banque } from '../banques/entities/banque.entity';
 import { Departement } from '../departements/entities/departement.entity';
 import { User } from '../users/entities/user.entity';
+import { ExcelService } from 'src/core/templates/excel/excel.service';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { User } from '../users/entities/user.entity';
     DepartementsService,
     BanquesService,
     AgencesService,
+    ExcelService
   ],
 })
 export class CommunesModule {}

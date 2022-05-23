@@ -19,14 +19,25 @@ export class AjouterClientComponent implements OnInit {
     private router: Router
   ) {}
 
+
   listCodeTarif = [];
   listWilaya = [];
   listAgence = [];
   listService = [];
-  newService = [];
+  listServiceBeforePatch = [];
+
   listCommuneResidence = [];
   listCommuneDepart = [];
+  clients: any;
   breadCrumbItems: Array<{}>;
+  touched: boolean = false;
+  isDureePaiement = false;
+  isJourneePayment = false
+  listDureePaiement = ['Fret', 'Classique Divers', 'Classique Entreprise']
+  listJourPayment = ['E-Commerce Express Divers', 'E-Commerce Economy Entreprise',
+    'E-Commerce Express Entreprise', 'E-Commerce Economy Divers']
+  selectedServiceDureePaiement = []
+  selectedServiceJourneePayment = [];
   journeeSemaine: any[] = [
     { journee: JourSemaineEnum.Dimanche, nom: JourSemaineEnum.Dimanche },
     { journee: JourSemaineEnum.Lundi, nom: JourSemaineEnum.Lundi },
@@ -35,12 +46,16 @@ export class AjouterClientComponent implements OnInit {
     { journee: JourSemaineEnum.Jeudi, nom: JourSemaineEnum.Jeudi },
   ];
   delaiPaiement = [
-    {delai: delaiPaiementEnum.alenvoi},
-    {delai: delaiPaiementEnum.aLaReceptionDeLaFacture},
-    {delai: delaiPaiementEnum.a15Jours},
-    {delai: delaiPaiementEnum.a30Jours},
-    {delai: delaiPaiementEnum.a45Jours},
+    { delai: delaiPaiementEnum.alenvoi },
+    { delai: delaiPaiementEnum.aLaReceptionDeLaFacture },
+    { delai: delaiPaiementEnum.a15Jours },
+    { delai: delaiPaiementEnum.a30Jours },
+    { delai: delaiPaiementEnum.a45Jours },
   ]
+
+  newService = [];
+
+
    delaiPaiementEnum;
   emailPattern =
     '^([a-zA-Z0-9_\\-\\.]+)@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.)|(([a-zA-Z0-9\\-]+\\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\\]?)$';
@@ -121,8 +136,8 @@ export class AjouterClientComponent implements OnInit {
     poidsBase: [, Validators.compose([Validators.required])],
     tauxCOD: [, Validators.compose([Validators.required])],
     moyenPayement: [, Validators.compose([Validators.required])],
-    jourPayement: [, Validators.compose([Validators.required])],
-    delaiPaiement: [, Validators.compose([Validators.required])],
+    jourPayement: [],
+    delaiPaiement: [],
     tarifRetour: [, Validators.compose([Validators.required])],
     wilayaDepartId: [, Validators.compose([Validators.required])],
     communeDepartId: [, Validators.compose([Validators.required])],
@@ -158,15 +173,54 @@ export class AjouterClientComponent implements OnInit {
   addTypeTarif() {
     this.typeTarif.push(this.newTypeTarif());
   }
-
-  resetTypeTarif(){
-    this.typeTarif.clear()
-    this.addTypeTarif()
-    this.getAllservice()
-   }
+  resetTypeTarif() {
+    this.typeTarif.clear();
+    this.addTypeTarif();
+    this.getAllservice();
+    this.selectedServiceDureePaiement = []
+    this.selectedServiceJourneePayment = []
+    this.isDureePaiement = false;
+    this.isJourneePayment = false;
+  }
 
   removeTypeTarif(i: number) {
+    console.log(this.listServiceBeforePatch)
+    let id = (this.typeTarif.at(i) as FormGroup).get('serviceId').value;
+    let service = this.listServiceBeforePatch.find((service) => service.id == id);
+    this.listService.push(service);
+    if (this.listDureePaiement.includes(service.nom)) {
+      const index = this.selectedServiceDureePaiement.indexOf(service);
+      this.selectedServiceDureePaiement.splice(index, 1);
+    }
+    if (this.listJourPayment.includes(service.nom)) {
+      const index = this.selectedServiceJourneePayment.indexOf(service);
+      this.selectedServiceJourneePayment.splice(index, 1)
+    }
+
     this.typeTarif.removeAt(i);
+    this.touched = true;
+    if (this.selectedServiceDureePaiement.length > 0) {
+      this.isDureePaiement = true
+      this.clientForm.get('delaiPaiement').setValidators([Validators.required])
+      this.clientForm.get('delaiPaiement').updateValueAndValidity()
+    } else {
+      this.isDureePaiement = false
+      this.clientForm.get('delaiPaiement').setValidators(null)
+      this.clientForm.get('delaiPaiement').updateValueAndValidity()
+
+    }
+    if (this.selectedServiceJourneePayment.length > 0) {
+      this.isJourneePayment = true
+      this.clientForm.get('jourPayement').setValidators([Validators.required])
+      this.clientForm.get('jourPayement').updateValueAndValidity()
+
+    }
+    else {
+      this.isJourneePayment = false
+      this.clientForm.get('jourPayement').setValidators(null)
+      this.clientForm.get('jourPayement').updateValueAndValidity()
+
+    }
   }
 
   getAllWilaya() {
@@ -265,7 +319,6 @@ export class AjouterClientComponent implements OnInit {
       this.clientForm.get('poidsBase').valid &&
       this.clientForm.get('tauxCOD').valid &&
       this.clientForm.get('moyenPayement').valid &&
-      this.clientForm.get('jourPayement').valid &&
       this.clientForm.get('tarifRetour').valid &&
       this.clientForm.get('wilayaDepartId').valid &&
       this.clientForm.get('communeDepartId').valid &&
@@ -282,7 +335,8 @@ export class AjouterClientComponent implements OnInit {
   }
 
   private _validateThirdtStep(): boolean {
-    if ((this.typeTarif.at(0) as FormGroup).get('codeTarifId').valid) {
+      
+    if ((this.typeTarif.at(0) as FormGroup).get('codeTarifId').valid && this.clientForm.get('jourPayement').valid && this.clientForm.get('delaiPaiement').valid ) {
       return true;
     } else {
       return false;
@@ -295,27 +349,56 @@ export class AjouterClientComponent implements OnInit {
 
   getAllservice() {
     this.clientService.getAllService().then((response) => {
-      this.listService = response;
+      for (const i of response) {
+        this.listServiceBeforePatch.push(i)
+        this.listService.push(i);
+      }
+
+      console.log("🚀 ~ file: detail-client.component.ts ~ line 258 ~ DetailClientComponent ~ this.clientService.getAllService ~ response", response)
+      console.log(this.listService)
+      console.log(this.listServiceBeforePatch)
     });
   }
-
   onChangeService(i: number) {
-    let id=(this.typeTarif.at(i) as FormGroup).get('serviceId').value
-    let service=this.listService.find(service=>service.id==id);
-    const index=this.listService.indexOf(service);
-    this.listService.splice(index,1)
+    
+    let id = (this.typeTarif.at(i) as FormGroup).get('serviceId').value;
+    let service = this.listService.find((service) => service.id == id);
+    if (this.listDureePaiement.includes(service.nom)) {
+      this.selectedServiceDureePaiement.push(service)
+
+      console.log(service.nom)
+      this.isDureePaiement = true;
+      this.clientForm.get('delaiPaiement').setValidators([Validators.required])
+      this.clientForm.get('delaiPaiement').updateValueAndValidity()
+    }
+
+    if (this.listJourPayment.includes(service.nom)) {
+      this.selectedServiceJourneePayment.push(service)
+      this.isJourneePayment = true;
+      this.clientForm.get('jourPayement').setValidators([Validators.required])
+      this.clientForm.get('jourPayement').updateValueAndValidity()
+    }
+
+
+    const index = this.listService.indexOf(service);
+    this.listService.splice(index, 1);
     this.clientService
       .getCodeTarifByServiceId(this.typeTarif.value[i].serviceId)
       .subscribe(
         (response) => {
           this.listCodeTarif[i] = response;
-          (this.typeTarif.at(i) as FormGroup).get('codeTarifId').patchValue(null);
+          (this.typeTarif.at(i) as FormGroup)
+            .get('codeTarifId')
+            .patchValue(null);
         },
         (error) => {
-            this.listCodeTarif[i] = null,
-            (this.typeTarif.at(i) as FormGroup).get('codeTarifId').patchValue(null);
+          (this.listCodeTarif[i] = null),
+            (this.typeTarif.at(i) as FormGroup)
+              .get('codeTarifId')
+              .patchValue(null);
         }
       );
+    (this.typeTarif.at(i) as FormGroup).get('serviceId').disable()
   }
 
   createClient() {

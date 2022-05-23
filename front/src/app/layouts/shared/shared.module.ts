@@ -16,6 +16,7 @@ import { HorizontalnavbarComponent } from './horizontalnavbar/horizontalnavbar.c
 import { LanguageService } from 'src/app/core/services/language.service';
 import { ButtonsModule, InputsModule, MDBBootstrapModule, WavesModule } from 'angular-bootstrap-md';
 import { ReactiveFormsModule } from '@angular/forms';
+import { NgxMaskModule } from 'ngx-mask';
 
 @NgModule({
   // tslint:disable-next-line: max-line-length
@@ -32,6 +33,8 @@ import { ReactiveFormsModule } from '@angular/forms';
     InputsModule,
     WavesModule,
     ReactiveFormsModule,
+    NgxMaskModule.forRoot(),
+
 
   ],
   exports: [TopbarComponent, FooterComponent, SidebarComponent, RightsidebarComponent, HorizontaltopbarComponent, HorizontalnavbarComponent],

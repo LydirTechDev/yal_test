@@ -19,6 +19,7 @@ import { Banque } from 'src/resources/banques/entities/banque.entity';
 import { Departement } from 'src/resources/departements/entities/departement.entity';
 import { Employe } from 'src/resources/employes/entities/employe.entity';
 import { Fonction } from 'src/resources/fonctions/entities/fonction.entity';
+import { ExcelService } from 'src/core/templates/excel/excel.service';
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { Fonction } from 'src/resources/fonctions/entities/fonction.entity';
     FonctionsService,
     DepartementsService,
     BanquesService,
+    ExcelService
   ],
 })
 export class CoursierModule {}

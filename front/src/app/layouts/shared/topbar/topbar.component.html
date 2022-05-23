@@ -33,7 +33,12 @@
 
         <form [formGroup]="searchForm" class="app-search mt-2 d-none d-lg-block" (ngSubmit)="searchTracking()">
           <div class="position-relative">
-            <input type="text" class="form-control" placeholder="{{'Tracking'  | translate}}" formControlName='search'>
+            <input type="text" class="form-control" placeholder="{{'Tracking'  | translate}}" formControlName='search' 
+            mask="00000000"
+            [ngClass]="{'is-invalid': searchForm.controls['search'].invalid && (searchForm.controls['search'].dirty 
+            || searchForm.controls['search'].touched),'is-valid': searchForm.controls['search'].valid && 
+            (searchForm.controls['search'].dirty 
+            || searchForm.controls['search'].touched) }">
             <span class="ri-search-line"></span>
           </div>
         </form>

@@ -28,7 +28,7 @@ export class TransitSacComponent implements OnInit {
     this.getSacPresTransit();
   }
   newSac() {
-    const express_reg = new RegExp(/^sac-\d{3}\w{3}$/, 'i')
+    const express_reg = new RegExp(/^sac-\d{8}$/, 'i')
     const track = this.formdata.value["tracking"];
     if (!express_reg.test(track).toString()) {
       this.sweetAlertService.backgroundRed()

@@ -388,7 +388,7 @@ export class ShipmentsOpsService {
     return this.http.get<Pagination<any>>(`${environment.apiV1}shipments/paginateAllShipments`)
   }
 
-  searchCoursier(searchShipmentsTerm: string): Observable<Pagination<any>> {
+  searchShipments(searchShipmentsTerm: string): Observable<Pagination<any>> {
     return this.http.get<Pagination<any>>(`${environment.apiV1}shipments/paginateAllShipments?searchShipmentsTerm=${searchShipmentsTerm}`)
   }
   funcPaginate(
@@ -401,7 +401,7 @@ export class ShipmentsOpsService {
       return this.http.get<Pagination<any>>(link)
     }
     if (page && search) {
-      link = `${environment.apiV1}shipments/paginateAllShipments?searchCoursierTerm=${search}&page=${page}`;
+      link = `${environment.apiV1}shipments/paginateAllShipments?searchShipmentTerm=${search}&page=${page}`;
       return this.http.get<Pagination<any>>(link)
     }
     if (search) {
@@ -412,6 +412,41 @@ export class ShipmentsOpsService {
 
   ExportToExcel(termToSearch: string) {
     return this.http.get(`http://localhost:3000/shipments/download?term=${termToSearch}`, { responseType: 'blob' });
+  }
+
+
+  //
+
+  printManifestSac(idSac: number) {
+    return this.http.get(`${environment.apiV1}sac/printManifestSac/${idSac}`, {
+      responseType: 'blob',
+    });
+  }
+
+  funcPaginateSac(link?: string,
+    page?: number,
+    search?: string
+  ): Observable<Pagination<any>> {
+    if (page && search == undefined) {
+      link = `${environment.apiV1}sac/paginateAllSac?page=${page}`;
+      return this.http.get<Pagination<any>>(link)
+    }
+    if (page && search) {
+      link = `${environment.apiV1}sac/paginateAllSac?searchSacTerm=${search}&page=${page}`;
+      return this.http.get<Pagination<any>>(link)
+    }
+    if (search) {
+      return this.http.get<Pagination<any>>(`${link}&searchSacTerm=${search}`);
+    }
+    return this.http.get<Pagination<any>>(link);
+  }
+  searchSacs(searchSacTerm: string) {
+    return this.http.get<Pagination<any>>(`${environment.apiV1}sac/paginateAllSac?searchSacTerm=${searchSacTerm}`)
+
+  }
+  getPaginateSacs() {
+    return this.http.get<Pagination<any>>(`${environment.apiV1}sac/paginateAllSac`)
+
   }
 
 }

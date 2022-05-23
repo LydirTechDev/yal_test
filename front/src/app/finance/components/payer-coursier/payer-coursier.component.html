@@ -41,7 +41,7 @@
         <!-- <td>{{colis.service_nom}}</td> -->
         <!-- <td>{{colis.wilaya_nomLatin}}</td> -->
       <td>{{colis.status_createdAt | date:'dd-MM-YYYY HH:mm:ss'}}</td>
-      <td class="font-weight-bold">{{colis.coursier_montantLivraison}}</td>
+      <td class="font-weight-bold">{{ colis.tarifsLivraison | currency:'DA':'symbol' :'1.2-2':'fr'}}</td>
     </tr>
   </tbody>
   <tfoot>
@@ -51,7 +51,7 @@
       <td></td>
       <td></td>
       <td class="customBg">
-        <h1 class="text-dark font-weight-bold p-0 ">Total: {{montant}} DA</h1>
+        <h1 class="text-dark font-weight-bold p-0 ">Total: {{montant | currency:'DA':'symbol' :'1.2-2':'fr'}}</h1>
       </td>
     </tr>
     <tr>

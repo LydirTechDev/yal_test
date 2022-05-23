@@ -105,6 +105,11 @@ export class AgencesController {
     return this.agencesService.findOneAgenceById(id);
   }
 
+  @Get('communeZone/:id')
+  findOneAgenceByIdWithCommuneZone(@Param('id', ParseIntPipe) id: number) {
+    return this.agencesService.findOneAgenceByIdV3(id);
+  }
+
   @Patch(':id')
   updateAgence(
     @Body() updateAgenceDto: UpdateAgenceDto,

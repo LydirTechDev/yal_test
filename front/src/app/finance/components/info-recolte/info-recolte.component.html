@@ -1,0 +1,29 @@
+<h4>
+    Detail du paiement : {{this.route.params.id}}</h4>
+<hr class="mb-3">
+<p>Crée par {{createdBy}}
+    le {{date | date:'dd-MM-YYYY HH:mm:ss'}}</p>
+<h5>Liste des colis <span class="badge px-2 text-white bg-dark">{{listShipmentsDetail.length}}</span></h5>
+<div class="card">
+    <table id="basic-datatable" class="table table-centered dt-responsive nowrap 
+                       ">
+        <thead>
+            <th>Tracking</th>
+            <th>Prix de vente</th>
+            <th>Recouvrement</th>
+            <th>Destinataire</th>
+            <th>Numero</th>
+
+        </thead>
+        <tbody>
+            <tr *ngFor="let data of listShipmentsDetail">
+                <td>{{data.tracking}}</td>
+                <td>{{data.prixVente}}</td>
+                <td>{{data.recouvrement}}</td>
+                <td>{{data.nom}} {{data.prenom}}</td>
+                <td>{{data.telephone}}</td>
+
+            </tr>
+        </tbody>
+    </table>
+</div>

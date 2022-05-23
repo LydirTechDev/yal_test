@@ -1,48 +1,49 @@
 <body>
 
-  <nav class="navbar navbar-expand-md navbar-light bg-light py-0 my-0"
-    style="border-bottom: #781616 3px solid;">
+  <nav class="navbar navbar-expand-md navbar-light bg-light py-0 my-0" style="border-bottom: #d62e2f 3px solid;">
     <!-- LOGO -->
-    <div class="navbar-brand-box py-0">
+
+    <div class="navbar-brand-box py-0 my-0" style="line-height: 60px;">
       <!-- bg-white -->
-      <a href="/" class="logo logo-dark">
+      <a href="/" class="logo " style="line-height: 60px;">
         <span class="logo-sm">
-          <img src="assets/images/yalidine-logo-sm.png" width=56px height=56px>
+          <img src="assets/images/logo-v1.png" width=220px height=45px>
         </span>
         <span class="logo-lg">
-          <img src="assets/images/logo-v1.png" width=190px height=45px>
+          <img src="assets/images/logo-v1.png" width=220px height=45px>
         </span>
       </a>
     </div>
-     
-<button class="navbar-toggler mr-auto" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-  aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-  <span class="navbar-toggler-icon"></span>
-</button>
+    <button class="navbar-toggler ml-auto" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav ml-auto font-weight-bold">
         <li class="nav-item">
-          <a class="nav-link text-dark" href="/">Accueil</a>
+          <a class="nav-link text-primary" href="/">Accueil</a>
         </li>
 
         <li class="nav-item ">
-          <a class="nav-link text-dark" href="#">Services</a>
+          <a class="nav-link text-dark" routerLink="/services">Services</a>
         </li>
 
         <li class="nav-item ">
-          <a class="nav-link text-dark" href="#">Nos qualités</a>
+          <a class="nav-link text-dark" href="/contact">Contact</a>
         </li>
         <li class="nav-item ">
-          <a class="nav-link text-dark" href="#">A propos</a>
+          <a class="nav-link text-dark" href="/apropos">A propos</a>
+        </li>
+        <li class="nav-item ">
+          <a type="link" class=" nav-link text-danger" routerLink="/auth/login">
+            se connecter
+          </a>
+
         </li>
       </ul>
     </div>
-  <div class="nav-item ">
-    <a type="link" class="btn btn-outline-dark nav-link px-3 ml-auto " routerLink="auth/login">
-      <i class=" fas fa-user-circle mr-2 pl-1"></i>
-      se connecter
-    </a>
-  </div>
+
   </nav>
 
 
@@ -54,19 +55,17 @@
 
   <div class="container text-center my-5">
     <br>
-    <h2 class="thin">Le 1er de la livraison express en Algérie</h2>
+    <h1 class="thin">Le 1er de la livraison express en Algérie</h1>
     <p class="text-muted">
       Avec un système de suivi 100% en temps réel!
     </p>
   </div>
 
-  <div class="jumbotron top-space bg-white border-top ">
+  <div class="jumbotron top-space bg-white border-top mx-2 ">
     <div class="container">
-      <h3 class="text-center thin">Nous livrons partout en Algérie</h3>
-
       <div class="row">
         <div class="col-md-3 col-sm-6 highlight">
-          <img class="h-100 w-100" alt="map-livraison" src="../../../assets/images/map.jpg">
+          <img class="h-100 w-100" alt="map-livraison" src="../../../assets/images/truck-model.png">
         </div>
         <div class="col-md-3 col-sm-6 highlight">
           <div class="h-caption">
@@ -100,9 +99,30 @@
     </div>
   </div>
 
+  <section class="section section-shaped bg-white">
+    <div class="container py-md">
+      <div class="row justify-content-between align-items-center">
+        <div class="col-lg-5 mb-5 mb-lg-0">
+          <h2 class=" text-dark font-weight-light">Nous livrons partout en Algérie</h2>
+          <p class="lead  text-dark mt-4">Nous offrons une logistique nationale avec une qualité de distribution
+            optimale, et ce grâce à nos bureaux locaux et nos
+            équipes dédiés de haut niveau.</p>
+        </div>
+        <div class="col-md-3 col-sm-6 ">
+          <img class="h-100 w-100" alt="map-livraison" src="../../../assets/images/map.jpg">
+        </div>
+      </div>
+    </div>
+    <!-- SVG separator -->
+    <div class="separator separator-bottom separator-skew">
+      <svg x="0" y="0" viewBox="0 0 2560 100" preserveAspectRatio="none" version="1.1"
+        xmlns="http://www.w3.org/2000/svg">
+        <polygon fill="#000000" points="2560 0 2560 100 0 100"></polygon>
+      </svg>
+    </div>
+  </section>
 
-
-  <footer id="footer" class="top-space">
+  <footer id="footer">
 
     <div class="footer1">
       <div class="container">
@@ -111,8 +131,7 @@
           <div class="col-md-3 widget">
             <h3 class="widget-title">Contact info</h3>
             <div class="widget-body">
-              <p> 1 Lotissement les vergers Bir Mourad Rais.
-                16000 Alger</p>
+              <p> Zone d’activité Kaidi Lot 63, Bordj El Kiffan,<br> Algérie 16000 Alger, Algérie</p>
               <p> RC N°: 13B 0986869-00/16</p>
               <p> AI N°: 16097109014</p>
               <p> NIF N°: 001316098686984</p>
@@ -127,16 +146,15 @@
           <div class="col-md-3 widget">
             <h3 class="widget-title">Nous suivre</h3>
             <div class="widget-body">
-              <p class="follow-me-icons">
-                <a href=""><i class="fab fa-twitter fa-2"></i></a>
-                <a href=""><i class="fab fa-instagram fa-2"></i></a>
-                <a href=""><i class="fab fa-facebook fa-2"></i></a>
-              </p>
+                  <p class="follow-me-icons">
+                    <a href=""><i class="fab fa-facebook fa-2"></i></a>
+                    <a href=""><i class="fab fa-instagram fa-2"></i></a>
+                  </p>
             </div>
           </div>
 
           <div class="col-md-6 widget">
-            <img src="assets/images/yalidine-logo.png" width=180px height=60px>
+            <img src="assets/images/logo-v2.png" width=210px height=50px>
             <div class="widget-body">
               <p>Opérateur de courrier Express en régime
                 domestique. </p>

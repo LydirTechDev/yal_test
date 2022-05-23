@@ -17,6 +17,7 @@ import { DepartementsService } from '../departements/departements.service';
 import { FonctionsService } from '../fonctions/fonctions.service';
 import { UsersService } from '../users/users.service';
 import { WilayasService } from '../wilayas/wilayas.service';
+import { ExcelService } from 'src/core/templates/excel/excel.service';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { WilayasService } from '../wilayas/wilayas.service';
     AgencesService,
     CommunesService,
     WilayasService,
+    ExcelService
   ],
   exports: [
     EmployesService,

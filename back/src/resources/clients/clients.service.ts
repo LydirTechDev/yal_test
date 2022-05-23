@@ -26,12 +26,15 @@ import { AgencesService } from '../agences/agences.service';
 import { ClientsTarifsService } from '../clients-tarifs/clients-tarifs.service';
 import { CreateClientsTarifDto } from '../clients-tarifs/dto/create-clients-tarif.dto';
 import { ClientsTarif } from '../clients-tarifs/entities/clients-tarif.entity';
+import { CodeTarifsZonesService } from '../code-tarifs-zones/code-tarifs-zones.service';
 import { CommunesService } from '../communes/communes.service';
 import { EmployesService } from '../employes/employes.service';
 import { Shipment } from '../shipments/entities/shipment.entity';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { UpdateUserDto } from '../users/dto/update-user.dto';
 import { UsersService } from '../users/users.service';
+import { WilayasService } from '../wilayas/wilayas.service';
+import { ZonesService } from '../zones/zones.service';
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
 import { Client } from './entities/client.entity';
@@ -51,6 +54,9 @@ export class ClientsService {
     private clienttTarifService: ClientsTarifsService,
     private pdfService: PdfService,
     private excelService: ExcelService,
+    private wilayaService:WilayasService,
+    private zoneService:ZonesService,
+    private codeTarifZone:CodeTarifsZonesService
   ) {}
 
   // const clientInfo = await this.clientRepository
@@ -504,6 +510,8 @@ export class ClientsService {
     this.excelService.exportToExcel(res, term, data);
   }
 
+ 
+  
   async getClientsHaveClassicShipmentInInterval(
     dateDebut,
     dateFin,
@@ -540,4 +548,112 @@ export class ClientsService {
       throw new EntityNotFoundError(Client, `n'existe pas`);
     }
   }
+
+  async getClientsHaveEcommerceShipmentInInterval(
+    dateDebut,
+    dateFin,
+    userId,
+  ): Promise<any> {
+    const date = new Date(dateFin);
+    date.setHours(23, 59, 59);
+    dateFin = date.toISOString();
+    const agenceId = (await this.userService.findOne(userId)).employe.agence.id;
+    console.log("🚀 ~ file: clients.service.ts ~ line 561 ~ ClientsService ~ agenceId", agenceId)
+
+    const clients = await await getManager()
+      .createQueryBuilder(Shipment, 'shipment')
+      .leftJoinAndSelect('shipment.createdBy', 'createdBy')
+      .leftJoinAndSelect('createdBy.client', 'client')
+      .leftJoinAndSelect('shipment.status', 'status')
+      .leftJoinAndSelect('shipment.commune', 'commune')
+      .leftJoinAndSelect('commune.wilaya', 'wilaya')
+      .leftJoin('status.user', 'user')
+      .leftJoinAndSelect('shipment.service', 'service')
+      .where(
+        `(service.nom='E-Commerce Express Divers' or service.nom ='E-Commerce Economy Entreprise'
+        or service.nom='E-Commerce Express Entreprise'
+        or service.nom='E-Commerce Economy Divers' ) and (shipment.prixVente != 0 or shipment.livraisonGratuite=false)   and client.caisseAgenceId=${agenceId}`,
+      )
+      .andWhere(
+        `(status.libelle = '${StatusShipmentEnum.payer}' or  status.libelle = '${StatusShipmentEnum.retirer}' ) and shipment.facture IsNull`,
+      )
+      .andWhere('status.createdAt >= :dateDebut', { dateDebut: `${dateDebut}` })
+      .andWhere('status.createdAt <= :dateFin', { dateFin: `${dateFin}` })
+      .select('client')
+      .distinctOn(['client.id'])
+      .getRawMany();
+    if (clients) {
+      return clients;
+    } else {
+      throw new EntityNotFoundError(Client, `n'existe pas`);
+    }
+  }
+
+ 
+
+
+    async getClientsHaveEcommerceZeroShipmentInInterval(
+    dateDebut,
+    dateFin,
+    userId,
+  ): Promise<any> {
+    const date = new Date(dateFin);
+    date.setHours(23, 59, 59);
+    dateFin = date.toISOString();
+    // const agenceId = (await this.userService.findOne(userId)).employe.agence.id;
+
+    const clients = await await getManager()
+      .createQueryBuilder(Shipment, 'shipment')
+      .leftJoinAndSelect('shipment.createdBy', 'createdBy')
+      .leftJoinAndSelect('createdBy.client', 'client')
+      .leftJoinAndSelect('shipment.status', 'status')
+      .leftJoinAndSelect('shipment.commune', 'commune')
+      .leftJoinAndSelect('commune.wilaya', 'wilaya')
+      .leftJoin('status.user', 'user')
+      .leftJoinAndSelect('shipment.service', 'service')
+      .where(
+        `(service.nom='E-Commerce Express Divers' or service.nom ='E-Commerce Economy Entreprise'
+        or service.nom='E-Commerce Express Entreprise'
+        or service.nom='E-Commerce Economy Divers' )  and client.caisseAgenceId=1 
+        and shipment.prixVente=0 and shipment.livraisonGratuite=true`,
+      )
+      .andWhere(
+        `(status.libelle = '${StatusShipmentEnum.livre}' or  status.libelle = '${StatusShipmentEnum.ARetirer}' ) and shipment.facture IsNull`,
+      )
+      .andWhere('status.createdAt >= :dateDebut', { dateDebut: `${dateDebut}` })
+      .andWhere('status.createdAt <= :dateFin', { dateFin: `${dateFin}` })
+      .select('client')
+      .distinctOn(['client.id'])
+      .getRawMany();
+    if (clients) {
+      return clients;
+    } else {
+      throw new EntityNotFoundError(Client, `n'existe pas`);
+    }
+  }
+
+
+  async getTarifOfclient(wilayaDepartId,codeTarifId){
+    let tarifClient=[];
+    const listwilaya= await this.wilayaService.findAllWilaya()
+    let i=0;
+    for await (const wilaya of listwilaya) {
+      i=i+1;
+      console.log("🚀 ~ file: clients.service.ts ~ line 598 ~ ClientsService ~ forawait ~ i", i)
+      const zone=await this.zoneService.findZoneByRotation(wilayaDepartId,wilaya.id);
+      console.log("🚀 ~ file: clients.service.ts ~ line 595 ~ ClientsService ~ getTarifOfclient ~ zone", zone);
+      const tarif=await this.codeTarifZone.findCodeTarifZoneWithoutPoids(zone.zone_id,codeTarifId)
+      console.log("🚀 ~ file: clients.service.ts ~ line 596 ~ ClientsService ~ getTarifOfclient ~ tarif", tarif)
+      const tarifClientInfo={
+      destination:wilaya.nomLatin,
+      zone:zone.zone_id,
+      tarifLivraison:tarif.tarifDomicile,
+      tarifStopDesk:tarif.tarifStopDesk
+      }
+      tarifClient.push(tarifClientInfo)
+    }
+    return tarifClient
+
+  }
+
 }

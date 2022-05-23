@@ -11,6 +11,7 @@ import { MesPaiementsComponent } from './components/mes-paiements/mes-paiements.
 import { DetailPaiementCoursierComponent } from './components/detail-paiement-coursier/detail-paiement-coursier.component';
 import { PickupComponent } from './components/pickup/pickup.component';
 
+
 @NgModule({
   declarations: [DashboardComponent, ReceiveShipmentsComponent, ListShipmentsComponent, ListEchecsComponent, MesPaiementsComponent, DetailPaiementCoursierComponent, PickupComponent],
   imports: [

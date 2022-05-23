@@ -1,5 +1,6 @@
 import { Agence } from 'src/resources/agences/entities/agence.entity';
 import { Client } from 'src/resources/clients/entities/client.entity';
+import { RecolteFacture } from 'src/resources/recolte-facture/entities/recolte-facture.entity';
 import { Shipment } from 'src/resources/shipments/entities/shipment.entity';
 import { User } from 'src/resources/users/entities/user.entity';
 import {
@@ -10,6 +11,7 @@ import {
   Entity,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -23,6 +25,11 @@ export class Facture {
     nullable: true,
   })
   numFacture: string;
+
+  @Column({
+    nullable: true,
+  })
+  typeFacture: string;
 
   @Column({
     nullable: true,
@@ -45,7 +52,7 @@ export class Facture {
   payer: boolean;
 
   @Column({
-    nullable:true
+    nullable: true,
   })
   espece: boolean;
 
@@ -84,7 +91,26 @@ export class Facture {
   montantTotal: number;
 
 
-
+  @Column({
+    nullable: true,
+    type: 'float',
+  })
+  montantTva: number;
+  @Column({
+    nullable: true,
+    type: 'float',
+  })
+  montantTtc: number;
+  @Column({
+    nullable: true,
+    type: 'float',
+  })
+  montantTimbre: number;
+  @Column({
+    nullable: true,
+    type: 'float',
+  })
+  montantHoreTaxe: number;
 
   //   ---------------------------------
   @OneToMany(() => Shipment, (shipments) => shipments.facture)
@@ -94,4 +120,9 @@ export class Facture {
     nullable: true,
   })
   nbrColis: number;
+
+  @OneToOne(() => RecolteFacture, (recolte) => recolte.facture, {
+    nullable: true,
+  })
+  recolte: RecolteFacture;
 }

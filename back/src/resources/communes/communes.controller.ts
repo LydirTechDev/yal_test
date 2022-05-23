@@ -8,6 +8,7 @@ import {
   Query,
   Patch,
   Param,
+  Res,
 } from '@nestjs/common';
 import { ApiQuery } from '@nestjs/swagger';
 import { Pagination } from 'nestjs-typeorm-paginate';
@@ -49,6 +50,11 @@ export class CommunesController {
   @Get()
   findAllCommune(): Promise<Commune[]> {
     return this.communesService.findAllCommune();
+  }
+
+  @Get('DownloadAllCommunes')
+  downloadAllWilayas(@Res() res) {
+    return this.communesService.exportCommune(res, '');
   }
 
   @Get('wilayaId/:wilayaId')

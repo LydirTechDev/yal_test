@@ -17,6 +17,7 @@ import { CommunesService } from '../communes/communes.service';
 import { DepartementsService } from '../departements/departements.service';
 import { FonctionsService } from '../fonctions/fonctions.service';
 import { UsersService } from '../users/users.service';
+import { ExcelService } from 'src/core/templates/excel/excel.service';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { UsersService } from '../users/users.service';
     BanquesService,
     AgencesService,
     CommunesService,
+    ExcelService
   ],
   exports: [WilayasService],
 })

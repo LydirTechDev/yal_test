@@ -32,7 +32,7 @@ export class ViderWilayaSacRetourComponent implements OnInit {
   }
   checkSack() {
     this.listeColisRetourWilaya = [];
-    const express_reg = new RegExp(/^sac-\d{3}\w{3}$/, 'i')
+    const express_reg = new RegExp(/^sac-\d{8}$/, 'i')
     const track = this.formSac.value["sacTracking"];
     if (express_reg.test(track)) {
       this.shipmentOpsService.getTrackingReturnWilaya(track.toLowerCase()).subscribe(

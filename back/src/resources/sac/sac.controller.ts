@@ -10,6 +10,9 @@ import {
   Response,
   UseGuards,
   Req,
+  DefaultValuePipe,
+  ParseIntPipe,
+  Query,
 } from '@nestjs/common';
 import { SacService } from './sac.service';
 import { CreateSacDto } from './dto/create-sac.dto';
@@ -18,6 +21,9 @@ import { Roles } from 'src/auth/decorators/role.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RoleGuard } from 'src/auth/guards/role.guard';
 import { REQUEST } from '@nestjs/core';
+import { Pagination } from 'nestjs-typeorm-paginate';
+import { Shipment } from '../shipments/entities/shipment.entity';
+import { Sac } from './entities/sac.entity';
 
 @UseGuards(JwtAuthGuard, RoleGuard)
 @Controller('sac')
@@ -142,7 +148,7 @@ export class SacController {
   @Get('getTrackingEnTransfert/:tracking')
   @Roles('236429359')
   getTrackingEnTransfert(@Param('tracking') tracking: any, @Request() req) {
-    const express_reg = new RegExp(/^sac-\d{3}\w{3}$/, 'i');
+    const express_reg = new RegExp(/^sac-\d{8}$/, 'i');
     if (express_reg.test(tracking.toLowerCase())) {
       return this.sacService.getTrackingEnTransfert(tracking, req.user);
     }
@@ -151,7 +157,7 @@ export class SacController {
   @Get('getTrackingVersWilaya/:tracking')
   @Roles('236429359')
   getTrackingVersWilaya(@Param('tracking') tracking: string, @Request() req) {
-    const express_reg = new RegExp(/^sac-\d{3}\w{3}$/, 'i');
+    const express_reg = new RegExp(/^sac-\d{8}$/, 'i');
     if (express_reg.test(tracking.toLowerCase())) {
       return this.sacService.getTrackingVersWilaya(tracking, req.user);
     }
@@ -161,21 +167,21 @@ export class SacController {
     @Param('tracking') tracking: string,
     @Request() req,
   ) {
-    const express_reg = new RegExp(/^sac-\d{3}\w{3}$/, 'i');
+    const express_reg = new RegExp(/^sac-\d{8}$/, 'i');
     if (express_reg.test(tracking.toLowerCase())) {
       return this.sacService.getTrackingReturnTransfert(tracking, req.user);
     }
   }
   @Get('getTrackingReturnWilaya/:trackingSac')
   getTrackingReturnWilaya(@Request() req, @Param('trackingSac') tracking) {
-    const express_reg = new RegExp(/^sac-\d{3}\w{3}$/, 'i');
+    const express_reg = new RegExp(/^sac-\d{8}$/, 'i');
     if (express_reg.test(tracking.toLowerCase())) {
       return this.sacService.getTrackingReturnWilaya(req.user, tracking);
     }
   }
   @Get('getTrackingReturnVersAgence/:trackingSac')
   getTrackingReturnVersAgence(@Request() req, @Param('trackingSac') tracking) {
-    const express_reg = new RegExp(/^sac-\d{3}\w{3}$/, 'i');
+    const express_reg = new RegExp(/^sac-\d{8}$/, 'i');
     if (express_reg.test(tracking.toLowerCase())) {
       return this.sacService.getTrackingReturnVersAgence(req.user, tracking);
     }
@@ -183,6 +189,28 @@ export class SacController {
   @Get('getTrackingOfSacVersVendeur/:trackingSac')
   getTrackingOfSacVersVendeur(@Param('trackingSac') trackingSac) {
     return this.sacService.getTrackingOfSacVersVendeur(trackingSac);
+  }
+  @Get('paginateAllSac')
+  paginateAllSac(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit,
+    @Query('searchSacTerm') searchSacTerm: string,
+  ): Promise<Pagination<Sac>> {
+    return this.sacService.findPaginateAllShipments(
+      {
+        page,
+        limit,
+      },
+      searchSacTerm,
+    );
+  }
+  @Get('printManifestSac/:idSac')
+  async printManifestSac(
+    @Request() req,
+    @Param('idSac') idSac,
+    @Response() res,
+  ) {
+    return await this.sacService.printManifestSac(idSac, res);
   }
   @Post('viderSacWilaya')
   @Roles('236429359')
@@ -262,7 +290,7 @@ export class SacController {
   @Get('getTrackingVersAgence/:tracking')
   @Roles('236429359')
   getTrackingVersAgence(@Param('tracking') tracking: string, @Request() req) {
-    const express_reg = new RegExp(/^sac-\d{3}\w{3}$/, 'i');
+    const express_reg = new RegExp(/^sac-\d{8}$/, 'i');
     if (express_reg.test(tracking.toLowerCase())) {
       return this.sacService.getTrackingVersAgence(tracking, req.user);
     }

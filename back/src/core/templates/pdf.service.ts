@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import * as fs from 'fs';
 import * as QRCode from 'qrcode';
 import * as bwipjs from 'bwip-js';
@@ -19,10 +19,18 @@ import { PmtCoursier } from 'src/resources/pmt-coursier/entities/pmt-coursier.en
 import { delaiPaiementEnum } from 'src/enums/delaiPaiementEnum';
 import { Shipment } from 'src/resources/shipments/entities/shipment.entity';
 import { ExpiditeurPublic } from 'src/resources/expiditeur-public/entities/expiditeur-public.entity';
+import { StatusShipmentEnum } from 'src/enums/status.shipment.enum';
+import { ClientsService } from 'src/resources/clients/clients.service';
 import { User } from 'src/resources/users/entities/user.entity';
 import { Recolte } from 'src/resources/recoltes/entities/recolte.entity';
 @Injectable()
 export class PdfService {
+
+  constructor(
+    @Inject(forwardRef(() => ClientsService))
+    private clientService:ClientsService
+  ) {}
+
   async generateShipmentAgence(shipmentInfo: Shipment, tarifLivraison: number) {
     console.log(
       '🚀 ~ file: pdf.service.ts ~ line 25 ~ PdfService ~ generateShipmentAgence ~ tarifLivraison',
@@ -300,7 +308,7 @@ export class PdfService {
     //   y: 405,
     //   width: 265,
     //   height: 27,
-      // rotate: degrees(-15),
+    // rotate: degrees(-15),
     //   borderWidth: 0,
     //   borderColor: grayscale(0.5),
     //   color: rgb(0.75, 0.2, 0.2),
@@ -816,12 +824,19 @@ export class PdfService {
       color: rgb(1, 1, 1),
     });
     //infoPackageSliprmations colis
-
-    firstPage.drawText(infoPackageSlip.shipment_designationProduit, {
-      x: 30,
-      y: height - 310,
-      size: 8,
-    });
+    if (otherStatus && otherStatus == 'ECH') {
+      firstPage.drawText(infoPackageSlip.shipment_objetRecuperer, {
+        x: 30,
+        y: height - 310,
+        size: 8,
+      });
+    } else {
+      firstPage.drawText(infoPackageSlip.shipment_designationProduit, {
+        x: 30,
+        y: height - 310,
+        size: 8,
+      });
+    }
 
     firstPage.drawText('# ' + infoPackageSlip.shipment_numCommande, {
       x: 25,
@@ -843,7 +858,7 @@ export class PdfService {
         ' x ' +
         infoPackageSlip.shipment_hauteur +
         ') en (m)',
-      { x: 70, y: 286, size: 8 },
+      { x: 75, y: 286, size: 8 },
     );
 
     // firstPage.drawText(
@@ -941,7 +956,7 @@ export class PdfService {
     //
     const textSizePrixEstime = 10;
     firstPage.drawText(
-      infoPackageSlip.shipment_prixVente
+      infoPackageSlip.shipment_prixEstimer
         .toString()
         .replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' DA',
       {
@@ -1609,12 +1624,33 @@ export class PdfService {
       y: height - 749.5,
       size: 10,
     });
+
+
+// -----------------------last page----------------
+    lastPage.drawText(service, {
+      x: 230,
+      y: height - 94.5,
+      size: 12,
+      color:rgb(1,0,0)
+    });
+
+    lastPage.drawText(client.nomGerant.toUpperCase() + ' ' + client.prenomGerant.toUpperCase(), {
+      x: 57,
+      y: height - 121.8,
+      size: 9,
+    });
+    lastPage.drawText(client.communeDepart.wilaya.nomLatin.toUpperCase(), {
+      x: 60,
+      y: height - 139,
+      size: 9,
+    });
+    // -----------------------end last page----------------
     //RETURN BUFFER
 
     return pdfDoc;
   }
 
-  async templateConventionExpressOREconomy(client, service) {
+  async templateConventionExpressOREconomy(client, service,codeTarifId) {
     let conventionTemplatePath;
     if (
       service == 'E-Commerce Express Divers' ||
@@ -1630,9 +1666,11 @@ export class PdfService {
     const pdfTemplateBytes = fs.readFileSync(conventionTemplatePath);
     const dest = 'src/testpdf/convention.pdf';
     const pdfDoc = await PDFDocument.load(pdfTemplateBytes);
+    const bold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
 
     // Embed the Helvetica font
     const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    const normal = await pdfDoc.embedFont(StandardFonts.Helvetica);
 
     // Get the first page of the document
     const pages = pdfDoc.getPages();
@@ -1804,6 +1842,200 @@ export class PdfService {
       y: height - 749.5,
       size: 10,
     });
+
+    const tarifClient= await this.clientService.getTarifOfclient(client.communeDepart.wilaya.id,codeTarifId)
+    console.log("🚀 ~ file: pdf.service.ts ~ line 1845 ~ PdfService ~ templateConventionExpressOREconomy ~ tarifClient", tarifClient)
+
+    let hauteur=0;
+    let rectangleStart = 165;
+    let lineStart = 150;
+
+    lastPage.drawText(service, {
+      x: 230,
+      y: height - 94.5,
+      size: 12,
+      color:rgb(1,0,0)
+    });
+
+    lastPage.drawText(client.nomGerant.toUpperCase() + ' ' + client.prenomGerant.toUpperCase(), {
+      x: 57,
+      y: height - 121.8,
+      size: 9,
+    });
+    lastPage.drawText(client.communeDepart.wilaya.nomLatin.toUpperCase(), {
+      x: 60,
+      y: height - 139,
+      size: 9,
+    });
+
+    //--------------------------------------------------- debut header----------------------
+    lastPage.drawRectangle({
+      x: 28,
+      y: height - rectangleStart,
+      width: 500,
+      height: 15,
+      borderColor: rgb(0, 0, 0),
+      borderWidth: 0.6,
+      color: rgb(1, 0, 0),
+    });
+
+    // -------------destination------------
+    lastPage.drawText(`Destination`, {
+      x: 31,
+      y: height - rectangleStart + 5,
+      size: 8.7,
+      color: rgb(1, 1, 1),
+      font: bold,
+    });
+
+    // -------------zone------------
+    lastPage.drawLine({
+      start: { x: 110, y: height - lineStart },
+      end: { x: 110, y: height - rectangleStart },
+      thickness: 0.7,
+      color: rgb(0, 0, 0),
+    });
+    lastPage.drawText(`Zone`, {
+      x: 113,
+      y: height - rectangleStart + 5,
+      size: 8.7,
+      color: rgb(1, 1, 1),
+      font: bold,
+    });
+
+    // -------------tarifLivraison------------
+    lastPage.drawLine({
+      start: { x: 188, y: height - lineStart },
+      end: { x: 188, y: height - rectangleStart },
+      thickness: 0.7,
+      color: rgb(0, 0, 0),
+    });
+    lastPage.drawText(`Tarif Livraison`, {
+      x: 191,
+      y: height - rectangleStart + 5,
+      size: 8.7,
+      color: rgb(1, 1, 1),
+      font: bold,
+    });
+
+    // ------------Tarif Stop Desk-------------
+    lastPage.drawLine({
+      start: { x: 312, y: height - lineStart },
+      end: { x: 312, y: height - rectangleStart },
+      thickness: 0.7,
+      color: rgb(0, 0, 0),
+    });
+    lastPage.drawText(`Tarif Stop Desk`, {
+      x: 315,
+      y: height - rectangleStart + 5,
+      size: 8.7,
+      color: rgb(1, 1, 1),
+      font: bold,
+    });
+
+    // ------------Tarif Retour-------------
+    lastPage.drawLine({
+      start: { x: 423, y: height - lineStart },
+      end: { x: 423, y: height - rectangleStart },
+      thickness: 0.7,
+      color: rgb(0, 0, 0),
+    });
+    lastPage.drawText(`Tarif Retour`, {
+      x: 426,
+      y: height - rectangleStart + 5,
+      size: 8.7,
+      color: rgb(1, 1, 1),
+      font: bold,
+    });
+
+
+
+    //--------------------------------------------------- fin header----------------------
+   
+
+
+    //--------------------------------------------------- debut contenu table----------------------
+
+    for await (const tarif of tarifClient) {
+      rectangleStart = rectangleStart + 12;
+      lineStart = lineStart + 12;
+      lastPage.drawRectangle({
+        x: 28,
+        y: height - rectangleStart,
+        width: 500,
+        height: 12,
+        borderColor: rgb(0, 0, 0),
+        borderWidth: 0.6,
+      });
+
+      // ------------destination-----------
+  
+      lastPage.drawText(tarif.destination, {
+        x: 31,
+        y: height - rectangleStart + 4,
+        size: 8,
+        font: normal,
+      });
+
+      // ------------zone----------
+      lastPage.drawLine({
+        start: { x: 110, y: height - lineStart },
+        end: { x: 110, y: height - rectangleStart },
+        thickness: 0.7,
+        color: rgb(0, 0, 0),
+      });
+      lastPage.drawText(tarif.zone.toString(), {
+        x: 112,
+        y: height - rectangleStart + 4,
+        size: 8,
+        font: normal,
+      });
+
+      // ------------tarifLivraison----------
+      lastPage.drawLine({
+        start: { x: 188, y: height - lineStart },
+        end: { x: 188, y: height - rectangleStart },
+        thickness: 0.7,
+        color: rgb(0, 0, 0),
+      });
+      lastPage.drawText(tarif.tarifLivraison.toFixed(2), {
+        x: 190,
+        y: height - rectangleStart + 4,
+        size: 8,
+        font: normal,
+      });
+
+      // -----------tarifStopDesk------------
+      lastPage.drawLine({
+        start: { x: 312, y: height - lineStart },
+        end: { x: 312, y: height - rectangleStart },
+        thickness: 0.7,
+        color: rgb(0, 0, 0),
+      });
+      lastPage.drawText(tarif.tarifStopDesk.toFixed(2), {
+        x: 315,
+        y: height - rectangleStart + 4,
+        size: 8,
+        font: normal,
+      });
+
+      // -----------tarifRetour----------
+      lastPage.drawLine({
+        start: { x: 423, y: height - lineStart },
+        end: { x: 423, y: height - rectangleStart },
+        thickness: 0.7,
+        color: rgb(0, 0, 0),
+      });
+      lastPage.drawText(client.tarifRetour.toFixed(2), {
+        x: 425.5,
+        y: height - rectangleStart + 4,
+        size: 8,
+        font: normal,
+      });
+
+   
+    }
+    //--------------------------------------------------- fin contenu table----------------------
     //RETURN BUFFER
 
     return pdfDoc;
@@ -1866,6 +2098,7 @@ export class PdfService {
         const serviceI = await this.templateConventionExpressOREconomy(
           client,
           clt.codeTarif.service.nom,
+          clt.codeTarifId
         );
         const pdfBytes = await serviceI.save();
         if (test == null) {
@@ -1873,8 +2106,10 @@ export class PdfService {
           test = serviceI;
         } else {
           console.log('ghiles');
-          const service = await test.copyPages(serviceI, [0]);
+          const service = await test.copyPages(serviceI, [0, 1, 2]);
           test.addPage(service[0]);
+          test.addPage(service[1]);
+          test.addPage(service[2]);
           const pdfBytes = await test.save();
           fs.writeFileSync('dest', pdfBytes);
         }
@@ -2320,7 +2555,6 @@ export class PdfService {
     return dateFormat;
   }
   async printRecolteManifest(recolte, trackings, userInfo, montant) {
-    console.log("🚀 ~ file: pdf.service.ts ~ line 2321 ~ PdfService ~ printRecolteManifest ~ userInfo", userInfo)
     const tracking = trackings.join(' ');
     const dateRecolte = await this.formatDate(recolte.createdAt);
 
@@ -2420,10 +2654,10 @@ export class PdfService {
 
     const pdfBytes = await pdfDoc.save();
     console.log('5');
-
     fs.writeFileSync('dest', pdfBytes);
     return pdfBytes;
   }
+
   async printRecolteCsManifest(recolte: Recolte, trackings, userInfo: User, montant) {
     console.log("🚀 ~ file: pdf.service.ts ~ line 2321 ~ PdfService ~ printRecolteManifest ~ userInfo", userInfo)
     const tracking = trackings.join(' ');
@@ -2526,7 +2760,6 @@ export class PdfService {
 
     const pdfBytes = await pdfDoc.save();
     console.log('5');
-
     fs.writeFileSync('dest', pdfBytes);
     return pdfBytes;
   }
@@ -2688,7 +2921,6 @@ export class PdfService {
     return pdfBytes;
   }
   async printPmt(client: Client, pmt: Pmt) {
-
     const pmtTemplatePath = 'src/assets/pmt.pdf';
     const pdfTemplateBytes = fs.readFileSync(pmtTemplatePath);
     const pdfDoc = await PDFDocument.load(pdfTemplateBytes);
@@ -3041,14 +3273,14 @@ export class PdfService {
       });
 
       // information de paiement
-      firstPage.drawText(
-        pmtCoursier.coursier.montantLivraison.toString() + ' ' + 'DA',
-        {
-          x: 215,
-          y: height - 428,
-          size: 12,
-        },
-      );
+      // firstPage.drawText(
+      //   pmtCoursier.coursier.montantLivraison.toString() + ' ' + 'DA',
+      //   {
+      //     x: 215,
+      //     y: height - 428,
+      //     size: 12,
+      //   },
+      // );
       firstPage.drawText(pmtCoursier.nbrColis.toString(), {
         x: 200,
         y: height - 452,
@@ -3090,45 +3322,155 @@ export class PdfService {
       );
     }
   }
+
+  
+
   async printFactureClassique(facture) {
-    console.log("🚀 ~ file: pdf.service.ts ~ line 2466 ~ PdfService ~ printFactureClassique ~ facture", facture)
+    console.log(
+      '🚀 ~ file: pdf.service.ts ~ line 2985 ~ PdfService ~ printFactureClassique ~ facture',
+      facture,
+    );
+    const factureAll = [...facture];
+    let page = 0;
+    const pdfDoc = null;
+    const pdfdocs = [];
+    let pagesTotales;
+    const reste = facture.length % 35;
+    if (reste > 15) {
+      pagesTotales = parseInt((facture.length / 35 + 2).toString());
+    } else {
+      pagesTotales = parseInt((facture.length / 35 + 1).toString());
+    }
+    // pagesTotales=parseInt((facture.length / 35 + 1).toString())
+    console.log(parseInt((facture.length / 35 + 1).toString()));
+    const lenthData = parseInt((facture.length / 35 + 1).toString());
+    for (let i = 0; i < lenthData; i++) {
+      page = page + 1;
+      console.log(lenthData, '', i, facture.length);
+      if (facture.length <= 35) {
+        if (facture.length > 15) {
+          const pdfDoc = await this.drawFactureClassic(
+            facture,
+            factureAll,
+            page,
+            pagesTotales,
+          );
+          pdfdocs.push(pdfDoc);
+          const pdfDocFooter = await this.drawFactureClassicFooter(
+            facture,
+            factureAll,
+            page,
+            pagesTotales,
+          );
+          pdfdocs.push(pdfDocFooter);
+        } else {
+          const pdfDoc = await this.drawFactureClassic(
+            facture,
+            factureAll,
+            page,
+            pagesTotales,
+            facture.length,
+          );
+          pdfdocs.push(pdfDoc);
+        }
+      } else {
+        const dataSend = facture.splice(0, 35);
+        const pdfDoc = await this.drawFactureClassic(
+          dataSend,
+          factureAll,
+          page,
+          pagesTotales,
+        );
+        pdfdocs.push(pdfDoc);
+      }
+    }
+    const brd = await pdfdocs[0];
+    let pdfBytes = await brd.save();
+    for (let i = 1; i < pdfdocs.length; i++) {
+      const allBRD = await brd.copyPages(pdfdocs[i], [0]);
+      brd.addPage(allBRD[0]);
+      pdfBytes = await brd.save();
+    }
+    fs.writeFileSync('dest', pdfBytes);
+    return pdfBytes;
+  }
+  async drawFactureClassic(facture, factureAll, page, pagesTotales, footer?) {
     const conventionTemplatePath = 'src/assets/FactureClassique.pdf';
     const pdfTemplateBytes = fs.readFileSync(conventionTemplatePath);
     const dest = 'src/testpdf/convention.pdf';
     const pdfDoc = await PDFDocument.load(pdfTemplateBytes);
-    const pdfDocVierge = await PDFDocument.load(pdfTemplateBytes);;
-
     // Get the first page of the document
     const pages = pdfDoc.getPages();
     const firstPage = pages[0];
-    const secondPage = pages[1];
-    const lastPage = pages[pages.length - 1];
-
-
+    const bold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+    const normal = await pdfDoc.embedFont(StandardFonts.Helvetica);
     const { width, height } = firstPage.getSize();
-    let rectangleStart = 252;
-    let lineStart = 237;
+    let rectangleStart = 237;
+    let lineStart = 222;
 
+    firstPage.drawText(facture[0].facture_numFacture, {
+      x: 70,
+      y: height - 139.5,
+      size: 8,
+    });
 
-    for (let i = 1; i < 50; i++) {
-      if (rectangleStart < 762) {
-        this.drawLine(firstPage, height, rectangleStart, lineStart)
-        rectangleStart = rectangleStart + 15;
-        lineStart = lineStart + 15
-      } else {
-        this.printFactureClassique(facture)
-      }
+    firstPage.drawText(facture[0].client_raisonSociale, {
+      x: 83,
+      y: height - 151.5,
+      size: 8,
+    });
 
-    }
+    firstPage.drawText(facture[0].client_adresse, {
+      x: 65,
+      y: height - 163.5,
+      size: 8,
+    });
 
+    firstPage.drawText(facture[0].client_nrc, {
+      x: 54,
+      y: height - 174.5,
+      size: 8,
+    });
 
-    const pdfBytes = await pdfDoc.save();
-    fs.writeFileSync('dest', pdfBytes);
-    return pdfBytes;
-  }
+    firstPage.drawText(facture[0].client_nif, {
+      x: 54,
+      y: height - 186.5,
+      size: 8,
+    });
 
-  async drawLine(firstPage, height, rectangleStart, lineStart) {
+    firstPage.drawText(facture[0].client_nis, {
+      x: 54,
+      y: height - 198,
+      size: 8,
+    });
 
+    firstPage.drawText(factureAll.length.toString(), {
+      x: 410,
+      y: height - 187,
+      size: 8,
+    });
+
+    firstPage.drawText('page' + ' ' + page.toString() + ' / ' + pagesTotales, {
+      x: 410,
+      y: height - 210,
+      size: 8,
+    });
+
+    const date = new Date();
+    let month = '' + (date.getMonth() + 1);
+    let day = '' + date.getDate();
+    const year = date.getFullYear();
+    if (month.length < 2) month = '0' + month;
+    if (day.length < 2) day = '0' + day;
+    const dateDeFacture = [day, month, year].join('-');
+
+    firstPage.drawText(dateDeFacture, {
+      x: 425,
+      y: height - 140.5,
+      size: 8,
+    });
+
+    //--------------------------------------------------- debut header----------------------
     firstPage.drawRectangle({
       x: 26.4,
       y: height - rectangleStart,
@@ -3136,37 +3478,2114 @@ export class PdfService {
       height: 15,
       borderColor: rgb(0, 0, 0),
       borderWidth: 0.6,
-    })
+      color: rgb(1, 0, 0),
+    });
 
+    // -------------date expidition------------
+    firstPage.drawText(`Date d'expédition`, {
+      x: 29.5,
+      y: height - rectangleStart + 4.7,
+      size: 8.7,
+      color: rgb(1, 1, 1),
+      font: bold,
+    });
+
+    // -------------tracking------------
     firstPage.drawLine({
       start: { x: 105.5, y: height - lineStart },
       end: { x: 105.5, y: height - rectangleStart },
       thickness: 0.7,
       color: rgb(0, 0, 0),
-    })
+    });
+    firstPage.drawText(`Envoi N°`, {
+      x: 129,
+      y: height - rectangleStart + 4.7,
+      size: 8.7,
+      color: rgb(1, 1, 1),
+      font: bold,
+    });
+
+    // -------------destinataire------------
     firstPage.drawLine({
       start: { x: 187.7, y: height - lineStart },
       end: { x: 187.7, y: height - rectangleStart },
       thickness: 0.7,
       color: rgb(0, 0, 0),
-    })
+    });
+    firstPage.drawText(`Destinataire`, {
+      x: 221,
+      y: height - rectangleStart + 4.7,
+      size: 8.7,
+      color: rgb(1, 1, 1),
+      font: bold,
+    });
+
+    // ------------destination-------------
     firstPage.drawLine({
       start: { x: 312.5, y: height - lineStart },
       end: { x: 312.5, y: height - rectangleStart },
       thickness: 0.7,
       color: rgb(0, 0, 0),
-    })
+    });
+    firstPage.drawText(`Destination`, {
+      x: 344,
+      y: height - rectangleStart + 4.7,
+      size: 8.7,
+      color: rgb(1, 1, 1),
+      font: bold,
+    });
+
+    // ------------Poids-------------
     firstPage.drawLine({
       start: { x: 423, y: height - lineStart },
       end: { x: 423, y: height - rectangleStart },
       thickness: 0.7,
       color: rgb(0, 0, 0),
-    })
+    });
+    firstPage.drawText(`Poids`, {
+      x: 440,
+      y: height - rectangleStart + 4.7,
+      size: 8.7,
+      color: rgb(1, 1, 1),
+      font: bold,
+    });
+
+    // -------------Tarif Ht------------
     firstPage.drawLine({
       start: { x: 486, y: height - lineStart },
       end: { x: 486, y: height - rectangleStart },
       thickness: 0.7,
       color: rgb(0, 0, 0),
     });
+    firstPage.drawText(`Tarif H.T`, {
+      x: 506,
+      y: height - rectangleStart + 4.7,
+      size: 8.7,
+      color: rgb(1, 1, 1),
+      font: bold,
+    });
+
+    //--------------------------------------------------- fin header----------------------
+
+    //--------------------------------------------------- debut contenu table----------------------
+
+    for (const shipment of facture) {
+      rectangleStart = rectangleStart + 15;
+      lineStart = lineStart + 15;
+      firstPage.drawRectangle({
+        x: 26.4,
+        y: height - rectangleStart,
+        width: 545.5,
+        height: 15,
+        borderColor: rgb(0, 0, 0),
+        borderWidth: 0.6,
+      });
+
+      // -------------date expidition------------
+      const dateExpidition = new Date(shipment.status_createdAt);
+      let month = '' + (dateExpidition.getMonth() + 1);
+      let day = '' + dateExpidition.getDate();
+      const year = dateExpidition.getFullYear();
+      if (month.length < 2) month = '0' + month;
+      if (day.length < 2) day = '0' + day;
+      const date = [day, month, year].join('-');
+      firstPage.drawText(date, {
+        x: 29.5,
+        y: height - rectangleStart + 4.7,
+        size: 8.7,
+        font: normal,
+      });
+
+      // -------------tracking------------
+      firstPage.drawLine({
+        start: { x: 105.5, y: height - lineStart },
+        end: { x: 105.5, y: height - rectangleStart },
+        thickness: 0.7,
+        color: rgb(0, 0, 0),
+      });
+      firstPage.drawText(shipment.shipments_tracking, {
+        x: 108,
+        y: height - rectangleStart + 4.7,
+        size: 8.7,
+        font: normal,
+      });
+
+      // -------------destinataire------------
+      firstPage.drawLine({
+        start: { x: 187.7, y: height - lineStart },
+        end: { x: 187.7, y: height - rectangleStart },
+        thickness: 0.7,
+        color: rgb(0, 0, 0),
+      });
+      firstPage.drawText(shipment.shipments_raisonSociale, {
+        x: 190,
+        y: height - rectangleStart + 4.7,
+        size: 8.7,
+        font: normal,
+      });
+
+      // ------------destination-------------
+      firstPage.drawLine({
+        start: { x: 312.5, y: height - lineStart },
+        end: { x: 312.5, y: height - rectangleStart },
+        thickness: 0.7,
+        color: rgb(0, 0, 0),
+      });
+      firstPage.drawText(shipment.wilaya_nomLatin, {
+        x: 315,
+        y: height - rectangleStart + 4.7,
+        size: 8.7,
+        font: normal,
+      });
+
+      // ------------Poids-------------
+      firstPage.drawLine({
+        start: { x: 423, y: height - lineStart },
+        end: { x: 423, y: height - rectangleStart },
+        thickness: 0.7,
+        color: rgb(0, 0, 0),
+      });
+      firstPage.drawText(shipment.poids.toString() + ' kg', {
+        x: 425.5,
+        y: height - rectangleStart + 4.7,
+        size: 8.7,
+        font: normal,
+      });
+
+      // -------------Tarif Ht------------
+      firstPage.drawLine({
+        start: { x: 486, y: height - lineStart },
+        end: { x: 486, y: height - rectangleStart },
+        thickness: 0.7,
+        color: rgb(0, 0, 0),
+      });
+      firstPage.drawText(
+        shipment.tarif.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$& '),
+        {
+          x: 488.5,
+          y: height - rectangleStart + 4.7,
+          size: 8.7,
+          font: normal,
+        },
+      );
+    }
+    //--------------------------------------------------- fin contenu table----------------------
+
+    //--------------------------------------------------- debut footer----------------------
+    if (footer) {
+      // ---------------------montant HT-----------------
+
+      firstPage.drawRectangle({
+        x: 160,
+        y: height - rectangleStart - 60,
+        width: 300,
+        height: 15,
+        borderColor: rgb(0, 0, 0),
+        borderWidth: 0.6,
+      });
+
+      firstPage.drawText('Montant H.T', {
+        x: 165,
+        y: height - rectangleStart - 60 + 4.7,
+        size: 10,
+      });
+
+      firstPage.drawText(
+        facture[0].facture_montantHoreTaxe
+          .toFixed(2)
+          .replace(/\d(?=(\d{3})+\.)/g, '$& '),
+        {
+          x: 355,
+          y: height - rectangleStart - 60 + 4.7,
+          size: 10,
+        },
+      );
+
+      // ---------------------TVA-----------------
+      firstPage.drawRectangle({
+        x: 160,
+        y: height - rectangleStart - 75,
+        width: 300,
+        height: 15,
+        borderColor: rgb(0, 0, 0),
+        borderWidth: 0.6,
+      });
+
+      firstPage.drawText('TVA (19%)', {
+        x: 165,
+        y: height - rectangleStart - 75 + 4.7,
+        size: 10,
+      });
+
+      firstPage.drawText(
+        facture[0].facture_montantTva
+          .toFixed(2)
+          .replace(/\d(?=(\d{3})+\.)/g, '$& '),
+        {
+          x: 363,
+          y: height - rectangleStart - 75 + 4.7,
+          size: 10,
+        },
+      );
+
+      // ---------------------TTC-----------------
+      firstPage.drawRectangle({
+        x: 160,
+        y: height - rectangleStart - 90,
+        width: 300,
+        height: 15,
+        borderColor: rgb(0, 0, 0),
+        borderWidth: 0.6,
+      });
+
+      firstPage.drawText('Montant TTC', {
+        x: 165,
+        y: height - rectangleStart - 90 + 4.7,
+        size: 10,
+      });
+
+      firstPage.drawText(
+        facture[0].facture_montantTtc
+          .toFixed(2)
+          .replace(/\d(?=(\d{3})+\.)/g, '$& '),
+        {
+          x: 355,
+          y: height - rectangleStart - 90 + 4.7,
+          size: 10,
+        },
+      );
+
+      // ---------------------timbre----------------
+      firstPage.drawRectangle({
+        x: 160,
+        y: height - rectangleStart - 105,
+        width: 300,
+        height: 15,
+        borderColor: rgb(0, 0, 0),
+        borderWidth: 0.6,
+      });
+      firstPage.drawText('Timbre', {
+        x: 165,
+        y: height - rectangleStart - 105 + 4.7,
+        size: 10,
+      });
+
+      if (facture[0].facture_montantTimbre == 0) {
+        firstPage.drawText('/', {
+          x: 380,
+          y: height - rectangleStart - 105 + 4.7,
+          size: 10,
+        });
+      } else {
+        firstPage.drawText(
+          facture[0].facture_montantTimbre
+            .toFixed(2)
+            .replace(/\d(?=(\d{3})+\.)/g, '$& '),
+          {
+            x: 369,
+            y: height - rectangleStart - 105 + 4.7,
+            size: 10,
+          },
+        );
+      }
+
+      // ---------------------montant total-----------------
+      firstPage.drawRectangle({
+        x: 160,
+        y: height - rectangleStart - 120,
+        width: 300,
+        height: 15,
+        borderColor: rgb(0, 0, 0),
+        borderWidth: 0.6,
+      });
+
+      firstPage.drawText('Montant total', {
+        x: 165,
+        y: height - rectangleStart - 120 + 4.7,
+        size: 10,
+      });
+
+      firstPage.drawText(
+        facture[0].facture_montantTotal
+          .toFixed(2)
+          .replace(/\d(?=(\d{3})+\.)/g, '$& '),
+        {
+          x: 355,
+          y: height - rectangleStart - 120 + 4.7,
+          size: 10,
+        },
+      );
+
+      firstPage.drawLine({
+        start: { x: 350, y: height - lineStart - 60 },
+        end: { x: 350, y: height - rectangleStart - 120 },
+        thickness: 0.7,
+        color: rgb(0, 0, 0),
+      });
+
+      const { NumberToLetter } = require('convertir-nombre-lettre');
+
+      const montantTotalString = facture[0].facture_montantTotal.toFixed(2);
+
+      const centimeString = montantTotalString.substr(
+        montantTotalString.length - 2,
+      );
+      const centimeNombre = Number(centimeString);
+
+      const dinarString = montantTotalString.slice(0, -3);
+      const dinarNombre = Number(dinarString);
+
+      const dinarEnLettre = NumberToLetter(dinarNombre);
+      const centimeLettre = NumberToLetter(centimeNombre);
+
+      firstPage.drawText('Arrêter la présente facture à la somme de :', {
+        x: 40,
+        y: height - rectangleStart - 170,
+        size: 10,
+      });
+
+      firstPage.drawText(
+        dinarEnLettre + ' dinars' + ' et ' + centimeLettre + ' centimes',
+        {
+          x: 40,
+          y: height - rectangleStart - 190,
+          size: 11,
+        },
+      );
+
+      firstPage.drawText('cachet et signature', {
+        x: 380,
+        y: height - 720,
+        size: 11,
+      });
+    }
+    //--------------------------------------------------- fin footer---------------------
+
+    return pdfDoc;
   }
+  //
+  async drawFactureClassicFooter(facture, factureAll, page, pagesTotales) {
+    const conventionTemplatePath = 'src/assets/FactureClassique.pdf';
+    const pdfTemplateBytes = fs.readFileSync(conventionTemplatePath);
+    const dest = 'src/testpdf/convention.pdf';
+    const pdfDoc = await PDFDocument.load(pdfTemplateBytes);
+    // Get the first page of the document
+    const pages = pdfDoc.getPages();
+    const firstPage = pages[0];
+    const { width, height } = firstPage.getSize();
+    let rectangleStart = 237;
+    let lineStart = 222;
+    const numPage = page + 1;
+
+    firstPage.drawText(facture[0].facture_numFacture, {
+      x: 70,
+      y: height - 139.5,
+      size: 8,
+    });
+
+    firstPage.drawText(facture[0].client_raisonSociale, {
+      x: 83,
+      y: height - 151.5,
+      size: 8,
+    });
+
+    firstPage.drawText(facture[0].client_adresse, {
+      x: 65,
+      y: height - 163.5,
+      size: 8,
+    });
+
+    firstPage.drawText(facture[0].client_nrc, {
+      x: 54,
+      y: height - 174.5,
+      size: 8,
+    });
+
+    firstPage.drawText(facture[0].client_nif, {
+      x: 54,
+      y: height - 186.5,
+      size: 8,
+    });
+
+    firstPage.drawText(facture[0].client_nis, {
+      x: 54,
+      y: height - 198,
+      size: 8,
+    });
+
+    firstPage.drawText(factureAll.length.toString(), {
+      x: 410,
+      y: height - 187,
+      size: 8,
+    });
+
+    firstPage.drawText(
+      'page' + ' ' + numPage.toString() + ' / ' + pagesTotales,
+      {
+        x: 410,
+        y: height - 210,
+        size: 8,
+      },
+    );
+
+    const date = new Date();
+    let month = '' + (date.getMonth() + 1);
+    let day = '' + date.getDate();
+    const year = date.getFullYear();
+    if (month.length < 2) month = '0' + month;
+    if (day.length < 2) day = '0' + day;
+    const dateDeFacture = [day, month, year].join('-');
+
+    firstPage.drawText(dateDeFacture, {
+      x: 425,
+      y: height - 140.5,
+      size: 8,
+    });
+
+    // ---------------------montant HT-----------------
+    firstPage.drawRectangle({
+      x: 160,
+      y: height - rectangleStart - 30,
+      width: 300,
+      height: 15,
+      borderColor: rgb(0, 0, 0),
+      borderWidth: 0.6,
+    });
+
+    firstPage.drawText('Montant H.T', {
+      x: 165,
+      y: height - rectangleStart - 30 + 4.7,
+      size: 10,
+    });
+
+    firstPage.drawText(
+      facture[0].facture_montantHoreTaxe
+        .toFixed(2)
+        .replace(/\d(?=(\d{3})+\.)/g, '$& '),
+      {
+        x: 355,
+        y: height - rectangleStart - 30 + 4.7,
+        size: 10,
+      },
+    );
+
+    // ---------------------TVA-----------------
+    firstPage.drawRectangle({
+      x: 160,
+      y: height - rectangleStart - 45,
+      width: 300,
+      height: 15,
+      borderColor: rgb(0, 0, 0),
+      borderWidth: 0.6,
+    });
+
+    firstPage.drawText('Montant TVA', {
+      x: 165,
+      y: height - rectangleStart - 45 + 4.7,
+      size: 10,
+    });
+
+    firstPage.drawText(
+      facture[0].facture_montantTva
+        .toFixed(2)
+        .replace(/\d(?=(\d{3})+\.)/g, '$& '),
+      {
+        x: 355,
+        y: height - rectangleStart - 45 + 4.7,
+        size: 10,
+      },
+    );
+
+    // ---------------------TTC-----------------
+    firstPage.drawRectangle({
+      x: 160,
+      y: height - rectangleStart - 60,
+      width: 300,
+      height: 15,
+      borderColor: rgb(0, 0, 0),
+      borderWidth: 0.6,
+    });
+
+    firstPage.drawText('Montant TTC', {
+      x: 165,
+      y: height - rectangleStart - 60 + 4.7,
+      size: 10,
+    });
+
+    firstPage.drawText(
+      facture[0].facture_montantTtc
+        .toFixed(2)
+        .replace(/\d(?=(\d{3})+\.)/g, '$& '),
+      {
+        x: 355,
+        y: height - rectangleStart - 60 + 4.7,
+        size: 10,
+      },
+    );
+
+    // ---------------------timbre----------------
+    firstPage.drawRectangle({
+      x: 160,
+      y: height - rectangleStart - 75,
+      width: 300,
+      height: 15,
+      borderColor: rgb(0, 0, 0),
+      borderWidth: 0.6,
+    });
+    firstPage.drawText('Timbre', {
+      x: 165,
+      y: height - rectangleStart - 75 + 4.7,
+      size: 10,
+    });
+
+    firstPage.drawText(
+      facture[0].facture_montantTimbre
+        .toFixed(2)
+        .replace(/\d(?=(\d{3})+\.)/g, '$& '),
+      {
+        x: 355,
+        y: height - rectangleStart - 75 + 4.7,
+        size: 10,
+      },
+    );
+
+    // ---------------------montant total-----------------
+    firstPage.drawRectangle({
+      x: 160,
+      y: height - rectangleStart - 90,
+      width: 300,
+      height: 15,
+      borderColor: rgb(0, 0, 0),
+      borderWidth: 0.6,
+    });
+
+    firstPage.drawText('Montant total', {
+      x: 165,
+      y: height - rectangleStart - 90 + 4.7,
+      size: 10,
+    });
+
+    firstPage.drawText(
+      facture[0].facture_montantTotal
+        .toFixed(2)
+        .replace(/\d(?=(\d{3})+\.)/g, '$& '),
+      {
+        x: 355,
+        y: height - rectangleStart - 90 + 4.7,
+        size: 10,
+      },
+    );
+
+    firstPage.drawLine({
+      start: { x: 350, y: height - lineStart - 30 },
+      end: { x: 350, y: height - rectangleStart - 90 },
+      thickness: 0.7,
+      color: rgb(0, 0, 0),
+    });
+
+    const { NumberToLetter } = require('  ');
+
+    const montantTotalString = facture[0].facture_montantTotal.toFixed(2);
+
+    const centimeString = montantTotalString.substr(
+      montantTotalString.length - 2,
+    );
+    const centimeNombre = Number(centimeString);
+
+    const dinarString = montantTotalString.slice(0, -3);
+    const dinarNombre = Number(dinarString);
+
+    const dinarEnLettre = NumberToLetter(dinarNombre);
+    const centimeLettre = NumberToLetter(centimeNombre);
+
+    firstPage.drawText('Arrêter la présente facture à la somme de :', {
+      x: 40,
+      y: height - rectangleStart - 170,
+      size: 10,
+    });
+
+    firstPage.drawText(
+      dinarEnLettre + ' dinars' + ' et ' + centimeLettre + ' centimes',
+      {
+        x: 40,
+        y: height - rectangleStart - 190,
+        size: 11,
+      },
+    );
+
+    firstPage.drawText('cachet et signature', {
+      x: 380,
+      y: height - 725,
+      size: 11,
+    });
+
+    return pdfDoc;
+  }
+
+  async printFactureEcommerceDetail(facture) {
+    const factureAll = [...facture];
+    let page = 0;
+    const pdfDoc = null;
+    const pdfdocs = [];
+    let pagesTotales;
+    const reste = facture.length % 35;
+    if (reste > 15) {
+      pagesTotales = parseInt((facture.length / 35 + 2).toString());
+    } else {
+      pagesTotales = parseInt((facture.length / 35 + 1).toString());
+    }
+    // pagesTotales=parseInt((facture.length / 35 + 1).toString())
+    console.log(parseInt((facture.length / 35 + 1).toString()));
+    const lenthData = parseInt((facture.length / 35 + 1).toString());
+    for (let i = 0; i < lenthData; i++) {
+      page = page + 1;
+      console.log(lenthData, '', i, facture.length);
+      if (facture.length <= 35) {
+        if (facture.length > 15) {
+          const pdfDoc = await this.drawFactureEcommerce(
+            facture,
+            factureAll,
+            page,
+            pagesTotales,
+          );
+          pdfdocs.push(pdfDoc);
+          const pdfDocFooter = await this.drawFactureEcommerceFooter(
+            facture,
+            factureAll,
+            page,
+            pagesTotales,
+          );
+          pdfdocs.push(pdfDocFooter);
+        } else {
+          const pdfDoc = await this.drawFactureEcommerce(
+            facture,
+            factureAll,
+            page,
+            pagesTotales,
+            facture.length,
+          );
+          pdfdocs.push(pdfDoc);
+        }
+      } else {
+        const dataSend = facture.splice(0, 35);
+        const pdfDoc = await this.drawFactureEcommerce(
+          dataSend,
+          factureAll,
+          page,
+          pagesTotales,
+        );
+        pdfdocs.push(pdfDoc);
+      }
+    }
+    const brd = await pdfdocs[0];
+    let pdfBytes = await brd.save();
+    for (let i = 1; i < pdfdocs.length; i++) {
+      const allBRD = await brd.copyPages(pdfdocs[i], [0]);
+      brd.addPage(allBRD[0]);
+      pdfBytes = await brd.save();
+    }
+    fs.writeFileSync('dest', pdfBytes);
+    return pdfBytes;
+  }
+
+  async drawFactureEcommerce(facture, factureAll, page, pagesTotales, footer?) {
+    const conventionTemplatePath = 'src/assets/FactureEcommerce.pdf';
+    const pdfTemplateBytes = fs.readFileSync(conventionTemplatePath);
+    const dest = 'src/testpdf/convention.pdf';
+    const pdfDoc = await PDFDocument.load(pdfTemplateBytes);
+    // Get the first page of the document
+    const pages = pdfDoc.getPages();
+    const firstPage = pages[0];
+    const bold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+    const normal = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    const { width, height } = firstPage.getSize();
+    let rectangleStart = 237;
+    let lineStart = 222;
+
+    firstPage.drawText(facture[0].facture_numFacture, {
+      x: 70,
+      y: height - 139.5,
+      size: 8,
+    });
+
+    firstPage.drawText(facture[0].client_raisonSociale, {
+      x: 83,
+      y: height - 151.5,
+      size: 8,
+    });
+
+    firstPage.drawText(facture[0].client_adresse, {
+      x: 65,
+      y: height - 163.5,
+      size: 8,
+    });
+
+    firstPage.drawText(facture[0].client_nrc, {
+      x: 54,
+      y: height - 174.5,
+      size: 8,
+    });
+
+    firstPage.drawText(facture[0].client_nif, {
+      x: 54,
+      y: height - 186.5,
+      size: 8,
+    });
+
+    firstPage.drawText(facture[0].client_nis, {
+      x: 54,
+      y: height - 198,
+      size: 8,
+    });
+
+    firstPage.drawText(factureAll.length.toString(), {
+      x: 410,
+      y: height - 187,
+      size: 8,
+    });
+
+    firstPage.drawText('page' + ' ' + page.toString() + ' / ' + pagesTotales, {
+      x: 410,
+      y: height - 210,
+      size: 8,
+    });
+
+    const date = new Date();
+    let month = '' + (date.getMonth() + 1);
+    let day = '' + date.getDate();
+    const year = date.getFullYear();
+    if (month.length < 2) month = '0' + month;
+    if (day.length < 2) day = '0' + day;
+    const dateDeFacture = [day, month, year].join('-');
+
+    firstPage.drawText(dateDeFacture, {
+      x: 425,
+      y: height - 140.5,
+      size: 8,
+    });
+
+    //--------------------------------------------------- debut header----------------------
+    firstPage.drawRectangle({
+      x: 22,
+      y: height - rectangleStart,
+      width: 560,
+      height: 15,
+      borderColor: rgb(0, 0, 0),
+      borderWidth: 0.6,
+      color: rgb(1, 0, 0),
+    });
+
+    // -------------tracking------------
+    firstPage.drawText(`Envoi N°`, {
+      x: 29.5,
+      y: height - rectangleStart + 4.7,
+      size: 8.7,
+      color: rgb(1, 1, 1),
+      font: bold,
+    });
+
+    // -------------statut------------
+    firstPage.drawLine({
+      start: { x: 80, y: height - lineStart },
+      end: { x: 80, y: height - rectangleStart },
+      thickness: 0.7,
+      color: rgb(0, 0, 0),
+    });
+    firstPage.drawText(`statut`, {
+      x: 85,
+      y: height - rectangleStart + 4.7,
+      size: 8.7,
+      color: rgb(1, 1, 1),
+      font: bold,
+    });
+
+    // -------------date------------
+    firstPage.drawLine({
+      start: { x: 130, y: height - lineStart },
+      end: { x: 130, y: height - rectangleStart },
+      thickness: 0.7,
+      color: rgb(0, 0, 0),
+    });
+    firstPage.drawText(`date`, {
+      x: 135,
+      y: height - rectangleStart + 4.7,
+      size: 8.7,
+      color: rgb(1, 1, 1),
+      font: bold,
+    });
+
+    // ------------destinataire-------------
+    firstPage.drawLine({
+      start: { x: 187.7, y: height - lineStart },
+      end: { x: 187.7, y: height - rectangleStart },
+      thickness: 0.7,
+      color: rgb(0, 0, 0),
+    });
+    firstPage.drawText(`Destinataire`, {
+      x: 192.7,
+      y: height - rectangleStart + 4.7,
+      size: 8.7,
+      color: rgb(1, 1, 1),
+      font: bold,
+    });
+
+    // ------------destinantion-------------
+    firstPage.drawLine({
+      start: { x: 285, y: height - lineStart },
+      end: { x: 285, y: height - rectangleStart },
+      thickness: 0.7,
+      color: rgb(0, 0, 0),
+    });
+    firstPage.drawText(`Destination`, {
+      x: 290,
+      y: height - rectangleStart + 4.7,
+      size: 8.7,
+      color: rgb(1, 1, 1),
+      font: bold,
+    });
+
+    // ------------Poids-------------
+    firstPage.drawLine({
+      start: { x: 355, y: height - lineStart },
+      end: { x: 355, y: height - rectangleStart },
+      thickness: 0.7,
+      color: rgb(0, 0, 0),
+    });
+    firstPage.drawText(`Poids`, {
+      x: 357.5,
+      y: height - rectangleStart + 4.7,
+      size: 8.7,
+      color: rgb(1, 1, 1),
+      font: bold,
+    });
+
+    // ------------Livraison-------------
+    firstPage.drawLine({
+      start: { x: 385, y: height - lineStart },
+      end: { x: 385, y: height - rectangleStart },
+      thickness: 0.7,
+      color: rgb(0, 0, 0),
+    });
+    firstPage.drawText(`Livraison`, {
+      x: 390,
+      y: height - rectangleStart + 4.7,
+      size: 8.7,
+      color: rgb(1, 1, 1),
+      font: bold,
+    });
+
+    // -------------Retour------------
+    firstPage.drawLine({
+      start: { x: 435, y: height - lineStart },
+      end: { x: 435, y: height - rectangleStart },
+      thickness: 0.7,
+      color: rgb(0, 0, 0),
+    });
+    firstPage.drawText(`Retour`, {
+      x: 440,
+      y: height - rectangleStart + 4.7,
+      size: 8.7,
+      color: rgb(1, 1, 1),
+      font: bold,
+    });
+
+    // -------------Cod------------
+    firstPage.drawLine({
+      start: { x: 480, y: height - lineStart },
+      end: { x: 480, y: height - rectangleStart },
+      thickness: 0.7,
+      color: rgb(0, 0, 0),
+    });
+    firstPage.drawText(`COD`, {
+      x: 485,
+      y: height - rectangleStart + 4.7,
+      size: 8.7,
+      color: rgb(1, 1, 1),
+      font: bold,
+    });
+
+    // -------------Tarif total------------
+    firstPage.drawLine({
+      start: { x: 525, y: height - lineStart },
+      end: { x: 525, y: height - rectangleStart },
+      thickness: 0.7,
+      color: rgb(0, 0, 0),
+    });
+    firstPage.drawText(`Total`, {
+      x: 530,
+      y: height - rectangleStart + 4.7,
+      size: 8.7,
+      color: rgb(1, 1, 1),
+      font: bold,
+    });
+
+    //--------------------------------------------------- fin header----------------------
+
+    //--------------------------------------------------- debut contenu table----------------------
+
+    for (const shipment of facture) {
+      console.log("🚀 ~ file: pdf.service.ts ~ line 4082 ~ PdfService ~ drawFactureEcommerce ~ shipment", shipment)
+      rectangleStart = rectangleStart + 15;
+      lineStart = lineStart + 15;
+      firstPage.drawRectangle({
+        x: 22,
+        y: height - rectangleStart,
+        width: 560,
+        height: 15,
+        borderColor: rgb(0, 0, 0),
+        borderWidth: 0.6,
+      });
+
+      // -------------tracking------------
+
+      firstPage.drawText(shipment.shipments_tracking, {
+        x: 24,
+        y: height - rectangleStart + 4.7,
+        size: 8.7,
+        font: normal,
+      });
+
+      // -------------statut------------
+
+      firstPage.drawLine({
+        start: { x: 80, y: height - lineStart },
+        end: { x: 80, y: height - rectangleStart },
+        thickness: 0.7,
+        color: rgb(0, 0, 0),
+      });
+
+      firstPage.drawText(shipment.status_libelle, {
+        x: 82,
+        y: height - rectangleStart + 4.7,
+        size: 8.7,
+        font: normal,
+      });
+
+      // -------------date------------
+
+      firstPage.drawLine({
+        start: { x: 130, y: height - lineStart },
+        end: { x: 130, y: height - rectangleStart },
+        thickness: 0.7,
+        color: rgb(0, 0, 0),
+      });
+
+      const dateExpidition = new Date(shipment.status_createdAt);
+      let month = '' + (dateExpidition.getMonth() + 1);
+      let day = '' + dateExpidition.getDate();
+      const year = dateExpidition.getFullYear();
+      if (month.length < 2) month = '0' + month;
+      if (day.length < 2) day = '0' + day;
+      const date = [day, month, year].join('-');
+      firstPage.drawText(date, {
+        x: 132,
+        y: height - rectangleStart + 4.7,
+        size: 8.7,
+        font: normal,
+      });
+
+      // -------------destinataire------------
+      firstPage.drawLine({
+        start: { x: 187.7, y: height - lineStart },
+        end: { x: 187.7, y: height - rectangleStart },
+        thickness: 0.7,
+        color: rgb(0, 0, 0),
+      });
+      firstPage.drawText(shipment.shipments_raisonSociale, {
+        x: 190,
+        y: height - rectangleStart + 4.7,
+        size: 8.7,
+        font: normal,
+      });
+
+      // ------------destination-------------
+      firstPage.drawLine({
+        start: { x: 285, y: height - lineStart },
+        end: { x: 285, y: height - rectangleStart },
+        thickness: 0.7,
+        color: rgb(0, 0, 0),
+      });
+      firstPage.drawText(shipment.wilaya_nomLatin, {
+        x: 287,
+        y: height - rectangleStart + 4.7,
+        size: 8.7,
+        font: normal,
+      });
+
+      // ------------Poids-------------
+      firstPage.drawLine({
+        start: { x: 355, y: height - lineStart },
+        end: { x: 355, y: height - rectangleStart },
+        thickness: 0.7,
+        color: rgb(0, 0, 0),
+      });
+      firstPage.drawText((shipment.poids).toString(), {
+        x: 357,
+        y: height - rectangleStart + 4.7,
+        size: 8.7,
+        font: normal,
+      });
+
+      // ------------- tarif Livraison------------
+      firstPage.drawLine({
+        start: { x: 385, y: height - lineStart },
+        end: { x: 385, y: height - rectangleStart },
+        thickness: 0.7,
+        color: rgb(0, 0, 0),
+      });
+      firstPage.drawText(
+        shipment.tarifLivraison.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$& '),
+        {
+          x: 387,
+          y: height - rectangleStart + 4.7,
+          size: 8.7,
+          font: normal,
+        },        
+      );
+
+        // -------------tarif retour------------
+      firstPage.drawLine({
+        start: { x: 435, y: height - lineStart },
+        end: { x: 435, y: height - rectangleStart },
+        thickness: 0.7,
+        color: rgb(0, 0, 0),
+      });
+      firstPage.drawText( shipment.tarifRetour.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$& '), {
+        x: 437,
+        y: height - rectangleStart + 4.7,
+        size: 8.7,
+        font: normal,
+      });
+
+      
+        // -------------cod------------
+        firstPage.drawLine({
+          start: { x: 480, y: height - lineStart },
+          end: { x: 480, y: height - rectangleStart },
+          thickness: 0.7,
+          color: rgb(0, 0, 0),
+        });
+        firstPage.drawText( shipment.montantCOD.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$& '), {
+          x: 482,
+          y: height - rectangleStart + 4.7,
+          size: 8.7,
+          font: normal,
+        })
+
+              
+        // -------------tatal colis------------
+        firstPage.drawLine({
+          start: { x: 525, y: height - lineStart },
+          end: { x: 525, y: height - rectangleStart },
+          thickness: 0.7,
+          color: rgb(0, 0, 0),
+        });
+        firstPage.drawText( shipment.montantTotalColis.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$& '), {
+          x: 527,
+          y: height - rectangleStart + 4.7,
+          size: 8.7,
+          font: normal,
+        })
+    }
+    //--------------------------------------------------- fin contenu table----------------------
+
+    //--------------------------------------------------- debut footer----------------------
+    if (footer) {
+      // ---------------------montant HT-----------------
+
+      firstPage.drawRectangle({
+        x: 160,
+        y: height - rectangleStart - 60,
+        width: 300,
+        height: 15,
+        borderColor: rgb(0, 0, 0),
+        borderWidth: 0.6,
+      });
+
+      firstPage.drawText('Montant H.T', {
+        x: 165,
+        y: height - rectangleStart - 60 + 4.7,
+        size: 10,
+      });
+
+      firstPage.drawText(
+        facture[0].facture_montantHoreTaxe
+          .toFixed(2)
+          .replace(/\d(?=(\d{3})+\.)/g, '$& '),
+        {
+          x: 355,
+          y: height - rectangleStart - 60 + 4.7,
+          size: 10,
+        },
+      );
+
+      // ---------------------TVA-----------------
+      firstPage.drawRectangle({
+        x: 160,
+        y: height - rectangleStart - 75,
+        width: 300,
+        height: 15,
+        borderColor: rgb(0, 0, 0),
+        borderWidth: 0.6,
+      });
+
+      firstPage.drawText('TVA (19%)', {
+        x: 165,
+        y: height - rectangleStart - 75 + 4.7,
+        size: 10,
+      });
+
+      firstPage.drawText(
+        facture[0].facture_montantTva
+          .toFixed(2)
+          .replace(/\d(?=(\d{3})+\.)/g, '$& '),
+        {
+          x: 363,
+          y: height - rectangleStart - 75 + 4.7,
+          size: 10,
+        },
+      );
+
+      // ---------------------TTC-----------------
+      firstPage.drawRectangle({
+        x: 160,
+        y: height - rectangleStart - 90,
+        width: 300,
+        height: 15,
+        borderColor: rgb(0, 0, 0),
+        borderWidth: 0.6,
+      });
+
+      firstPage.drawText('Montant TTC', {
+        x: 165,
+        y: height - rectangleStart - 90 + 4.7,
+        size: 10,
+      });
+
+      firstPage.drawText(
+        facture[0].facture_montantTtc
+          .toFixed(2)
+          .replace(/\d(?=(\d{3})+\.)/g, '$& '),
+        {
+          x: 355,
+          y: height - rectangleStart - 90 + 4.7,
+          size: 10,
+        },
+      );
+
+      // ---------------------timbre----------------
+      firstPage.drawRectangle({
+        x: 160,
+        y: height - rectangleStart - 105,
+        width: 300,
+        height: 15,
+        borderColor: rgb(0, 0, 0),
+        borderWidth: 0.6,
+      });
+      firstPage.drawText('Timbre', {
+        x: 165,
+        y: height - rectangleStart - 105 + 4.7,
+        size: 10,
+      });
+
+      if (facture[0].facture_montantTimbre == 0) {
+        firstPage.drawText('/', {
+          x: 380,
+          y: height - rectangleStart - 105 + 4.7,
+          size: 10,
+        });
+      } else {
+        firstPage.drawText(
+          facture[0].facture_montantTimbre
+            .toFixed(2)
+            .replace(/\d(?=(\d{3})+\.)/g, '$& '),
+          {
+            x: 369,
+            y: height - rectangleStart - 105 + 4.7,
+            size: 10,
+          },
+        );
+      }
+
+      // ---------------------montant total-----------------
+      firstPage.drawRectangle({
+        x: 160,
+        y: height - rectangleStart - 120,
+        width: 300,
+        height: 15,
+        borderColor: rgb(0, 0, 0),
+        borderWidth: 0.6,
+      });
+
+      firstPage.drawText('Montant total', {
+        x: 165,
+        y: height - rectangleStart - 120 + 4.7,
+        size: 10,
+      });
+
+      firstPage.drawText(
+        facture[0].facture_montantTotal
+          .toFixed(2)
+          .replace(/\d(?=(\d{3})+\.)/g, '$& '),
+        {
+          x: 355,
+          y: height - rectangleStart - 120 + 4.7,
+          size: 10,
+        },
+      );
+
+      firstPage.drawLine({
+        start: { x: 350, y: height - lineStart - 60 },
+        end: { x: 350, y: height - rectangleStart - 120 },
+        thickness: 0.7,
+        color: rgb(0, 0, 0),
+      });
+
+      const { NumberToLetter } = require('convertir-nombre-lettre');
+
+      const montantTotalString = facture[0].facture_montantTotal.toFixed(2);
+
+      const centimeString = montantTotalString.substr(
+        montantTotalString.length - 2,
+      );
+      const centimeNombre = Number(centimeString);
+
+      const dinarString = montantTotalString.slice(0, -3);
+      const dinarNombre = Number(dinarString);
+
+      const dinarEnLettre = NumberToLetter(dinarNombre);
+      const centimeLettre = NumberToLetter(centimeNombre);
+
+      firstPage.drawText('Arrêter la présente facture à la somme de :', {
+        x: 40,
+        y: height - rectangleStart - 170,
+        size: 10,
+      });
+
+      firstPage.drawText(
+        dinarEnLettre + ' dinars' + ' et ' + centimeLettre + ' centimes',
+        {
+          x: 40,
+          y: height - rectangleStart - 190,
+          size: 11,
+        },
+      );
+
+      firstPage.drawText('cachet et signature', {
+        x: 380,
+        y: height - 720,
+        size: 11,
+      });
+    }
+    //--------------------------------------------------- fin footer---------------------
+
+    return pdfDoc;
+  }
+
+  async drawFactureEcommerceFooter(facture, factureAll, page, pagesTotales) {
+    const conventionTemplatePath = 'src/assets/FactureEcommerce.pdf';
+    const pdfTemplateBytes = fs.readFileSync(conventionTemplatePath);
+    const dest = 'src/testpdf/convention.pdf';
+    const pdfDoc = await PDFDocument.load(pdfTemplateBytes);
+    // Get the first page of the document
+    const pages = pdfDoc.getPages();
+    const firstPage = pages[0];
+    const { width, height } = firstPage.getSize();
+    let rectangleStart = 237;
+    let lineStart = 222;
+    const numPage = page + 1;
+
+    firstPage.drawText(facture[0].facture_numFacture, {
+      x: 70,
+      y: height - 139.5,
+      size: 8,
+    });
+
+    firstPage.drawText(facture[0].client_raisonSociale, {
+      x: 83,
+      y: height - 151.5,
+      size: 8,
+    });
+
+    firstPage.drawText(facture[0].client_adresse, {
+      x: 65,
+      y: height - 163.5,
+      size: 8,
+    });
+
+    firstPage.drawText(facture[0].client_nrc, {
+      x: 54,
+      y: height - 174.5,
+      size: 8,
+    });
+
+    firstPage.drawText(facture[0].client_nif, {
+      x: 54,
+      y: height - 186.5,
+      size: 8,
+    });
+
+    firstPage.drawText(facture[0].client_nis, {
+      x: 54,
+      y: height - 198,
+      size: 8,
+    });
+
+    firstPage.drawText(factureAll.length.toString(), {
+      x: 410,
+      y: height - 187,
+      size: 8,
+    });
+
+    firstPage.drawText(
+      'page' + ' ' + numPage.toString() + ' / ' + pagesTotales,
+      {
+        x: 410,
+        y: height - 210,
+        size: 8,
+      },
+    );
+
+    const date = new Date();
+    let month = '' + (date.getMonth() + 1);
+    let day = '' + date.getDate();
+    const year = date.getFullYear();
+    if (month.length < 2) month = '0' + month;
+    if (day.length < 2) day = '0' + day;
+    const dateDeFacture = [day, month, year].join('-');
+
+    firstPage.drawText(dateDeFacture, {
+      x: 425,
+      y: height - 140.5,
+      size: 8,
+    });
+
+    // ---------------------montant HT-----------------
+    firstPage.drawRectangle({
+      x: 160,
+      y: height - rectangleStart - 30,
+      width: 300,
+      height: 15,
+      borderColor: rgb(0, 0, 0),
+      borderWidth: 0.6,
+    });
+
+    firstPage.drawText('Montant H.T', {
+      x: 165,
+      y: height - rectangleStart - 30 + 4.7,
+      size: 10,
+    });
+
+    firstPage.drawText(
+      facture[0].facture_montantHoreTaxe
+        .toFixed(2)
+        .replace(/\d(?=(\d{3})+\.)/g, '$& '),
+      {
+        x: 355,
+        y: height - rectangleStart - 30 + 4.7,
+        size: 10,
+      },
+    );
+
+    // ---------------------TVA-----------------
+    firstPage.drawRectangle({
+      x: 160,
+      y: height - rectangleStart - 45,
+      width: 300,
+      height: 15,
+      borderColor: rgb(0, 0, 0),
+      borderWidth: 0.6,
+    });
+
+    firstPage.drawText('Montant TVA', {
+      x: 165,
+      y: height - rectangleStart - 45 + 4.7,
+      size: 10,
+    });
+
+    firstPage.drawText(
+      facture[0].facture_montantTva
+        .toFixed(2)
+        .replace(/\d(?=(\d{3})+\.)/g, '$& '),
+      {
+        x: 363,
+        y: height - rectangleStart - 45 + 4.7,
+        size: 10,
+      },
+    );
+
+    // ---------------------TTC-----------------
+    firstPage.drawRectangle({
+      x: 160,
+      y: height - rectangleStart - 60,
+      width: 300,
+      height: 15,
+      borderColor: rgb(0, 0, 0),
+      borderWidth: 0.6,
+    });
+
+    firstPage.drawText('Montant TTC', {
+      x: 165,
+      y: height - rectangleStart - 60 + 4.7,
+      size: 10,
+    });
+
+    firstPage.drawText(
+      facture[0].facture_montantTtc
+        .toFixed(2)
+        .replace(/\d(?=(\d{3})+\.)/g, '$& '),
+      {
+        x: 355,
+        y: height - rectangleStart - 60 + 4.7,
+        size: 10,
+      },
+    );
+
+    // ---------------------timbre----------------
+    firstPage.drawRectangle({
+      x: 160,
+      y: height - rectangleStart - 75,
+      width: 300,
+      height: 15,
+      borderColor: rgb(0, 0, 0),
+      borderWidth: 0.6,
+    });
+    firstPage.drawText('Timbre', {
+      x: 165,
+      y: height - rectangleStart - 75 + 4.7,
+      size: 10,
+    });
+
+    firstPage.drawText(
+      facture[0].facture_montantTimbre
+        .toFixed(2)
+        .replace(/\d(?=(\d{3})+\.)/g, '$& '),
+      {
+        x: 369,
+        y: height - rectangleStart - 75 + 4.7,
+        size: 10,
+      },
+    );
+
+    // ---------------------montant total-----------------
+    firstPage.drawRectangle({
+      x: 160,
+      y: height - rectangleStart - 90,
+      width: 300,
+      height: 15,
+      borderColor: rgb(0, 0, 0),
+      borderWidth: 0.6,
+    });
+
+    firstPage.drawText('Montant total', {
+      x: 165,
+      y: height - rectangleStart - 90 + 4.7,
+      size: 10,
+    });
+
+    firstPage.drawText(
+      facture[0].facture_montantTotal
+        .toFixed(2)
+        .replace(/\d(?=(\d{3})+\.)/g, '$& '),
+      {
+        x: 355,
+        y: height - rectangleStart - 90 + 4.7,
+        size: 10,
+      },
+    );
+
+    firstPage.drawLine({
+      start: { x: 350, y: height - lineStart - 30 },
+      end: { x: 350, y: height - rectangleStart - 90 },
+      thickness: 0.7,
+      color: rgb(0, 0, 0),
+    });
+
+      const { NumberToLetter } = require('convertir-nombre-lettre');
+
+    const montantTotalString = facture[0].facture_montantTotal.toFixed(2);
+
+    const centimeString = montantTotalString.substr(
+      montantTotalString.length - 2,
+    );
+    const centimeNombre = Number(centimeString);
+
+    const dinarString = montantTotalString.slice(0, -3);
+    const dinarNombre = Number(dinarString);
+
+    const dinarEnLettre = NumberToLetter(dinarNombre);
+    const centimeLettre = NumberToLetter(centimeNombre);
+
+    firstPage.drawText('Arrêter la présente facture à la somme de :', {
+      x: 40,
+      y: height - rectangleStart - 170,
+      size: 10,
+    });
+
+    firstPage.drawText(
+      dinarEnLettre + ' dinars' + ' et ' + centimeLettre + ' centimes',
+      {
+        x: 40,
+        y: height - rectangleStart - 190,
+        size: 11,
+      },
+    );
+
+    firstPage.drawText('cachet et signature', {
+      x: 380,
+      y: height - 725,
+      size: 11,
+    });
+
+    return pdfDoc;
+  }
+
+  async printFactureEcommerceSimplifie(facture) {
+    const conventionTemplatePath = 'src/assets/FactureEcommerce.pdf';
+    const pdfTemplateBytes = fs.readFileSync(conventionTemplatePath);
+    const dest = 'src/testpdf/convention.pdf';
+    const pdfDoc = await PDFDocument.load(pdfTemplateBytes);
+    // Get the first page of the document
+    const pages = pdfDoc.getPages();
+    const firstPage = pages[0];
+    const bold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+    const normal = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    const { width, height } = firstPage.getSize();
+    let rectangleStart = 237;
+    let lineStart = 222;
+
+    firstPage.drawText(facture[0].facture_numFacture, {
+      x: 70,
+      y: height - 139.5,
+      size: 8,
+    });
+
+    firstPage.drawText(facture[0].client_raisonSociale, {
+      x: 83,
+      y: height - 151.5,
+      size: 8,
+    });
+
+    firstPage.drawText(facture[0].client_adresse, {
+      x: 65,
+      y: height - 163.5,
+      size: 8,
+    });
+
+    firstPage.drawText(facture[0].client_nrc, {
+      x: 54,
+      y: height - 174.5,
+      size: 8,
+    });
+
+    firstPage.drawText(facture[0].client_nif, {
+      x: 54,
+      y: height - 186.5,
+      size: 8,
+    });
+
+    firstPage.drawText(facture[0].client_nis, {
+      x: 54,
+      y: height - 198,
+      size: 8,
+    });
+
+    firstPage.drawText(facture.length.toString(), {
+      x: 410,
+      y: height - 187,
+      size: 8,
+    });
+
+    firstPage.drawText('page ' + '1' + ' / ' + '1', {
+      x: 410,
+      y: height - 210,
+      size: 8,
+    });
+
+    const date = new Date();
+    let month = '' + (date.getMonth() + 1);
+    let day = '' + date.getDate();
+    const year = date.getFullYear();
+    if (month.length < 2) month = '0' + month;
+    if (day.length < 2) day = '0' + day;
+    const dateDeFacture = [day, month, year].join('-');
+
+    firstPage.drawText(dateDeFacture, {
+      x: 425,
+      y: height - 140.5,
+      size: 8,
+    });
+
+    //--------------------------------------------------- debut header----------------------
+    firstPage.drawRectangle({
+      x: 40,
+      y: height - rectangleStart,
+      width: 440,
+      height: 15,
+      borderColor: rgb(0, 0, 0),
+      borderWidth: 0.6,
+      color: rgb(1, 0, 0),
+    });
+
+    // -------------nombre------------
+    firstPage.drawText(`Nombre`, {
+      x: 42,
+      y: height - rectangleStart + 4.7,
+      size: 8.7,
+      color: rgb(1, 1, 1),
+      font: bold,
+    });
+
+    // -------------statut------------
+    firstPage.drawLine({
+      start: { x: 120, y: height - lineStart },
+      end: { x: 120, y: height - rectangleStart },
+      thickness: 0.7,
+      color: rgb(0, 0, 0),
+    });
+    firstPage.drawText(`statut`, {
+      x: 122,
+      y: height - rectangleStart + 4.7,
+      size: 8.7,
+      color: rgb(1, 1, 1),
+      font: bold,
+    });
+
+
+    // ------------Livraison-------------
+    firstPage.drawLine({
+      start: { x: 200, y: height - lineStart },
+      end: { x: 200, y: height - rectangleStart },
+      thickness: 0.7,
+      color: rgb(0, 0, 0),
+    });
+    firstPage.drawText(`Livraison`, {
+      x: 202,
+      y: height - rectangleStart + 4.7,
+      size: 8.7,
+      color: rgb(1, 1, 1),
+      font: bold,
+    });
+
+    // -------------Retour------------
+    firstPage.drawLine({
+      start: { x: 280, y: height - lineStart },
+      end: { x: 280, y: height - rectangleStart },
+      thickness: 0.7,
+      color: rgb(0, 0, 0),
+    });
+    firstPage.drawText(`Retour`, {
+      x: 282,
+      y: height - rectangleStart + 4.7,
+      size: 8.7,
+      color: rgb(1, 1, 1),
+      font: bold,
+    });
+
+    // -------------Cod------------
+    firstPage.drawLine({
+      start: { x: 360, y: height - lineStart },
+      end: { x: 360, y: height - rectangleStart },
+      thickness: 0.7,
+      color: rgb(0, 0, 0),
+    });
+    firstPage.drawText(`COD`, {
+      x: 362,
+      y: height - rectangleStart + 4.7,
+      size: 8.7,
+      color: rgb(1, 1, 1),
+      font: bold,
+    });
+
+    // -------------Tarif total------------
+    firstPage.drawLine({
+      start: { x: 420, y: height - lineStart },
+      end: { x: 420, y: height - rectangleStart },
+      thickness: 0.7,
+      color: rgb(0, 0, 0),
+    });
+    firstPage.drawText(`Total`, {
+      x: 422,
+      y: height - rectangleStart + 4.7,
+      size: 8.7,
+      color: rgb(1, 1, 1),
+      font: bold,
+    });
+
+    //--------------------------------------------------- fin header----------------------
+
+    //--------------------------------------------------- debut contenu table----------------------
+    let colisLivrer=0;
+    let colisRetirer=0;
+    let tarifLivraison=0;
+    let tarifRetour=0;
+    let montantCOD=0;
+    let tarifColisLiivre=0;
+    for (const shipment of facture) {
+      if (shipment.status_libelle==StatusShipmentEnum.livre) {
+        montantCOD= montantCOD + shipment.montantCOD;
+        tarifLivraison=tarifLivraison+shipment.tarifLivraison
+        colisLivrer=colisLivrer+1;
+        tarifColisLiivre=tarifColisLiivre+shipment.montantTotalColis;
+      } else if (shipment.status_libelle==StatusShipmentEnum.retirer) {
+        tarifRetour=tarifRetour+shipment.tarifRetour;
+        colisRetirer=colisRetirer+1
+      }
+    }
+
+    firstPage.drawRectangle({
+      x: 40,
+      y: height - rectangleStart-15,
+      width: 440,
+      height: 15,
+      borderColor: rgb(0, 0, 0),
+      borderWidth: 0.6,
+    });
+
+    // -------------nombre------------
+    firstPage.drawText(colisLivrer.toString(), {
+      x: 42,
+      y: height - rectangleStart-15 + 4.7,
+      size: 8.7,
+    });
+
+    // -------------statut------------
+    firstPage.drawLine({
+      start: { x: 120, y: height - lineStart },
+      end: { x: 120, y: height - rectangleStart-15 },
+      thickness: 0.7,
+      color: rgb(0, 0, 0),
+    });
+    firstPage.drawText(`LIVRÉ`, {
+      x: 122,
+      y: height - rectangleStart-15 + 4.7,
+      size: 8.7,
+    });
+
+
+    // ------------Livraison-------------
+    firstPage.drawLine({
+      start: { x: 200, y: height - lineStart },
+      end: { x: 200, y: height - rectangleStart-15 },
+      thickness: 0.7,
+      color: rgb(0, 0, 0),
+    });
+    firstPage.drawText(tarifLivraison.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$& '), {
+      x: 202,
+      y: height - rectangleStart-15 + 4.7,
+      size: 8.7,
+    });
+
+    // -------------Retour------------
+    firstPage.drawLine({
+      start: { x: 280, y: height - lineStart },
+      end: { x: 280, y: height - rectangleStart-15 },
+      thickness: 0.7,
+      color: rgb(0, 0, 0),
+    });
+    firstPage.drawText(`00.00`, {
+      x: 282,
+      y: height - rectangleStart-15 + 4.7,
+      size: 8.7,
+    });
+
+    // -------------Cod------------
+    firstPage.drawLine({
+      start: { x: 360, y: height - lineStart },
+      end: { x: 360, y: height - rectangleStart-15 },
+      thickness: 0.7,
+      color: rgb(0, 0, 0),
+    });
+    firstPage.drawText(montantCOD.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$& '), {
+      x: 362,
+      y: height - rectangleStart-15 + 4.7,
+      size: 8.7,
+    });
+
+    // -------------Tarif total------------
+    firstPage.drawLine({
+      start: { x: 420, y: height - lineStart },
+      end: { x: 420, y: height - rectangleStart-15 },
+      thickness: 0.7,
+      color: rgb(0, 0, 0),
+    });
+    firstPage.drawText(tarifColisLiivre.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$& '),{
+      x: 422,
+      y: height - rectangleStart-15 + 4.7,
+      size: 8.7,
+    });
+
+    firstPage.drawRectangle({
+      x: 40,
+      y: height - rectangleStart-30,
+      width: 440,
+      height: 15,
+      borderColor: rgb(0, 0, 0),
+      borderWidth: 0.6,
+    });
+
+    // -------------nombre------------
+    firstPage.drawText(colisRetirer.toString(), {
+      x: 42,
+      y: height - rectangleStart-30 + 4.7,
+      size: 8.7,
+    });
+
+    // -------------statut------------
+    firstPage.drawLine({
+      start: { x: 120, y: height - lineStart },
+      end: { x: 120, y: height - rectangleStart-30 },
+      thickness: 0.7,
+      color: rgb(0, 0, 0),
+    });
+    firstPage.drawText(`RETIRÉ`, {
+      x: 122,
+      y: height - rectangleStart-30 + 4.7,
+      size: 8.7,
+    });
+
+
+    // ------------Livraison-------------
+    firstPage.drawLine({
+      start: { x: 200, y: height - lineStart },
+      end: { x: 200, y: height - rectangleStart-30 },
+      thickness: 0.7,
+      color: rgb(0, 0, 0),
+    });
+    firstPage.drawText('00.00', {
+      x: 202,
+      y: height - rectangleStart-30 + 4.7,
+      size: 8.7,
+    });
+
+    // -------------Retour------------
+    firstPage.drawLine({
+      start: { x: 280, y: height - lineStart },
+      end: { x: 280, y: height - rectangleStart-30 },
+      thickness: 0.7,
+      color: rgb(0, 0, 0),
+    });
+    firstPage.drawText(tarifRetour.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$& '), {
+      x: 282,
+      y: height - rectangleStart-30 + 4.7,
+      size: 8.7,
+    });
+
+    // -------------Cod------------
+    firstPage.drawLine({
+      start: { x: 360, y: height - lineStart },
+      end: { x: 360, y: height - rectangleStart-30 },
+      thickness: 0.7,
+      color: rgb(0, 0, 0),
+    });
+    firstPage.drawText('00.00', {
+      x: 362,
+      y: height - rectangleStart-30 + 4.7,
+      size: 8.7,
+    });
+
+    // -------------Tarif total------------
+    firstPage.drawLine({
+      start: { x: 420, y: height - lineStart },
+      end: { x: 420, y: height - rectangleStart-30 },
+      thickness: 0.7,
+      color: rgb(0, 0, 0),
+    });
+    firstPage.drawText(tarifRetour.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$& '),{
+      x: 422,
+      y: height - rectangleStart-30 + 4.7,
+      size: 8.7,
+    });
+
+
+    // ---------------------montant HT-----------------
+    firstPage.drawRectangle({
+      x: 160,
+      y: height - rectangleStart - 60-30,
+      width: 300,
+      height: 15,
+      borderColor: rgb(0, 0, 0),
+      borderWidth: 0.6,
+    });
+
+    firstPage.drawText('Montant H.T', {
+      x: 165,
+      y: height - rectangleStart - 60-30 + 4.7,
+      size: 10,
+    });
+
+    firstPage.drawText(
+      facture[0].facture_montantHoreTaxe
+        .toFixed(2)
+        .replace(/\d(?=(\d{3})+\.)/g, '$& '),
+      {
+        x: 355,
+        y: height - rectangleStart - 60-30 + 4.7,
+        size: 10,
+      },
+    );
+
+    // ---------------------TVA-----------------
+    firstPage.drawRectangle({
+      x: 160,
+      y: height - rectangleStart - 75-30,
+      width: 300,
+      height: 15,
+      borderColor: rgb(0, 0, 0),
+      borderWidth: 0.6,
+    });
+
+    firstPage.drawText('Montant TVA', {
+      x: 165,
+      y: height - rectangleStart - 75-30 + 4.7,
+      size: 10,
+    });
+
+    firstPage.drawText(
+      facture[0].facture_montantTva
+        .toFixed(2)
+        .replace(/\d(?=(\d{3})+\.)/g, '$& '),
+      {
+        x: 363,
+        y: height - rectangleStart - 75-30 + 4.7,
+        size: 10,
+      },
+    );
+
+    // ---------------------TTC-----------------
+    firstPage.drawRectangle({
+      x: 160,
+      y: height - rectangleStart - 90-30,
+      width: 300,
+      height: 15,
+      borderColor: rgb(0, 0, 0),
+      borderWidth: 0.6,
+    });
+
+    firstPage.drawText('Montant TTC', {
+      x: 165,
+      y: height - rectangleStart - 90-30 + 4.7,
+      size: 10,
+    });
+
+    firstPage.drawText(
+      facture[0].facture_montantTtc
+        .toFixed(2)
+        .replace(/\d(?=(\d{3})+\.)/g, '$& '),
+      {
+        x: 355,
+        y: height - rectangleStart - 90-30 + 4.7,
+        size: 10,
+      },
+    );
+
+    // ---------------------timbre----------------
+    firstPage.drawRectangle({
+      x: 160,
+      y: height - rectangleStart - 105-30,
+      width: 300,
+      height: 15,
+      borderColor: rgb(0, 0, 0),
+      borderWidth: 0.6,
+    });
+    firstPage.drawText('Timbre', {
+      x: 165,
+      y: height - rectangleStart - 105-30 + 4.7,
+      size: 10,
+    });
+
+    firstPage.drawText(
+      facture[0].facture_montantTimbre
+        .toFixed(2)
+        .replace(/\d(?=(\d{3})+\.)/g, '$& '),
+      {
+        x: 369,
+        y: height - rectangleStart - 105-30 + 4.7,
+        size: 10,
+      },
+    );
+
+    // ---------------------montant total-----------------
+    firstPage.drawRectangle({
+      x: 160,
+      y: height - rectangleStart - 120-30,
+      width: 300,
+      height: 15,
+      borderColor: rgb(0, 0, 0),
+      borderWidth: 0.6,
+    });
+
+    firstPage.drawText('Montant total', {
+      x: 165,
+      y: height - rectangleStart - 120-30 + 4.7,
+      size: 10,
+    });
+
+    firstPage.drawText(
+      facture[0].facture_montantTotal
+        .toFixed(2)
+        .replace(/\d(?=(\d{3})+\.)/g, '$& '),
+      {
+        x: 355,
+        y: height - rectangleStart - 120-30 + 4.7,
+        size: 10,
+      },
+    );
+
+    firstPage.drawLine({
+      start: { x: 350, y: height - lineStart - 60-30 },
+      end: { x: 350, y: height - rectangleStart - 120-30 },
+      thickness: 0.7,
+      color: rgb(0, 0, 0),
+    });
+
+      const { NumberToLetter } = require('convertir-nombre-lettre');
+
+    const montantTotalString = facture[0].facture_montantTotal.toFixed(2);
+
+    const centimeString = montantTotalString.substr(
+      montantTotalString.length - 2,
+    );
+    const centimeNombre = Number(centimeString);
+
+    const dinarString = montantTotalString.slice(0, -3);
+    const dinarNombre = Number(dinarString);
+
+    const dinarEnLettre = NumberToLetter(dinarNombre);
+    const centimeLettre = NumberToLetter(centimeNombre);
+
+    firstPage.drawText('Arrêter la présente facture à la somme de :', {
+      x: 40,
+      y: height - rectangleStart - 200-30,
+      size: 10,
+    });
+
+    firstPage.drawText(
+      dinarEnLettre + ' dinars' + ' et ' + centimeLettre + ' centimes',
+      {
+        x: 40,
+        y: height - rectangleStart - 220-30,
+        size: 11,
+      },
+    );
+
+    firstPage.drawText('cachet et signature', {
+      x: 380,
+      y: height - 725,
+      size: 11,
+    });
+    
+
+ 
+
+
+    //--------------------------------------------------- fin contenu table----------------------
+
+    const pdfBytes = await pdfDoc.save();
+    fs.writeFileSync('dest', pdfBytes);
+    return pdfBytes;
+  }
+
+
+
 }

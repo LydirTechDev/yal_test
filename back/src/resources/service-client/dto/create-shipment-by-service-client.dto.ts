@@ -1,6 +1,5 @@
 import {
   IsBoolean,
-  isNumber,
   IsNumber,
   IsString,
   MaxLength,
@@ -66,7 +65,6 @@ export class CreateShipmentByServiceClientDto {
 
   @IsNumber()
   hauteur: number = 0;
-
   @IsBoolean()
   livraisonDomicile: boolean;
 

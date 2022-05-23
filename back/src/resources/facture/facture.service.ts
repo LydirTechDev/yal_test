@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   IPaginationOptions,
@@ -6,8 +6,10 @@ import {
   Pagination,
 } from 'nestjs-typeorm-paginate';
 import { PdfService } from 'src/core/templates/pdf.service';
+import { StatusShipmentEnum } from 'src/enums/status.shipment.enum';
 import { EntityNotFoundError, ILike, Repository } from 'typeorm';
 import { ClientsService } from '../clients/clients.service';
+import { ShipmentsService } from '../shipments/shipments.service';
 import { UsersService } from '../users/users.service';
 import { CreateFactureDto } from './dto/create-facture.dto';
 import { UpdateFactureDto } from './dto/update-facture.dto';
@@ -21,6 +23,8 @@ export class FactureService {
     private clientService: ClientsService,
     private userService: UsersService,
     private pdfService: PdfService,
+    @Inject(forwardRef(() => ShipmentsService))
+    private shipmentService: ShipmentsService,
   ) {}
 
   async generateNumFacture(id) {
@@ -30,11 +34,6 @@ export class FactureService {
   }
 
   async create(createFactureDto: CreateFactureDto) {
-    console.log(
-      '🚀 ~ file: facture.service.ts ~ line 22 ~ FactureService ~ create ~ createFactureDto',
-      createFactureDto,
-    );
-
     const facture = this.factureRepository.create(createFactureDto);
     const client = await this.clientService.findOneClientById(
       createFactureDto.clientId,
@@ -83,6 +82,112 @@ export class FactureService {
     }
   }
 
+  async findOneFactureClassique(id: number): Promise<Facture[]> {
+    const facture = await this.factureRepository
+      .createQueryBuilder('facture')
+      .leftJoinAndSelect('facture.client', 'client')
+      .leftJoinAndSelect('facture.shipments', 'shipments')
+      .leftJoinAndSelect('shipments.commune', 'commune')
+      .leftJoinAndSelect('commune.wilaya', 'wilaya')
+      .leftJoinAndSelect('shipments.status', 'status')
+      .where(`facture.id=${id}`)
+      .andWhere(`status.libelle = '${StatusShipmentEnum.expidie}'`)
+      .getRawMany();
+
+    for await (const colis of facture) {
+      if (
+        colis.shipments_poids >
+        colis.shipments_longueur *
+          colis.shipments_largeur *
+          colis.shipments_hauteur *
+          200
+      ) {
+        colis.poids = colis.shipments_poids;
+      } else {
+        colis.poids =
+          colis.shipments_longueur *
+          colis.shipments_largeur *
+          colis.shipments_hauteur *
+          200;
+      }
+      const tarifs = await this.shipmentService.calculTarifslivraison(
+        colis.shipments_tracking,
+      );
+
+      colis.tarif = tarifs;
+    }
+    if (facture) {
+      return facture;
+    } else {
+      throw new EntityNotFoundError(Facture, id);
+    }
+  }
+
+  async findOneFactureEcommerce(id: number): Promise<Facture[]> {
+    let montantTotalColis = 0;
+    let tarifLivraison = 0;
+    let tarifRetour = 0;
+    let prixCod = 0;
+    const facture = await this.factureRepository
+      .createQueryBuilder('facture')
+      .leftJoinAndSelect('facture.client', 'client')
+      .leftJoinAndSelect('facture.shipments', 'shipments')
+      .leftJoinAndSelect('shipments.commune', 'commune')
+      .leftJoinAndSelect('commune.wilaya', 'wilaya')
+      .leftJoinAndSelect('shipments.status', 'status')
+      .where(`facture.id=${id}`)
+      .andWhere(
+        `(status.libelle = '${StatusShipmentEnum.livre}' or  status.libelle = '${StatusShipmentEnum.retirer}' )`,
+      )
+      .getRawMany();
+
+    for await (const shipment of facture) {
+      if (
+        shipment.shipments_poids >
+        shipment.shipments_longueur *
+          shipment.shipments_largeur *
+          shipment.shipments_hauteur *
+          200
+      ) {
+        shipment.poids = shipment.shipments_poids;
+      } else {
+        shipment.poids =
+          shipment.shipments_longueur *
+          shipment.shipments_largeur *
+          shipment.shipments_hauteur *
+          200;
+      }
+      if (shipment.status_libelle == StatusShipmentEnum.livre) {
+        const tarifs = await this.shipmentService.calculTarifslivraison(
+          shipment.shipments_tracking,
+        );
+        console.log('zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz');
+
+        tarifLivraison = tarifs;
+        shipment.tarifLivraison = tarifLivraison;
+        tarifRetour = 0;
+        shipment.tarifRetour = tarifRetour;
+        prixCod =
+          (shipment.shipments_prixEstimer * shipment.client_tauxCOD) / 100;
+        montantTotalColis = prixCod + tarifLivraison + tarifRetour;
+      } else if (shipment.status_libelle == StatusShipmentEnum.retirer) {
+        tarifLivraison = 0;
+        shipment.tarifLivraison = tarifLivraison;
+        tarifRetour = shipment.client_tarifRetour;
+        shipment.tarifRetour = tarifRetour;
+        prixCod = 0;
+      }
+      shipment.montantCOD = prixCod;
+      montantTotalColis = prixCod + tarifLivraison + tarifRetour;
+      shipment.montantTotalColis = montantTotalColis;
+    }
+    if (facture) {
+      return facture;
+    } else {
+      throw new EntityNotFoundError(Facture, id);
+    }
+  }
+
   remove(id: number) {
     return `This action removes a #${id} facture`;
   }
@@ -91,14 +196,18 @@ export class FactureService {
     options: IPaginationOptions,
     searchFactureTerm: string,
     payer: boolean,
+    type: string,
   ): Promise<Pagination<Facture>> {
+    console.log(
+      '🚀 ~ file: facture.service.ts ~ line 207 ~ FactureService ~ type',
+      type,
+    );
     let facture;
     if (searchFactureTerm && Number(searchFactureTerm) != NaN) {
       facture = this.factureRepository
         .createQueryBuilder('facture')
-        .leftJoinAndSelect('facture.client', 'client')
-        .leftJoinAndSelect('facture.shipments', 'shipments').where(`
-        facture.payer= ${payer} and (
+        .leftJoinAndSelect('facture.client', 'client').where(`
+        facture.payer= ${payer} and facture.typeFacture='${type}' and (
         facture.numFacture ilike  '%${searchFactureTerm}%' or
         client.raisonSociale ilike '%${searchFactureTerm}%' or
         client.nomGerant ilike '%${searchFactureTerm}%' or
@@ -109,8 +218,7 @@ export class FactureService {
       facture = this.factureRepository
         .createQueryBuilder('facture')
         .leftJoinAndSelect('facture.client', 'client')
-        .leftJoinAndSelect('facture.shipments', 'shipments')
-        .where(`facture.payer= ${payer}`);
+        .where(`facture.payer= ${payer} and facture.typeFacture='${type}'`);
     }
     return await paginate<any>(facture, {
       page: options.page,
@@ -120,23 +228,12 @@ export class FactureService {
   }
 
   async payerFacture(id: number, paiementInfo: any) {
-    console.log(
-      '🚀 ~ file: facture.service.ts ~ line 120 ~ FactureService ~ payerFacture ~ id',
-      id,
-    );
-    console.log(
-      '🚀 ~ file: facture.service.ts ~ line 120 ~ FactureService ~ payerFacture ~ paiementInfo',
-      paiementInfo,
-    );
     const datePaiement = new Date();
-    console.log(
-      '🚀 ~ file: facture.service.ts ~ line 123 ~ FactureService ~ payerFacture ~ datePaiement',
-      datePaiement,
-    );
+
     const facture = await this.findOne(id);
     if (facture) {
       const factureToUpdate = this.factureRepository.create();
-      factureToUpdate.payer = false;
+      factureToUpdate.payer = true;
       factureToUpdate.modePaiement = paiementInfo.moyenPayement;
       factureToUpdate.datePaiement = datePaiement;
       if (paiementInfo.numeroCheque != null) {
@@ -146,18 +243,127 @@ export class FactureService {
         id,
         factureToUpdate,
       );
-      console.log(
-        '🚀 ~ file: facture.service.ts ~ line 138 ~ FactureService ~ payerFacture ~ factureUpdated',
-        factureUpdated,
-      );
-      return this.prinFactureClassique(id);
+
+      return facture;
     }
 
     throw new EntityNotFoundError(Facture, 'cette facture existe pas');
   }
 
   async prinFactureClassique(factureId: number) {
-    const infoFacture = await this.findOne(factureId);
+    const infoFacture = await this.findOneFactureClassique(factureId);
     return await this.pdfService.printFactureClassique(infoFacture);
+  }
+
+  async prinFactureEcommerceDetail(factureId: number) {
+    const infoFacture = await this.findOneFactureEcommerce(factureId);
+    return await this.pdfService.printFactureEcommerceDetail(infoFacture);
+  }
+
+  async prinFactureEcommerceSimplifie(factureId: number) {
+    const infoFacture = await this.findOneFactureEcommerce(factureId);
+    return await this.pdfService.printFactureEcommerceSimplifie(infoFacture);
+  }
+
+  async getStatistique() {
+    const sommeTotal = await this.factureRepository
+      .createQueryBuilder('facture')
+      .select(`SUM(facture.montantTotal)`, 'sommeTotal')
+      .getRawOne();
+    const sommeTotalClassique = await this.factureRepository
+      .createQueryBuilder('facture')
+      .select(`SUM(facture.montantTotal)`, 'sommeTotalClassique')
+      .where(`facture.typeFacture='classique'`)
+      .getRawOne();
+    const sommeTotalClassiquePayer = await this.factureRepository
+      .createQueryBuilder('facture')
+      .select(`SUM(facture.montantTotal)`, 'sommeTotalClassiquePayer')
+      .where(`facture.typeFacture='classique' and facture.payer=true`)
+      .getRawOne();
+    const sommeTotalClassiqueNonPayer = await this.factureRepository
+      .createQueryBuilder('facture')
+      .select(`SUM(facture.montantTotal)`, 'sommeTotalClassiqueNonPayer')
+      .where(`facture.typeFacture='classique' and facture.payer=false`)
+      .getRawOne();
+    const sommeTotalEcommerce = await this.factureRepository
+      .createQueryBuilder('facture')
+      .select(`SUM(facture.montantTotal)`, 'sommeTotalEcommerce')
+      .where(`facture.typeFacture='ecommerce'`)
+      .getRawOne();
+    const sommeTotalEcommerceZero = await this.factureRepository
+      .createQueryBuilder('facture')
+      .select(`SUM(facture.montantTotal)`, 'sommeTotalEcommerceZero')
+      .where(`facture.typeFacture='ecommerceZero'`)
+      .getRawOne();
+    const sommeTotalEcommerceZeroPayer = await this.factureRepository
+      .createQueryBuilder('facture')
+      .select(`SUM(facture.montantTotal)`, 'sommeTotalEcommerceZero')
+      .where(`facture.typeFacture='ecommerceZero'  and facture.payer=true`)
+      .getRawOne();
+    const sommeTotalEcommerceZeroNonPayer = await this.factureRepository
+      .createQueryBuilder('facture')
+      .select(`SUM(facture.montantTotal)`, 'sommeTotalEcommerceZero')
+      .where(`facture.typeFacture='ecommerceZero'  and facture.payer=false`)
+      .getRawOne();
+
+    const nombreTotal = await this.factureRepository
+      .createQueryBuilder('facture')
+      .select(`COUNT(facture.id)`, 'nombreTotal')
+      .getRawOne();
+    const nombreTotalClassique = await this.factureRepository
+      .createQueryBuilder('facture')
+      .select(`COUNT(facture.id)`, 'nombreTotalClassique')
+      .where(`facture.typeFacture='classique'`)
+      .getRawOne();
+    const nombreTotalClassiquePayer = await this.factureRepository
+      .createQueryBuilder('facture')
+      .select(`COUNT(facture.id)`, 'nombreTotalClassiquePayer')
+      .where(`facture.typeFacture='classique' and facture.payer=true`)
+      .getRawOne();
+    const nombreTotalClassiqueNonPayer = await this.factureRepository
+      .createQueryBuilder('facture')
+      .select(`COUNT(facture.id)`, 'nombreTotalClassiqueNonPayer')
+      .where(`facture.typeFacture='classique' and facture.payer=false`)
+      .getRawOne();
+    const nombreTotalEcommerce = await this.factureRepository
+      .createQueryBuilder('facture')
+      .select(`COUNT(facture.id)`, 'nombreTotalEcommerce')
+      .where(`facture.typeFacture='ecommerce'`)
+      .getRawOne();
+    const nombreTotalEcommerceZero = await this.factureRepository
+      .createQueryBuilder('facture')
+      .select(`COUNT(facture.montantTotal)`, 'nombreTotalEcommerceZero')
+      .where(`facture.typeFacture='ecommerceZero'`)
+      .getRawOne();
+    const nombreTotalEcommerceZeroPayer = await this.factureRepository
+      .createQueryBuilder('facture')
+      .select(`COUNT(facture.montantTotal)`, 'nombreTotalEcommerceZeroPayer')
+      .where(`facture.typeFacture='ecommerceZero' and facture.payer=true`)
+      .getRawOne();
+    const nombreTotalEcommerceZeroNonPayer = await this.factureRepository
+      .createQueryBuilder('facture')
+      .select(`COUNT(facture.montantTotal)`, 'nombreTotalEcommerceZeroNonPayer')
+      .where(`facture.typeFacture='ecommerceZero' and facture.payer=false`)
+      .getRawOne();
+    return [
+      {
+        sommeTotal: sommeTotal,
+        sommeTotalClassique: sommeTotalClassique,
+        sommeTotalClassiquePayer: sommeTotalClassiquePayer,
+        sommeTotalClassiqueNonPayer: sommeTotalClassiqueNonPayer,
+        sommeTotalEcommerce: sommeTotalEcommerce,
+        sommeTotalEcommerceZero: sommeTotalEcommerceZero,
+        sommeTotalEcommerceZeroPayer: sommeTotalEcommerceZeroPayer,
+        sommeTotalEcommerceZeroNonPayer: sommeTotalEcommerceZeroNonPayer,
+        nombreTotal: nombreTotal,
+        nombreTotalClassique: nombreTotalClassique,
+        nombreTotalClassiquePayer: nombreTotalClassiquePayer,
+        nombreTotalClassiqueNonPayer: nombreTotalClassiqueNonPayer,
+        nombreTotalEcommerce: nombreTotalEcommerce,
+        nombreTotalEcommerceZero: nombreTotalEcommerceZero,
+        nombreTotalEcommerceZeroPayer: nombreTotalEcommerceZeroPayer,
+        nombreTotalEcommerceZeroNonPayer: nombreTotalEcommerceZeroNonPayer,
+      },
+    ];
   }
 }

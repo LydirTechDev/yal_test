@@ -45,8 +45,8 @@ export class PmtCoursierController {
   }
 
   @Get('getPaiementDetailsCoursier/:tracking')
-  getPaiementDetailsCoursier(@Param('tracking') tracking) {
-    return this.pmtCoursierService.getPaiementDetailsCoursier(tracking);
+  getPaiementDetailsCoursier(@Req() req, @Param('tracking') tracking) {
+    return this.pmtCoursierService.getPaiementDetailsCoursier(req.user, tracking);
   }
   @ApiQuery({ name: 'page', type: Number, required: false })
   @ApiQuery({ name: 'limit', type: Number, required: false })

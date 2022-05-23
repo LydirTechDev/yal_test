@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import {
   IPaginationMeta,
   IPaginationLinks,
@@ -53,7 +54,8 @@ export class ListRecoltesComponent implements OnInit {
   btnSpinner: boolean = false;
   constructor(
     private financeService: FinanceService,
-    public sweetalertService: SweetAlertService
+    public sweetalertService: SweetAlertService,
+    private router: Router
   ) {
     /**
      * init isLoading to false
@@ -217,5 +219,8 @@ export class ListRecoltesComponent implements OnInit {
       res
     );
     return res;
+  }
+  detailRct(tracking) {
+    this.router.navigateByUrl(`finance/recolte/${tracking}`);
   }
 }

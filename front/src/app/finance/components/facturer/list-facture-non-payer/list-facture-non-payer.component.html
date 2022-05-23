@@ -26,35 +26,37 @@
                     <!-- Table -->
                     <div class="table-responsive">
                         <table id="basic-datatable"
-                            class="table table-centered dt-responsive nowrap no-footer dtr-inline">
+                            class="table table-centered dt-responsive nowrap no-footer dtr-inline table-hover">
                             <thead>
                                 <tr>
                                     <th>N° Facture</th>
                                     <th>Client</th>
-                                    <th>Montant</th>
-                                    <th>Nombre d'envoi</th>
+                                    <th>Montant HT</th>
+                                    <th>Montant Total</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody *ngIf="!isLoading; else spiner">
 
                                 <tr *ngFor="let facture of factureData">
-                                    <td>
+                                    <td (click)="showDetail(facture.id)">
                                         <a class="text-dark font-weight-bold">
                                             {{ facture.numFacture }}
                                         </a>
                                     </td>
-                                    <td>
+                                    <td (click)="showDetail(facture.id)">
                                       {{ facture.client.nomCommercial }} {{ facture.client.raisonSociale }}
                                     </td>
-                                    <td>
-                                      {{ facture.montantTotal }}
+                                    <td (click)="showDetail(facture.id)">
+                                      {{facture.montantHoreTaxe  | currency:'DA':'symbol' :'1.2-2' :'fr'}}
+                                    </td>
+                                    <td (click)="showDetail(facture.id)">
+                                      {{ facture.montantTotal  | currency:'DA':'symbol' :'1.2-2' :'fr' }}
                                     </td>
                                     <td>
-                                      {{facture.shipments.length}}
-                                    </td>
-                                    <td>
-                                      <button class="btn btn-sm btn-danger" (click)="openModal(content,facture.id)">Payer</button>
+                                      <button class="btn btn-sm btn-danger" (click)="openModal(content,facture.id)"><i class="fa fa-credit-card" aria-hidden="true"></i></button>
+                                      <button class="btn btn-sm btn-primary" (click)="printFacture(facture.id)"><i class="fa fa-print" aria-hidden="true"></i></button>
+
                                     </td>
                                 </tr>
                                 <tr *ngIf="factureData.length <= 0">

@@ -32,7 +32,7 @@ export class EmptiedTransfertSacComponent implements OnInit {
   ngOnInit() { }
 
   checkSack() {
-    const express_reg = new RegExp(/^sac-\d{3}\w{3}$/, 'i');
+    const express_reg = new RegExp(/^sac-\d{8}$/, 'i')
     const tracking = this.formSacTransfert.value['sacTracking'];
     if (express_reg.test(tracking)) {
       this.formSacTransfert.controls['sacTracking'].disable;
@@ -40,7 +40,7 @@ export class EmptiedTransfertSacComponent implements OnInit {
         .getTrackingEnTransfert(tracking.toLowerCase())
         .subscribe(
           (data) => {
-          console.log("🚀 ~ file: emptied-transfert-sac.component.ts ~ line 43 ~ EmptiedTransfertSacComponent ~ checkSack ~ data", data)
+            console.log("🚀 ~ file: emptied-transfert-sac.component.ts ~ line 43 ~ EmptiedTransfertSacComponent ~ checkSack ~ data", data)
             if (data.length > 0) {
               this.listeShipmentEnTransfert = data;
               this.count = data.length;

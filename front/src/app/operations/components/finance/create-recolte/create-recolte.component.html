@@ -20,7 +20,8 @@
     </div>
     <hr class=" mx-auto">
 
-    <table class="table table-bordered table-centered bg-white" *ngIf="coursierLoaded && montant >= 0">
+    <!--    <table class="table table-bordered table-centered bg-white" *ngIf="coursierLoaded && montant >= 0">-->
+    <table class="table table-bordered table-centered bg-white" *ngIf="coursierLoaded && nbrColis > 0">
         <thead class="">
             <tr>
                 <th scope="col">Tracking</th>
@@ -49,13 +50,14 @@
                     <h1 class="text-dark font-weight-bold p-0 ">Total: {{montant}} DA</h1>
                 </td>
             </tr>
-
+      
         </tfoot>
     </table>
-    <div class=" d-flex justify-content-center" *ngIf="coursierLoaded && montant >= 0">
-        <button class="btn btn-success" (click)="validateReceptionRecolte()">
-            <i class="ri-check-fill"></i>
-            Confirmer et valider la réception
-        </button>
-    </div>
+    <!-- <div class=" d-flex justify-content-center" *ngIf="coursierLoaded && montant >= 0"> -->
+<div class=" d-flex justify-content-center" *ngIf="coursierLoaded && nbrColis > 0">
+<button class="btn btn-success" (click)="validateReceptionRecolte()">
+    <i class="ri-check-fill"></i> 
+    Confirmer et valider la réception
+</button>
+</div>
 </div>

@@ -233,6 +233,8 @@ export class DetailClientComponent implements OnInit {
             })
 
           );
+          (this.typeTarif.at(i) as FormGroup).get('serviceId').disable()
+
 
           setTimeout(() => {
             let service = this.listService.find(
@@ -395,6 +397,8 @@ export class DetailClientComponent implements OnInit {
               .patchValue(null);
         }
       );
+    (this.typeTarif.at(i) as FormGroup).get('serviceId').disable()
+
   }
 
   onChangWilayaResidence() {

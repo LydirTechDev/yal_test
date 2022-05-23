@@ -12,4 +12,9 @@ export interface IAgence {
   nif: string;
   nis: string;
   commune: ICommune;
+  prixRamassageZoneOne:number
+  prixRamassageZoneTwo:number
+  prixLivraisonZoneOne:number
+  prixLivraisonZoneTwo:number
+  communeZoneOne:any[];
 }

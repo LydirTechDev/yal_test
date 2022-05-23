@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
+  IsArray,
   IsEnum,
   IsNumber,
   IsString,
@@ -85,4 +86,19 @@ export class CreateAgenceDto {
   })
   @IsNumber()
   communeId: number;
+
+  @IsArray()
+  communeZoneOne: number[];
+
+  @IsNumber()
+  prixRamassageZoneOne: number;
+
+  @IsNumber()
+  prixRamassageZoneTwo: number;
+
+  @IsNumber()
+  prixLivraisonZoneOne: number;
+
+  @IsNumber()
+  prixLivraisonZoneTwo: number;
 }

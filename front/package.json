@@ -2,7 +2,7 @@
   "name": "client-yalidine",
   "version": "0.0.1",
   "description": "Yalidine api Erp",
-  "author": "Idir CHAOUCHI, Hakim HAMMDACHE, Ghiles HADADI",
+  "author": "Idir CHAOUCHI, Hakim HAMMDACHE",
   "license": "Yalidine El Djazair Service",
   "scripts": {
     "ng": "ng",

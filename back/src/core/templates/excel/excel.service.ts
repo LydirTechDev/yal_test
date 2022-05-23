@@ -63,7 +63,7 @@ export class ExcelService {
           fontSize: 10,
         });
         const rangeHeaders = workbook.sheet(0).range(`A1:${colonne}1`);
-        rangeHeaders.style({ bold: 'true', fill: '555d88', fontSize: 11 });
+        rangeHeaders.style({ bold: 'true', fill: 'FF4500', fontSize: 11 });
         return workbook.outputAsync();
       })
       .then((data) => {

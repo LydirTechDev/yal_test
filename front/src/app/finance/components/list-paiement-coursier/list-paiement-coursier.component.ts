@@ -23,6 +23,7 @@ export class ListPaiementCoursierComponent implements OnInit {
   constructor(
     private readonly financeService: FinanceService,
     private sweetAlertService: SweetAlertService,
+    private router: Router,
   ) {
     this.isLoading = false;
     /**
@@ -134,5 +135,9 @@ export class ListPaiementCoursierComponent implements OnInit {
     if (!pwa || pwa.closed || typeof pwa.closed == 'undefined') {
       alert('Please disable your pop-up blocker and try again!')
     }
+  }
+  detailPmt(tracking) {
+    console.log("🚀 ~ file: mes-paiements.component.ts ~ line 137 ~ MesPaiementsComponent ~ detailPmt ~ tracking", tracking)
+    this.router.navigateByUrl(`finance/detail-list-paiement/${tracking}`)
   }
 }

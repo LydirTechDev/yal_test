@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { IPaginationLinks, IPaginationMeta } from 'src/app/core/interfaces/paginations';
 import { Pagination } from 'src/app/core/interfaces/paginations/pagination';
 import { SweetAlertService } from 'src/app/core/services/sweet-alert.service';
@@ -17,10 +18,16 @@ export class ListFacturePayerComponent implements OnInit {
   isLoading: boolean;
   searchFactureTerm: string;
   breadCrumbItems: Array<{}>;
+  moyenPaiement = {
+    'cheque': { text: 'Chèque / ' },
+    'espece': { text: 'Espèce' },
+    'virement': { text: 'Virement' },
+  };
 
   constructor(
     private factureService:FacturerService,
-    private sweetAlertService:SweetAlertService
+    private sweetAlertService:SweetAlertService,
+    private router: Router
   ) {
 
     this.isLoading = false;
@@ -47,7 +54,7 @@ export class ListFacturePayerComponent implements OnInit {
     searchTermUpdate(searchFactureTerm: string): void {
       this.isLoading = true;
       setTimeout(() => {
-        this.factureService.searchFacture(searchFactureTerm,'oui').subscribe(
+        this.factureService.searchFacture(searchFactureTerm,'oui','classique').subscribe(
           (response) => {
             this._facturesResponse(response);
           },
@@ -60,7 +67,7 @@ export class ListFacturePayerComponent implements OnInit {
 
     getAllpaginateFacture() {
       this.isLoading = true;
-      this.factureService.getAllPaginateFacture('oui').subscribe(
+      this.factureService.getAllPaginateFacture('oui','classique').subscribe(
         (response) => {
           this._facturesResponse(response);
         },
@@ -73,7 +80,7 @@ export class ListFacturePayerComponent implements OnInit {
     funcPaginate(link: string, params?: number) {
       this.isLoading = true;
       setTimeout(() => {
-        this.factureService.funcPaginate(link, params, this.searchFactureTerm,'oui').subscribe(
+        this.factureService.funcPaginate(link, params, this.searchFactureTerm,'oui','classique').subscribe(
           (response) => {
             this._facturesResponse(response);
           },
@@ -107,6 +114,30 @@ export class ListFacturePayerComponent implements OnInit {
         last: '',
       };
       this.isLoading = false;
+    }
+
+    openFile(data: any, type: string) {
+      let blob = new Blob([data], { type: type });
+      let url = window.URL.createObjectURL(blob);
+      let pwa = window.open(url);
+      if (!pwa || pwa.closed || typeof pwa.closed == 'undefined') {
+        alert('Please disable your pop-up blocker and try again!');
+      }
+    }
+    printFacture(id:number){
+      this.factureService.printFactureClassique(id).subscribe(
+        (response)=>{
+          this.openFile(response, "application/pdf")
+        },
+        (error)=>{
+          this.sweetAlertService.creationFailure('echec')
+        }
+      )
+      }
+
+
+    showDetail(id: number) {
+      this.router.navigateByUrl(`finance/facture/detail-facture-classique/${id}`);
     }
 
 

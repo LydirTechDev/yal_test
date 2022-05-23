@@ -1,20 +1,30 @@
-import { IsBoolean, IsNumber } from "class-validator";
+import { IsBoolean, IsNumber } from 'class-validator';
 
 export class CreateFactureDto {
+    @IsNumber()
+    clientId: number;
 
     @IsNumber()
-    clientId:number
+    montantTotal: number;
 
     @IsNumber()
-    montantTotal:number
+    employeId: number;
 
     @IsNumber()
-    employeId:number
-
-    @IsNumber()
-    nbrColis:number
+    nbrColis: number;
 
     @IsBoolean()
-    espece:boolean
+    espece: boolean;
 
+    @IsNumber()
+    montantTva: number;
+
+    @IsNumber()
+    montantTtc: number;
+
+    @IsNumber()
+    montantTimbre: number;
+
+    @IsNumber()
+    montantHoreTaxe: number
 }

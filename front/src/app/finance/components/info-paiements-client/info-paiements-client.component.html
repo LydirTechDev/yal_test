@@ -94,8 +94,8 @@
                     </div>
                 </div>
                 <div class="row mb-3 col-12 mr-0 ml-0">
-                    <div class="col-6 text-center mx-auto"> <button type="button"
-                            class="btn btn-info btn-rounded font-size-16" (click)="payeClient(clientInfo['id'])"> Payer le client</button>
+                    <div class="col-6 text-center mx-auto" > <button type="button"
+                            class="btn btn-info btn-rounded font-size-16" [disabled]="netPayerClient<=0" (click)="payeClient(clientInfo['id'])"> Payer le client</button>
                     </div>
                 </div>
             </div>

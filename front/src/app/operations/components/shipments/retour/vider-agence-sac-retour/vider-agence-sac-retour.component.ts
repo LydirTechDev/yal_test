@@ -30,7 +30,7 @@ export class ViderAgenceSacRetourComponent implements OnInit {
   ngOnInit(): void {
   }
   checkSack() {
-    const express_reg = new RegExp(/^sac-\d{3}\w{3}$/, 'i')
+    const express_reg = new RegExp(/^sac-\d{8}$/, 'i')
     const track = this.formSac.value["sacTracking"];
     if (express_reg.test(track)) {
       this.shipmentOpsService.getTrackingReturnVersAgence(track.toLowerCase()).subscribe(

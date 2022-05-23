@@ -52,4 +52,17 @@ export class PaiementsClientService {
       `${environment.apiV1}pmt/getPaiementDetails/${tracking}`
     );
   }
+
+
+  downloadBorderauAspirer() {
+    return this.http.get(`${environment.apiV1}shipments/downloadBrdToAspire`, { responseType: 'blob' })
+  }
+
+  downloadWilayas() {
+    return this.http.get(`${environment.apiV1}wilayas/DownloadAllWilayas`, { responseType: 'blob' })
+  }
+
+  downloadCommunes() {
+    return this.http.get(`${environment.apiV1}communes/DownloadAllCommunes`, { responseType: 'blob' })
+  }
 }

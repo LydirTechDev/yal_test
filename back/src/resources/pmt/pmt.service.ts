@@ -80,15 +80,15 @@ export class PmtService {
           ? 'Livré'
           : 'Retour',
         cod:
-          shipment.prixVente > pmt.client.c_o_d_ApartirDe
-            ? (pmt.client.tauxCOD / 100) * shipment.prixVente
+          shipment.prixEstimer > pmt.client.c_o_d_ApartirDe
+            ? (pmt.client.tauxCOD / 100) * shipment.prixEstimer
             : 0,
       });
     }
 
     console.log(
       '🚀 ~ file: pmt.service.ts ~ line 59 ~ PmtService ~ getPaiementDetails ~ pmt',
-      pmt,
+      listShipment,
     );
     return listShipment;
   }

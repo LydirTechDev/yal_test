@@ -1,0 +1,81 @@
+<h4>Paramétrage</h4>
+
+<div class="row mt-4 mx-auto container-fluid">
+    <div class="col-xl-12">
+        <div class="row">
+            <div class="col-md-4">
+                <a (click)="downloadBorderauAspirer()" class="card-hover">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex">
+                                <div class="flex-1 overflow-hidden">
+                                    <h5 class="mb-0">Model à aspirer
+                                    </h5>
+                                </div>
+                                <div class="text-primary ml-auto">
+                                    <i mdbColor class="ri-download-2-fill font-size-24"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a (click)="downloadWilayas()" class="card-hover">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex">
+                                <div class="flex-1 overflow-hidden">
+                                    <h5 class="mb-0">Liste wilayas</h5>
+                                </div>
+                                <div class="text-primary ml-auto">
+                                    <i class="ri-download-2-fill font-size-24"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a (click)="downloadCommunes()" class="card-hover">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex">
+                                <div class="flex-1 overflow-hidden">
+                                    <h5 class="mb-0">Liste communes</h5>
+                                </div>
+                                <div class="text-primary ml-auto">
+                                    <i class="ri-download-2-fill font-size-24"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+
+        </div>
+        <!-- end row -->
+
+    </div>
+
+</div>
+
+<hr>
+<div class="container mx-auto rotate-2 mt-4">
+    <div class="row col-12 ">
+        <div class="notes w-100 ">
+            <div class="red-bg col-12">
+                <h4>Notes Importantes !</h4>
+                <hr>
+                <p>- Tous les champs du fichier à importer doivent etre remplis.</p>
+                <p>- Verifiez la syntaxe des wilayas et communes.</p>
+                <p>- La colonne échange et la colonne objet à récuperer sont optionnelles, selon l'éxistance de l'échange ou non.</p>
+                <p>- Nombre de caractères ne doit pas depasser 50.</p>
+                <p>- Le poids ne doit pas depasser 150KG en stop desk et 30Kg à domicile.</p>
+                <p>- Le poids volumétrique (H x L x L ) x 200 ne doit pas depasser 150 en stop desk et 30 à domicile.</p>
+                <p>- La longueur, la largeur et la hauteur sont en métre .</p>
+            </div>
+        </div>
+    </div>
+</div>

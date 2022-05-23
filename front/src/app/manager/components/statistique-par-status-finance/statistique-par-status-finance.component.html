@@ -1,0 +1,233 @@
+<div class="row">
+    <div class="col-12 mb-1">
+        <h6 class="text-uppercase">Statistiques financieres par status</h6>
+    </div>
+</div>
+<form [formGroup]="dateForm" class="row col-12 py-0 my-0 ">
+    <div class="row col-12 py-0 my-0 ">
+        <div class="form-group row col-12 py-0 my-0 col-lg-6 col-xl-4">
+            <label class="col-md-4 col-form-label text-right" for="dateDebut">Date debut*:</label>
+            <div class="col-md-8">
+                <input class="form-control" formControlName="dateDebut" type="date" placeholder="Date de debut"
+                    (change)="compare()" (change)="enableDisableDatefin()" (change)="compareToDateDebut()"
+                    [ngClass]="{'is-invalid': (dateDebutError || dateForm.controls['dateDebut'].invalid) && (dateForm.controls['dateDebut'].dirty || dateForm.controls['dateDebut'].touched),'is-valid': dateForm.controls['dateDebut'].valid && (dateForm.controls['dateDebut'].dirty || dateForm.controls['dateDebut'].touched) }">
+                <div *ngIf="dateForm.controls['dateDebut'].invalid" class="invalid-feedback">
+                    <span *ngIf="dateForm.controls['dateDebut'].errors.required">Date debut requise</span>
+                </div>
+                <span *ngIf="dateDebutError" class="text-danger error">Date de début supérieure à la date
+                    actuelle</span> <br>
+                <span *ngIf="intervalError" class="text-danger error">Interval incorrecte</span>
+
+            </div>
+        </div>
+        <div class="form-group row col-12 py-0 my-0 col-lg-6 col-xl-4">
+            <label class="col-md-4 col-form-label text-right" for="dateFin">Date fin*:</label>
+            <div class="col-md-8">
+                <input class="form-control" formControlName="dateFin" type="date" placeholder="Date de fin"
+                    (change)="compare()" (change)="compareToDateDebut()"
+                    [ngClass]="{'is-invalid': (dateFinError || dateForm.controls['dateFin'].invalid) && (dateForm.controls['dateFin'].dirty || dateForm.controls['dateFin'].touched),'is-valid': dateForm.controls['dateFin'].valid && (dateForm.controls['dateFin'].dirty || dateForm.controls['dateFin'].touched) }">
+                <div *ngIf="dateForm.controls['dateFin'].invalid" class="invalid-feedback">
+                    <span *ngIf="dateForm.controls['dateFin'].errors.required">Date fin requise</span>
+                </div>
+                <span *ngIf="dateFinError" class="text-danger error">Date de fin supérieure à la date
+                    actuelle</span><br>
+                <span *ngIf="intervalError" class="text-danger error">Interval incorrecte</span>
+            </div>
+        </div>
+        <div class="form-group row col-12 py-0 my-0 col-lg-6 col-xl-4">
+            <h6 class="col-md-4 col-form-label text-right" for="stationSelected">Agence:</h6>
+            <div class="col-8">
+                <ng-select formControlName="stationSelected" placeholder=" Selectionner une agence" [clearable]="false"
+                    appendTo="body">
+                    <ng-option value="all">
+                        Toutes les agences
+                    </ng-option>
+
+                    <ng-option *ngFor="let station of StationData" [value]="station.id">
+                        {{station.nom}}
+                    </ng-option>
+                </ng-select>
+            </div>
+        </div>
+        <div class="form-group col-12 col-lg-6 col-xl-4">
+            <div class=" ">
+                <button class="btn btn-sm btn-danger" [disabled]="dateForm.invalid" (click)="getStatistiquesStatusFinancieres()">
+                    Filtrer
+
+                </button>
+
+            </div>
+        </div>
+    </div>
+
+</form>
+<hr class="mt-0">
+<div class="container-fluid">
+    <section>
+        <div class="row">
+            <div class="col-xl-3 col-sm-6 col-12 mb-0">
+                <div class="card">
+                    <div class="card-body py-0 my-2">
+                        <div class="d-flex justify-content-between px-md-1">
+                            <div class="align-self-center">
+                                <h6>Pas prés</h6>
+                            </div>
+                            <!-- <span class="">{{statistique.total > 0 ? statistique.livre*100/statistique.total : 0}} -->
+                                <!-- %</span> -->
+                            <div class="text-end row">
+                                <h5> {{statistique.livre}} </h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-sm-6 col-12 mb-0">
+                <div class="card">
+                    <div class="card-body py-0 my-2">
+                        <div class="d-flex justify-content-between px-md-1">
+                            <div class="align-self-center">
+                                <h6>
+                                    Prés récolté
+                                </h6>
+                            </div>
+                            <!-- <span class="">{{statistique.total > 0 ? statistique.preRecolte*100/statistique.total :0 | -->
+                                <!-- currency:'%':'symbol' :'1.0-2' :'fr'}}</span> -->
+                            <div class="text-end row">
+                                <h5>{{statistique.preRecolte}}</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-sm-6 col-12 mb-0">
+                <div class="card">
+                    <div class="card-body py-0 my-2">
+                        <div class="d-flex justify-content-between px-md-1">
+                            <div class="align-self-center">
+                                <h6>
+                                    Récolté
+                                </h6>
+                            </div>
+                            <!-- <span class="">{{statistique.total > 0 ? statistique.recolte*100/statistique.total :0 | -->
+                                <!-- currency:'%':'symbol' :'1.0-2' :'fr'}}</span> -->
+                            <div class="text-end row">
+                                <h5>{{statistique.recolte}}</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-sm-6 col-12 mb-0">
+                <div class="card">
+                    <div class="card-body py-0 my-2">
+                        <div class="d-flex justify-content-between px-md-1">
+                            <div class="align-self-center">
+                                <h6>
+                                    Prés payé
+                                </h6>
+                            </div>
+                            <!-- <span class="">{{statistique.total > 0 ? statistique.pretAPayer*100/statistique.total :0 | -->
+                                <!-- currency:'%':'symbol' :'1.0-2' :'fr'}}</span> -->
+                            <div class="text-end">
+                                <h5>{{statistique.pretAPayer}}</h5>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xl-3 col-sm-6 col-12 mb-0">
+                <div class="card">
+                    <div class="card-body py-0 my-2">
+                        <div class="d-flex justify-content-between px-md-1">
+                            <div class="align-self-center">
+                                <h6>Payé</h6>
+                            </div>
+                            <!-- <span class="">{{statistique.total > 0 ? statistique.payer*100/statistique.total :0 | -->
+                                <!-- currency:'%':'symbol' :'1.0-2' :'fr'}}</span> -->
+                            <div class="text-end ">
+                                <h6>{{statistique.payer}} colis</h6>
+                                <h5>{{statistique.recouvrement - statistique.mantantRetour - 
+                                    statistique.mantantLivraison - statistique.totalFraiCOD | currency:'DA':'symbol' :'1.0-2' :'fr'}}</h5>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-sm-6 col-12 mb-0">
+                <div class="card">
+                    <div class="card-body py-0 my-2">
+                        <div class="d-flex justify-content-between px-md-1">
+                            <div class="align-self-center">
+                                <h6>Retour au vendeur</h6>
+                            </div>
+                            <!-- <span class="">{{statistique.total > 0 ? statistique.payer*100/statistique.total :0 | -->
+                                <!-- currency:'%':'symbol' :'1.0-2' :'fr'}}</span> -->
+                            <div class="text-end">
+                                <h6>{{statistique.retourRetire}} colis</h6>
+                                <h5>{{statistique.mantantRetour| currency:'DA':'symbol' :'1.0-2' :'fr'}}</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                <div class="col-xl-3 col-sm-6 col-12 mb-0">
+                    <div class="card">
+                        <div class="card-body py-0 my-2">
+                            <div class="d-flex justify-content-between px-md-1">
+                                <div class="align-self-center">
+                                    <h6>Livraison</h6>
+                                </div>
+                                <!-- <span class="">{{statistique.total > 0 ? statistique.payer*100/statistique.total :0 | -->
+                                    <!-- currency:'%':'symbol' :'1.0-2' :'fr'}}</span> -->
+                                <div class="text-end ">
+                                <h6>{{statistique.livre}} colis</h6>
+                                    <h5>{{statistique.mantantLivraison| currency:'DA':'symbol' :'1.0-2' :'fr'}}</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                    <div class="col-xl-3 col-sm-6 col-12 mb-0">
+                        <div class="card">
+                            <div class="card-body py-0 my-2">
+                                <div class="d-flex justify-content-between px-md-1">
+                                    <div class="align-self-center">
+                                        <h6>C.O.D</h6>
+                                    </div>
+                                    <!-- <span class="">{{statistique.total > 0 ? statistique.payer*100/statistique.total :0 | -->
+                                        <!-- currency:'%':'symbol' :'1.0-2' :'fr'}}</span> -->
+                                    <div class="text-end ">
+                                <h6>{{statistique.nbrColisCOD}} colis</h6>
+                                        <h5>{{statistique.totalFraiCOD| currency:'DA':'symbol' :'1.0-2' :'fr'}}</h5>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+        </div>
+<div class="row">
+            <div class="col-xl-3 col-sm-6 col-12 mb-0 mx-auto">
+                <div class="card">
+                    <div class="card-body ">
+                        <div class="d-flex justify-content-between px-md-1">
+                            <div class="align-self-center">
+                                <h4>CA</h4>
+                            </div>
+                         
+                            <div class="text-end ">
+                                <h4>{{ statistique.mantantRetour + statistique.mantantLivraison + statistique.totalFraiCOD
+                                    | currency:'DA':'symbol' :'1.0-2' :'fr'}}</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+</div>
+    </section>
+</div>

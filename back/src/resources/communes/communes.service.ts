@@ -5,6 +5,7 @@ import {
   paginate,
   Pagination,
 } from 'nestjs-typeorm-paginate';
+import { ExcelService } from 'src/core/templates/excel/excel.service';
 import { EntityNotFoundError, ILike, Repository, UpdateResult } from 'typeorm';
 import { WilayasService } from '../wilayas/wilayas.service';
 import { CreateCommuneDto } from './dto/create-commune.dto';
@@ -27,6 +28,7 @@ export class CommunesService {
     private communeRepository: Repository<Commune>,
     @Inject(forwardRef(() => WilayasService))
     private wilayaService: WilayasService,
+    private excelService: ExcelService,
   ) {}
 
   /**
@@ -43,6 +45,7 @@ export class CommunesService {
     createCommune.wilaya = wilaya;
     return await this.communeRepository.save(createCommune);
   }
+
   async createCommuneByFile(createCommunesDto: CreateCommuneDto[]) {
     for await (const createCommuneDto of createCommunesDto) {
       const commune = await this.communeRepository.findOne({
@@ -219,6 +222,14 @@ export class CommunesService {
     }
   }
 
+  async findOneByNomLatin(nomLatin: string) {
+    return await this.communeRepository.findOne({
+      where: {
+        nomLatin: ILike(`%${nomLatin}%`),
+      },
+      relations: ['wilaya'],
+    });
+  }
   async findOneByWilayaId(id: number): Promise<Commune[]> {
     const wilaya = await this.wilayaService.findOne(id);
     console.log(
@@ -230,14 +241,7 @@ export class CommunesService {
       where: { wilaya: wilaya },
     });
   }
-  /**
-   *     const wilayaDepart = await this.communeRepository.findOne({
-      relations: ['wilaya'],
-      where: {
-        id: packageSlip.packageSlip_communeId,
-      },
-    });
-   */
+
   async getWilayaOfCommune(communeId: number) {
     const wilaya = this.communeRepository.findOne({
       relations: ['wilaya'],
@@ -286,6 +290,7 @@ export class CommunesService {
     });
     return isDeleted;
   }
+
   async updateCommune(
     id: number,
     updateCommuneDto: UpdateCommuneDto,
@@ -300,5 +305,23 @@ export class CommunesService {
       return await this.communeRepository.update(id, commune);
     }
     return await this.communeRepository.update(id, updateCommuneDto);
+  }
+
+  async getAllCommunesToExport(): Promise<any> {
+    const communes = await this.communeRepository
+      .createQueryBuilder('commune')
+      .leftJoinAndSelect('commune.wilaya', 'wilaya')
+      .select('commune.nomLatin', 'Nom')
+      .addSelect('commune.livraisonDomicile', 'Livraison domicile')
+      .addSelect('commune.livraisonStopDesck', 'Livraison Stop Desc')
+      .addSelect('commune.journeeLivraison', 'Journee de livraison')
+      .addSelect('wilaya.nomLatin', 'wilaya')
+      .orderBy('wilaya.id', 'ASC')
+      .getRawMany();
+    return communes;
+  }
+  async exportCommune(res: any, term: string) {
+    const data = await this.getAllCommunesToExport();
+    this.excelService.exportToExcel(res, term, data);
   }
 }

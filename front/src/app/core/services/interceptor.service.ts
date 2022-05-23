@@ -2,6 +2,7 @@ import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/c
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { finalize } from 'rxjs/operators';
+import { SpinnerService } from '../helpres/spinner/spinner.service';
 import { LoadinService } from './loadin.service';
 
 @Injectable({
@@ -10,17 +11,18 @@ import { LoadinService } from './loadin.service';
 export class InterceptorService implements HttpInterceptor{
 
   constructor(
-    public loaderservice: LoadinService
+    public spinnerService: SpinnerService,
   ) { }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    this.loaderservice.isLoadin.next(true);
+    this.spinnerService.requestStarted();
     return next.handle(req).pipe(
       finalize(
         () => {
-          this.loaderservice.isLoadin.next(false);
-          this.loaderservice.message = req.reportProgress;
-          console.log("🚀 ~ file: interceptor.service.ts ~ line 23 ~ InterceptorService ~ intercept ~ this.loaderservice.message", this.loaderservice.message)
+          this.spinnerService.requestEnded();
+          this.spinnerService.resetSpinner()
+
+          // this.spinnerService.message = req.reportProgress;
         }
       )
     )

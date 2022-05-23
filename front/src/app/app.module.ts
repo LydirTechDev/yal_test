@@ -21,8 +21,8 @@ import { JwtInterceptor } from './core/helpres/jwt.interceptor';
 import { InterceptorService } from './core/services/interceptor.service';
 import { ButtonsModule, InputsModule, MDBBootstrapModule, WavesModule } from 'angular-bootstrap-md';
 import { OperationsModule } from './operations/operations.module';
-import { FinanceModule } from './finance/finance.module';
-
+import { SpinnerComponent } from './core/helpres/spinner/spinner.component';
+import { SpinnerService } from './core/helpres/spinner/spinner.service';
 export function createTranslateLoader(http: HttpClient): any {
   return new TranslateHttpLoader(http, 'assets/i18n/', '.json');
 }
@@ -30,6 +30,7 @@ export function createTranslateLoader(http: HttpClient): any {
 @NgModule({
   declarations: [
     AppComponent,
+    SpinnerComponent,
   ],
   imports: [
     BrowserModule,
@@ -52,6 +53,7 @@ export function createTranslateLoader(http: HttpClient): any {
     OperationsModule,
   ],
   providers: [
+    SpinnerService,
     { provide: HTTP_INTERCEPTORS,
       useClass: ErrorsInterceptor,
       multi: true

@@ -66,10 +66,10 @@ export class ListShipmentsComponent implements OnInit {
       );
   }
 
-  searchTermUpdate(searchCoursierTerm: string): void {
+  searchTermUpdate(searchShipmentTerm: string): void {
     this.isLoading = true;
     setTimeout(() => {
-      this.shipmentOpsService.searchCoursier(searchCoursierTerm).subscribe(
+      this.shipmentOpsService.searchShipments(searchShipmentTerm).subscribe(
         (response) => {
           this._shipmentsResponse(response);
         },

@@ -35,5 +35,10 @@ export const MENUCLIENT: MenuItem[] = [
         icon: 'fas fa-cash-register',
         link: '/client/paiementclient'
     },
-
+    {
+        id: 5,
+        label: 'Paramétrage',
+        icon: 'fas fa-cogs',
+        link: '/client/parametrage'
+    }, 
 ];

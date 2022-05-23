@@ -79,7 +79,7 @@ export class CodeTarifsZonesService {
       .leftJoinAndSelect('codeTarifZone.zone', 'zone')
       .leftJoinAndSelect('codeTarifZone.poids', 'poids')
       .where(
-        `codeTarif.id = '${codeTarifId}' and zone.id = '${zonId}' and poids.id = '${plageSurpoidsId}'`,
+        `codeTarif.id = ${codeTarifId} and zone.id = ${zonId} and poids.id = ${plageSurpoidsId}`,
       )
       .select(['codeTarifZone'])
       .getRawOne();
@@ -128,5 +128,26 @@ export class CodeTarifsZonesService {
 
   remove(id: number) {
     return `This action removes a #${id} codeTarifsZone`;
+  }
+
+  async findCodeTarifZoneWithoutPoids(
+    zonId: number,
+    codeTarifId: number,
+  ) {
+    const codeTarifZones = await this.codeTarifZonesRepository
+      .createQueryBuilder('codeTarifZone')
+      .leftJoin('codeTarifZone.codeTarif', 'codeTarif')
+      .leftJoin('codeTarifZone.zone', 'zone')
+      .leftJoin('codeTarifZone.poids', 'poids')
+      .where(
+        `codeTarif.id = '${codeTarifId}' and zone.id = '${zonId}'`,
+      )
+      .getOne();
+
+    if (codeTarifZones) {
+      return codeTarifZones;
+    } else {
+      throw new EntityNotFoundError(CodeTarifsZone, { zonId, codeTarifId });
+    }
   }
 }

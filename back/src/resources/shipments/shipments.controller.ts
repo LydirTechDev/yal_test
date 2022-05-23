@@ -28,6 +28,8 @@ import { Echecs } from 'src/enums/echecs';
 import { TypeUserEnum } from 'src/enums/TypeUserEnum';
 import { ApiQuery } from '@nestjs/swagger';
 import { Shipment } from './entities/shipment.entity';
+import { Service } from '../services/entities/service.entity';
+import { CreateAspirationShipmentDto } from './dto/createAspirationShipmentDto';
 
 @UseGuards(JwtAuthGuard, RoleGuard)
 @Controller('shipments')
@@ -51,7 +53,18 @@ export class ShipmentsController {
       res,
     );
   }
-
+  @Post('createShipmentByFile')
+  createShipmentByFile(
+    @Request() req,
+    @Body('service') Service,
+    @Body('shipments') shipments: CreateAspirationShipmentDto[],
+  ) {
+    return this.shipmentsService.createShipmentByFile(
+      req.user,
+      Service,
+      shipments,
+    );
+  }
   @Post('assignToCourier')
   async assignToCourier(
     @Request() req,
@@ -141,13 +154,21 @@ export class ShipmentsController {
   ) {
     return this.shipmentsService.receiveShipmentCoursier(req.user, trackings);
   }
-
-  @Patch('payerShipments')
-  async payerShipment(@Body() shipments: any, @Request() req, @Response() res) {
-    const buffer = await this.shipmentsService.payerCoursier(shipments, req);
+  @Patch('payerShipmentsOfCoursier')
+  async payerShipment(
+    @Query('coursierId') coursierId,
+    @Request() req,
+    @Response() res,
+  ) {
+    const buffer = await this.shipmentsService.payerCoursier(coursierId, req);
     const buf = Buffer.from(buffer);
     res.send(buf);
     return res;
+  }
+  @Get('downloadBrdToAspire')
+  downloadBorderau(@Res() res) {
+    const filePath = 'src/assets/brd_aspirer.xlsx';
+    return res.download(filePath);
   }
 
   // @Get('receive-shipment-coursier')
@@ -201,7 +222,6 @@ export class ShipmentsController {
       searchColisTerm,
     );
   }
-
   @Get('getPaginatedShipmentsEnpreparation')
   @Roles('1976729')
   getPaginatedShipmentsEnpreparation(
@@ -222,8 +242,8 @@ export class ShipmentsController {
 
   @Get('getPresExp')
   @Roles('236429359')
-  findAllShipmentsPresExp() {
-    return this.shipmentsService.getTrackingPresExp();
+  findAllShipmentsPresExp(@Req() req) {
+    return this.shipmentsService.getTrackingPresExp(req.user);
   }
 
   @Get('getShipmentsPresTransfert')
@@ -250,6 +270,30 @@ export class ShipmentsController {
   getStatistiqueClient(@Request() req) {
     return this.shipmentsService.getStatistiqueClient(req.user);
   }
+  @Get('getStatistiquesStatusOPS/:agence')
+  getStatistiquesStatusOPS(
+    @Param() agence,
+    @Query('dateDebut') dateDebut,
+    @Query('dateFin') dateFin,
+  ) {
+    return this.shipmentsService.getStatistiquesStatusOPS(
+      agence,
+      dateDebut,
+      dateFin,
+    );
+  }
+  @Get('getStatistiquesStatusFinance/:agence')
+  getStatistiquesStatusFinance(
+    @Param() agence,
+    @Query('dateDebut') dateDebut,
+    @Query('dateFin') dateFin,
+  ) {
+    return this.shipmentsService.getStatistiquesStatusFinance(
+      agence,
+      dateDebut,
+      dateFin,
+    );
+  }
   @Get()
   findAll() {
     return this.shipmentsService.findAll();
@@ -272,13 +316,11 @@ export class ShipmentsController {
   async setShipmentExpedier(@Request() req, @Body('tracking') shipments) {
     return this.shipmentsService.setShipmentExpedier(req.user, shipments);
   }
-
   @Post('setShipmentRamasser-freelance')
   // @Roles('236429359')
   async setShipmentRamasser(@Request() req, @Body('tracking') shipments) {
     return this.shipmentsService.setShipmentRamasser(req.user, shipments);
   }
-
   @Post('setReturnStation')
   setReturnStation(@Request() req, @Body('trackings') trackings) {
     return this.shipmentsService.setReturnStation(req.user, trackings);
@@ -328,7 +370,9 @@ export class ShipmentsController {
         req.user.typeUser == TypeUserEnum.admin ||
         req.user.typeUser == TypeUserEnum.caissierRegional ||
         req.user.typeUser == TypeUserEnum.finance ||
-        req.user.typeUser == TypeUserEnum.caissierAgence
+        req.user.typeUser == TypeUserEnum.caissierAgence ||
+        req.user.typeUser == TypeUserEnum.manager ||
+        req.user.typeUser == TypeUserEnum.service_client
       ) {
         return this.shipmentsService.searchTrackingByEmploye(
           tracking.toLowerCase(),
@@ -366,17 +410,15 @@ export class ShipmentsController {
   getRecoltesOfCoursier(@Param('coursierId') coursierId: number) {
     return this.shipmentsService.getRecoltesOfCoursier(coursierId);
   }
-
   @Get('getRecoltesDeskInformation')
   getRecoltesDeskInformation(@Request() req) {
     return this.shipmentsService.getRecoltesDeskInformation(req.user);
   }
-
+  
   @Get('getRecoltesCsInformation')
   getRecoltesCsInformation(@Request() req) {
     return this.shipmentsService.getRecoltesCsInformation(req.user);
   }
-
   @Get('getShipmentsReturnStation/:coursierId')
   getShipmentsReturnStation(
     @Request() req,
@@ -384,16 +426,49 @@ export class ShipmentsController {
   ) {
     return this.shipmentsService.getColisReturnStation(req.user, coursierId);
   }
+
   @Get('getColisOfClientClassic/:id')
   getColisOfClientClassic(
     @Param('id', ParseIntPipe) id,
     @Query('dateDebut') dateDebut,
     @Query('dateFin') dateFin,
+    @Query('espece') espece,
   ) {
     return this.shipmentsService.getShipmentClassicWithIntervalOfClient(
       id,
       dateDebut,
       dateFin,
+      espece,
+    );
+  }
+
+  @Get('getColisOfClientEcommerce/:id')
+  getColisOfClientEcommerce(
+    @Param('id', ParseIntPipe) id,
+    @Query('dateDebut') dateDebut,
+    @Query('dateFin') dateFin,
+    @Query('espece') espece,
+  ) {
+    return this.shipmentsService.getShipmentEcommerceWithIntervalOfClient(
+      id,
+      dateDebut,
+      dateFin,
+      espece,
+    );
+  }
+
+  @Get('getColisOfClientEcommerceZero/:id')
+  getColisOfClientEcommerceZero(
+    @Param('id', ParseIntPipe) id,
+    @Query('dateDebut') dateDebut,
+    @Query('dateFin') dateFin,
+    @Query('espece') espece,
+  ) {
+    return this.shipmentsService.getShipmentEcommerceZeroWithIntervalOfClient(
+      id,
+      dateDebut,
+      dateFin,
+      espece,
     );
   }
 
@@ -412,7 +487,6 @@ export class ShipmentsController {
   getShipmentLivrerByCoursierId(@Param('id', ParseIntPipe) id: number) {
     return this.shipmentsService.getShipmentsByCoursierId(id);
   }
-
   @Get('paginateColisTracabiliteOfClient')
   getPaginateColisTracabiliteOfClient(
     @Request() req,
@@ -430,27 +504,154 @@ export class ShipmentsController {
     );
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string, @Request() req: any) {
-    return this.shipmentsService.findOne(+id);
+  @Patch('facturerShipments')
+  async facturerShipments(
+    @Request() req,
+    @Query('clientId') clientId,
+    @Query('dateDebut') dateDebut,
+    @Query('dateFin') dateFin,
+    @Query('espece') espece,
+    @Response() res,
+  ) {
+    const buffer = await this.shipmentsService.facturerShipmentsClassique(
+      req,
+      clientId,
+      dateDebut,
+      dateFin,
+      espece,
+    );
+    const buf = Buffer.from(buffer);
+    console.log(
+      '🚀 ~ file: shipments.controller.ts ~ line 438 ~ ShipmentsController ~ buf',
+      buf,
+    );
+    res.send(buf);
+    return res;
   }
 
-  @Patch('facturerShipments')
-  async facturerShipments(@Body() shipments: any, @Request() req) {
-    return await this.shipmentsService.facturerShipments(shipments, req);
+  @Patch('facturerShipmentsEcommerceDetail')
+  async facturerShipmentsEcommerce(
+    @Request() req,
+    @Query('clientId') clientId,
+    @Query('dateDebut') dateDebut,
+    @Query('dateFin') dateFin,
+    @Query('espece') espece,
+    @Response() res,
+  ) {
+    const buffer = await this.shipmentsService.facturerShipmentnsEcommerce(
+      req,
+      clientId,
+      dateDebut,
+      dateFin,
+      espece,
+      'detail',
+    );
+    const buf = Buffer.from(buffer);
+    res.send(buf);
+    return res;
+  }
+
+  @Patch('facturerShipmentsEcommerceSimplifier')
+  async facturerShipmentsEcommerceSimplifier(
+    @Request() req,
+    @Query('clientId') clientId,
+    @Query('dateDebut') dateDebut,
+    @Query('dateFin') dateFin,
+    @Query('espece') espece,
+    @Response() res,
+  ) {
+    const buffer = await this.shipmentsService.facturerShipmentnsEcommerce(
+      req,
+      clientId,
+      dateDebut,
+      dateFin,
+      espece,
+      'simple',
+    );
+    const buf = Buffer.from(buffer);
+    res.send(buf);
+    return res;
+  }
+
+  @Patch('facturerShipmentsEcommerceZeroDetail')
+  async facturerShipmentsEcommerceZero(
+    @Request() req,
+    @Query('clientId') clientId,
+    @Query('dateDebut') dateDebut,
+    @Query('dateFin') dateFin,
+    @Query('espece') espece,
+    @Response() res,
+  ) {
+    const buffer = await this.shipmentsService.facturerShipmentnsEcommerceZero(
+      req,
+      clientId,
+      dateDebut,
+      dateFin,
+      espece,
+      'detail',
+    );
+    const buf = Buffer.from(buffer);
+    res.send(buf);
+    return res;
+  }
+
+  @Patch('facturerShipmentsEcommerceZeroSimplifier')
+  async facturerShipmentsEcommerceZeroSimplifier(
+    @Request() req,
+    @Query('clientId') clientId,
+    @Query('dateDebut') dateDebut,
+    @Query('dateFin') dateFin,
+    @Query('espece') espece,
+    @Response() res,
+  ) {
+    const buffer = await this.shipmentsService.facturerShipmentnsEcommerce(
+      req,
+      clientId,
+      dateDebut,
+      dateFin,
+      espece,
+      'simple',
+    );
+    const buf = Buffer.from(buffer);
+    res.send(buf);
+    return res;
+  }
+  @Patch('updateStopDeskToDomicile/:id')
+  updateStopDeskToDomicile(
+    @Param('id') id: number,
+
+    @Body('adress') adress: string,
+  ) {
+    console.log(
+      '🚀 ~ file: shipments.controller.ts ~ line 582 ~ ShipmentsController ~ adress',
+      adress,
+    );
+    console.log(
+      '🚀 ~ file: shipments.controller.ts ~ line 582 ~ ShipmentsController ~ tracking',
+      id,
+    );
+    return this.shipmentsService.updateStopDeskToDomicile(id, adress);
   }
   @Patch(':id')
   update(
     @Param('id') id: number,
     @Body() updateShipmentDto: UpdateShipmentDto,
   ) {
+    console.log(
+      '🚀 ~ file: shipments.controller.ts ~ line 435 ~ ShipmentsController ~ updateShipmentDto',
+      updateShipmentDto,
+    );
     return this.shipmentsService.update(id, updateShipmentDto);
   }
 
+  @Get(':id')
+  findOne(@Param('id') id: string, @Request() req: any) {
+    return this.shipmentsService.findOne(+id);
+  }
+
   @Delete(':id')
-  remove(@Param('id') id: number, @Request() req: any) {
-    const response = this.shipmentsService.remove(id, req.user.id);
-    return response;
+  async remove(@Param('id') id: number, @Request() req: any) {
+    return await this.shipmentsService.remove(id, req.user.id);
   }
   @Get('get-solde-client/:id')
   getSoldeClient(@Req() req, @Param() clientId) {

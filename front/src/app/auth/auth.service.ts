@@ -215,6 +215,10 @@ export class AuthService {
         this.router.navigate(['/service-client']);
         isRedirected = true;
         break;
+      case '48653128185':
+        this.router.navigate(['/manager']);
+        isRedirected = true;
+        break;
       default:
         break;
     }

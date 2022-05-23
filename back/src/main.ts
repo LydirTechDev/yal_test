@@ -20,7 +20,7 @@ async function bootstrap() {
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
-      // whitelist: false,
+      whitelist: false,
       skipMissingProperties: false,
       enableDebugMessages: true,
     }),
@@ -30,7 +30,7 @@ async function bootstrap() {
   app.use(bodyParser.json({ limit: '50mb' }));
   app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
   app.enableCors({
-    origin: '*',
+    origin: 'http://localhost:4200',
     credentials: true,
   });
 

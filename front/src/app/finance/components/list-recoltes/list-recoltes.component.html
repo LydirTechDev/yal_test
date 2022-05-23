@@ -43,8 +43,12 @@
                             <tr *ngFor="let recolte of recolteData; let i=index ">
                                 <td class="{{!recolte.receivedAt && calculateDiff(recolte.createdAt) > 
                                         recolte.createdBy.employe.agence.commune.wilaya.dureeReceptionRecolte ?
-                                        'text-danger': 'text-dark' }}">
-                                    <span class="text-uppercase font-weight-bold">{{recolte.tracking}}</span>
+                                        'text-danger': 'text-dark' }}" 
+                                        (click)="detailRct(recolte.tracking)">
+                                        <h4 class="hover"><span class="px-3 text-white badge badge-secondary" >
+                                            {{recolte.tracking}}
+                                            </span>
+                                        </h4>
                                 </td>
                                 <th class=" text-center py-0 mx-auto">
                                     <h3><span
@@ -68,9 +72,9 @@
                                     {{recolte.montant | currency :' ':'symbol':'4.2-2':'fr'}}
                                 </td>
                                 <td class="py-0">
-                                    <button mdbBtn color="mdb-color" class=" btn-sm btn "
-                                        (click)="print(recolte.id, recolte.typeRtc)" mdbWavesEffect><i
-                                            class="fas fa-print fa-lg"></i></button>
+                                    <button mdbBtn color="mdb-color" class=" btn-sm btn " 
+                                    (click)="print(recolte.id, recolte.typeRtc)" mdbWavesEffect><i 
+                                    class="fas fa-print fa-lg"></i></button>
                                 </td>
                             </tr>
                             <tr *ngIf="recolteData.length <= 0">

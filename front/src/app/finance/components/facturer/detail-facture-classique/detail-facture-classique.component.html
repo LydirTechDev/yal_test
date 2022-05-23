@@ -1,0 +1,43 @@
+<app-pagetitle title="detail de la facture : {{numFacture}}"></app-pagetitle>
+
+<div class="col-2">
+  <button class="btn btn-sm btn-dark" (click)="goBack()"> <i class="fa fa-arrow-left" aria-hidden="true"></i> Retour</button>
+</div>
+<div class="row col-12 d-flex justify-content-end">
+
+  <h6 class="col-10">
+    <span class="col-2"> <span class="font-weight-bold">Montant HT : </span> {{montantHoreTaxe | currency:'DA':'symbol' :'1.2-2':'fr' }}</span>
+    <span class="col-2"><span class="font-weight-bold">TVA : </span> {{montantTva | currency:'DA':'symbol' :'1.2-2':'fr' }} </span>
+    <span class="col-2"><span class="font-weight-bold">TTC  : </span> {{montantTtc | currency:'DA':'symbol' :'1.2-2':'fr' }} </span>
+    <span class="col-2"><span class="font-weight-bold">Timbre : </span> {{montantTimbre | currency:'DA':'symbol' :'1.2-2':'fr' }} </span>
+    <span class="col-2"><span class="font-weight-bold">Montant total : </span> {{montantTotal | currency:'DA':'symbol' :'1.2-2' :'fr'}} </span>
+  </h6>
+</div>
+
+<hr class=" mx-auto">
+
+<table class="table table-bordered table-centered bg-white">
+<thead class="">
+  <tr>
+    <th scope="col">Tracking</th>
+    <th scope="col">Date d'expidition</th>
+    <th scope="col">Destinataire</th>
+    <th scope="col">Wilaya destination</th>
+    <th scope="col">Poids</th>
+    <th scope="col">Prix livraison</th>
+
+
+  </tr>
+</thead>
+<tbody>
+  <tr *ngFor="let colis of facture">
+    <td><span class="bg-light py-2 px-3 rounded text-dark font-weight-bold">{{colis.shipments_tracking}}</span>
+    <td>{{colis.status_createdAt | date:'dd-MM-YYYY HH:mm:ss'}}</td>
+    <td>{{colis.shipments_nom}} {{colis.shipments_prenom}}</td>
+    <td>{{colis.wilaya_nomLatin}}</td>
+    <td>{{colis.poids}}</td>
+    <td class="font-weight-bold">{{colis.tarif | currency:'DA':'symbol' :'1.2-2' :'fr'}}</td>
+  </tr>
+</tbody>
+
+</table>

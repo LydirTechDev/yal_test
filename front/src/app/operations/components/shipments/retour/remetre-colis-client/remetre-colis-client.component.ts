@@ -64,7 +64,7 @@ export class RemetreColisClientComponent implements OnInit {
     this.getListClients();
   }
   checkSack() {
-    const express_reg = new RegExp(/^sac-\d{3}\w{3}$/, 'i');
+    const express_reg = new RegExp(/^sac-\d{8}$/, 'i');
     const track = this.formSac.value['sacTracking'];
     console.log('track', track);
     if (express_reg.test(track)) {

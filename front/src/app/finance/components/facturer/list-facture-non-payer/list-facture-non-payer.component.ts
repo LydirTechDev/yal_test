@@ -61,7 +61,7 @@ export class ListFactureNonPayerComponent implements OnInit {
     searchTermUpdate(searchFactureTerm: string): void {
       this.isLoading = true;
       setTimeout(() => {
-        this.factureService.searchFacture(searchFactureTerm,'non').subscribe(
+        this.factureService.searchFacture(searchFactureTerm,'non','classique').subscribe(
           (response) => {
             this._facturesResponse(response);
           },
@@ -74,7 +74,7 @@ export class ListFactureNonPayerComponent implements OnInit {
 
     getAllpaginateFacture() {
       this.isLoading = true;
-      this.factureService.getAllPaginateFacture('non').subscribe(
+      this.factureService.getAllPaginateFacture('non','classique').subscribe(
         (response) => {
           this._facturesResponse(response);
           console.log("🚀 ~ file: list-facture-non-payer.component.ts ~ line 80 ~ ListFactureNonPayerComponent ~ getAllpaginateFacture ~ response", response)
@@ -88,7 +88,7 @@ export class ListFactureNonPayerComponent implements OnInit {
     funcPaginate(link: string, params?: number) {
       this.isLoading = true;
       setTimeout(() => {
-        this.factureService.funcPaginate(link, params, this.searchFactureTerm,'non').subscribe(
+        this.factureService.funcPaginate(link, params, this.searchFactureTerm,'non','classique').subscribe(
           (response) => {
             this._facturesResponse(response);
           },
@@ -146,8 +146,7 @@ export class ListFactureNonPayerComponent implements OnInit {
       this.factureService.payerFacture(this.factureId,this.paiementForm.value).subscribe(
         (response)=>{
           this.sweetAlertService.creationSucces('facture payée avec succès');
-          this.openFile(response, "application/pdf")
-        //  this.router.navigateByUrl(`admin/list-facture-payer`);
+          this.router.navigateByUrl(`finance/list-facture-payer`);
          this.modalService.dismissAll();
         },
         (erro)=>{
@@ -176,4 +175,24 @@ export class ListFactureNonPayerComponent implements OnInit {
         alert('Please disable your pop-up blocker and try again!');
       }
     }
+
+
+
+    printFacture(id:number){
+      this.factureService.printFactureClassique(id).subscribe(
+        (response)=>{
+          this.openFile(response, "application/pdf")
+        },
+        (error)=>{
+          this.sweetAlertService.creationFailure('echec')
+        }
+      )
+      }
+
+
+      showDetail(id: number) {
+        this.router.navigateByUrl(`finance/facture/detail-facture-classique/${id}`);
+      }
+
+
 }

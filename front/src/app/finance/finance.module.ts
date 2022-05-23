@@ -16,9 +16,18 @@ import { InfoPaiementsClientComponent } from './components/info-paiements-client
 import { ListPaiementsComponent } from './components/list-paiements/list-paiements.component';
 import { PayerCoursierComponent } from './components/payer-coursier/payer-coursier.component';
 import { ListPaiementCoursierComponent } from './components/list-paiement-coursier/list-paiement-coursier.component';
-import { FacturerComponent } from './components/facturer/facturer.component';
 import { ListFactureNonPayerComponent } from './components/facturer/list-facture-non-payer/list-facture-non-payer.component';
 import { ListFacturePayerComponent } from './components/facturer/list-facture-payer/list-facture-payer.component';
+import { InfoRecolteComponent } from './components/info-recolte/info-recolte.component';
+import { DetailFactureClassiqueComponent } from './components/facturer/detail-facture-classique/detail-facture-classique.component';
+import { FacturerECommerceComponent } from './components/facturer/facturer-e-commerce/facturer-e-commerce.component';
+import { FacturerClassiqueComponent } from './components/facturer/facturer-classique/facturer-classique.component';
+import { ListFactureEcommerceComponent } from './components/facturer/list-facture-ecommerce/list-facture-ecommerce.component';
+import { DetailFactureEcommerceComponent } from './components/facturer/detail-facture-ecommerce/detail-facture-ecommerce.component';
+import { FacturationDashboardComponent } from './components/facturer/facturation-dashboard/facturation-dashboard.component';
+import { FacturerZeroComponent } from './components/facturer/facturer-zero/facturer-zero.component';
+import { ListFactureZeroNonPayerComponent } from './components/facturer/list-facture-zero-non-payer/list-facture-zero-non-payer.component';
+import { ListFactureZeroPayerComponent } from './components/facturer/list-facture-zero-payer/list-facture-zero-payer.component';
 
 @NgModule({
   declarations: [
@@ -31,9 +40,18 @@ import { ListFacturePayerComponent } from './components/facturer/list-facture-pa
     ListPaiementsComponent,
     PayerCoursierComponent,
     ListPaiementCoursierComponent,
-    FacturerComponent,
+    InfoRecolteComponent,
     ListFactureNonPayerComponent,
-    ListFacturePayerComponent
+    ListFacturePayerComponent,
+    DetailFactureClassiqueComponent,
+    FacturerECommerceComponent,
+    FacturerClassiqueComponent,
+    ListFactureEcommerceComponent,
+    DetailFactureEcommerceComponent,
+    FacturationDashboardComponent,
+    FacturerZeroComponent,
+    ListFactureZeroNonPayerComponent,
+    ListFactureZeroPayerComponent
   ],
   imports: [
     CommonModule,

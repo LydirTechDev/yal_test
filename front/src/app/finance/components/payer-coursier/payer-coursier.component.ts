@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { Router } from '@angular/router';
 import { SweetAlertService } from 'src/app/core/services/sweet-alert.service';
 import { FinanceService } from '../../finance.service';
 
@@ -13,9 +12,8 @@ export class PayerCoursierComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private financeService: FinanceService,
-    private sweetAlertService: SweetAlertService,
-    private readonly router: Router
-  ) {}
+    private sweetAlertService: SweetAlertService
+  ) { }
 
   coursierData: any;
   coursierSelected: any;
@@ -34,19 +32,8 @@ export class PayerCoursierComponent implements OnInit {
   private _getListCoursier() {
     this.financeService.getListCoursiersAttachedToMyStation().subscribe(
       (response) => {
-        console.log(
-          '🚀 ~ file: payer-coursier.component.ts ~ line 29 ~ PayerCoursierComponent ~ _getListCoursier ~ response',
-          response
-        );
-
         this.coursierData = response;
       },
-      (error) => {
-        console.log(
-          '🚀 ~ file: affecter-au-coursier.component.ts ~ line 51 ~ AffecterAuCoursierComponent ~ _getShipmentsPresLivraison ~ error',
-          error
-        );
-      }
     );
   }
 
@@ -54,9 +41,9 @@ export class PayerCoursierComponent implements OnInit {
     this.financeService
       .getColisLivrerByCoursierId(coursier.id)
       .subscribe((response) => {
-        this.listColis = response;
-        this.nbrColis = response.length;
-        this.montant = response.length * coursier.montantLivraison;
+        this.listColis = response[0];
+        this.nbrColis = response[0].length;
+        this.montant = response[1].montantTotal;
         this.coursierSelected = this.coursierForm.value['coursierSelected'];
         this.coursierLoaded = true;
       });
@@ -73,16 +60,27 @@ export class PayerCoursierComponent implements OnInit {
   }
 
   payer() {
-    this.financeService.payerShipmentOfCoursier(this.listColis).subscribe(
-      (response) => {
-        this.openFile(response, 'application/pdf');
-        window.location.reload();
-        // this.router.navigate['finance/payer-coursier']
-      },
-      (error) => {
-        this.sweetAlertService.creationFailure(error);
-      }
+    console.log(
+      '🚀 ~ file: payer-coursier.component.ts ~ line 73 ~ PayerCoursierComponent ~ payer ~ this.coursierSelected',
+      this.coursierSelected
     );
+    this.financeService
+      .payerShipmentOfCoursier(this.coursierSelected.id)
+      .subscribe(
+        (response) => {
+          this.openFile(response, 'application/pdf');
+          this.nbrColis = 0;
+          this.listColis = [];
+          this.coursierLoaded = false;
+          this.montant = 0;
+          this.coursierSelected = {};
+          this.coursierForm.reset('coursierSelected');
+          this._getListCoursier();
+        },
+        (error) => {
+          this.sweetAlertService.creationFailure(error);
+        }
+      );
   }
 
   Confirm() {
@@ -105,4 +103,5 @@ export class PayerCoursierComponent implements OnInit {
       alert('Please disable your pop-up blocker and try again!');
     }
   }
+
 }

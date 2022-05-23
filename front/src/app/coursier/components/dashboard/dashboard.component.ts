@@ -4,12 +4,14 @@ import { CoursierService } from '../../coursier.service';
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.scss'],
+  styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent implements OnInit {
   statistique: any = {};
 
-  constructor(private coursierService: CoursierService) {}
+  constructor(
+    private coursierService: CoursierService
+  ) { }
 
   ngOnInit(): void {
     this.getStatistiqueShipmentCoursier();
@@ -21,4 +23,5 @@ export class DashboardComponent implements OnInit {
         this.statistique = resp;
       });
   }
+
 }

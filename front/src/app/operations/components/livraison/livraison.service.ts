@@ -39,6 +39,15 @@ export class LivraisonService {
       }
     );
   }
+  validateStopDeskToDomicile(id, adress) {
+    console.log("🚀 ~ file: livraison.service.ts ~ line 43 ~ LivraisonService ~ validateStopDeskToDomicile ~ adress", adress)
+    return this.http.patch(
+      `${environment.apiV1}shipments/updateStopDeskToDomicile/${id}`,
+      {
+        adress: adress
+      }
+    );
+  }
 
   getShipmentToBeDelivered() {
     return this.http.get<string[]>(

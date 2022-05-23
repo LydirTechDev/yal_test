@@ -35,11 +35,11 @@
                                 <th>Montant</th>
                                 <th>Imprimer</th>
                             </tr>
-                        </thead>
+                        </thead> 
                         <tbody *ngIf="!isLoading; else spiner">
-                            <tr *ngFor="let pmt of pmtsData; let i=index "  (click)="detailPmt(pmt.tracking)">
-                                    <td>
-                                        <h4 class="hover"><span class="px-3 text-white badge badge-secondary">
+                            <tr *ngFor="let pmt of pmtsData; let i=index " >
+                                    <td  (click)="detailPmt(pmt.tracking)">
+                                        <h4 class="hover"><span class="px-3 text-white badge badge-secondary" >
                                                 {{pmt.tracking}}
                                             </span>
                                         </h4>

@@ -10,6 +10,7 @@ import {
   UseGuards,
   Patch,
   Param,
+  Res,
 } from '@nestjs/common';
 import { WilayasService } from './wilayas.service';
 import { CreateWilayaDto } from './dto/create-wilaya.dto';
@@ -53,6 +54,11 @@ export class WilayasController {
   @Get('wilayasOfMyCenter')
   wilayasOfMyCenter(@Request() req) {
     return this.wilayasService.wilayasOfMyCenter(req.user);
+  }
+
+  @Get('DownloadAllWilayas')
+  downloadAllWilayas(@Res() res) {
+    return this.wilayasService.exportWilayas(res, '');
   }
   /**
    * get all wilaya or search or by limite nb items to select or defin n° of page

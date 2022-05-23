@@ -76,10 +76,6 @@
       </div>
     </div>
 
-  </div>
-
-  <div class="col-6 border-left pt-3 mb-2">
-
     <!--wilaya-->
     <div class="form-group row mb-3 text-right">
       <label class="col-md-3 col-form-label"> Wilaya*: </label>
@@ -95,7 +91,7 @@
           class="valid-feedback-custom">Wilaya valide</span>
       </div>
     </div>
-
+    
     <!--commune-->
     <div class="form-group row mb-3 text-right">
       <label class="col-md-3 col-form-label"> Commune*: </label>
@@ -111,9 +107,9 @@
           class="valid-feedback-custom">Commune valide</span>
       </div>
     </div>
-
-
-
+    
+    
+    
     <!-- adresse -->
     <div class="form-group row mb-3 text-right">
       <label class="col-md-3 col-form-label">Adresse*:</label>
@@ -128,6 +124,77 @@
         </div>
       </div>
     </div>
+
+  </div>
+
+  <div class="col-6 border-left pt-3 mb-2">
+
+    <div class="row mb-3">
+      <label class="col-sm-3 col-form-label  text-right"> Zone 1 : </label>
+      <div class="col-sm-9">
+        <ng-select [items]="listCommune" formControlName="communeZoneOne" [multiple]="true" placeholder="Selectionner la commune"
+        bindLabel="nomLatin" bindValue="id" labelForId="state">
+        </ng-select>
+      </div>
+    </div>
+
+
+    <div class="row mb-3">
+      <label class="col-sm-3 col-form-label  text-right"> ramassage zone 1: </label>
+      <div class="col-sm-9">
+        <ng-select formControlName="prixRamassageZoneOne" placeholder="montant ramassage ">
+          <ng-option value="350">
+            350 DA
+          </ng-option>
+          <ng-option value="250">
+            250 DA
+          </ng-option>
+        </ng-select>
+      </div>
+    </div>
+    
+    <div class="row mb-3">
+      <label class="col-sm-3 col-form-label  text-right">livraison zone 1: </label>
+      <div class="col-sm-9">
+        <ng-select formControlName="prixLivraisonZoneOne" placeholder="montant livraison ">
+          <ng-option value="350">
+            350 DA
+          </ng-option>
+          <ng-option value="250">
+            250 DA
+          </ng-option>
+        </ng-select>
+      </div>
+    </div>
+    
+    <div class="row mb-3">
+      <label class="col-sm-3 col-form-label  text-right">ramassage autre commune: </label>
+      <div class="col-sm-9">
+        <ng-select formControlName="prixRamassageZoneTwo" placeholder="montant ramassage ">
+          <ng-option value="350">
+            350 DA
+          </ng-option>
+          <ng-option value="250">
+            250 DA
+          </ng-option>
+        </ng-select>
+      </div>
+    </div>
+    
+    <div class="row mb-3">
+      <label class="col-sm-3 col-form-label  text-right">livraison autre commune: </label>
+      <div class="col-sm-9">
+        <ng-select formControlName="prixLivraisonZoneTwo" placeholder="montant livraison ">
+          <ng-option value="350">
+            350 DA
+          </ng-option>
+          <ng-option value="250">
+            250 DA
+          </ng-option>
+        </ng-select>
+      </div>
+    </div>
+    
 
     <!-- Type -->
     <div class="form-group row mb-3 text-right">

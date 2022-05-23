@@ -1,17 +1,17 @@
-import { MenuItem } from './menu.model';
+  import { MenuItem } from './menu.model';
 
-export const MENUFINANCE: MenuItem[] = [
-  {
-    id: 1,
-    label: 'Finance',
-    isTitle: true,
-  },
-  {
-    id: 2,
-    label: 'Tableau de bord',
-    icon: 'ri-dashboard-line',
-    link: '/operations',
-  },
+  export const MENUFINANCE: MenuItem[] = [
+    {
+      id: 1,
+      label: 'Finance',
+      isTitle: true,
+    },
+    {
+      id: 2,
+      label: 'Tableau de bord',
+      icon: 'ri-dashboard-line',
+      link: '/operations',
+    },
   {
     id: 3,
     label: 'Récoltes',
@@ -72,43 +72,111 @@ export const MENUFINANCE: MenuItem[] = [
     id: 12,
     label: 'FACTURATION',
     icon: 'ri-exchange-dollar-line',
-    link: '/finance/tarifications',
+    link: '/finance/facturation',
     subItems: [
       {
         id: 13,
-        label: 'Facturer',
+        label: 'Dashboard',
         icon: 'ri-dashboard-line',
-        link: '/finance/facturer',
+        link: '/finance/facturation/dashboard',
         parentId: 12,
       },
 
       {
         id: 14,
-        label: 'Factures non payées',
+        label: 'Classique',
         icon: 'ri-dashboard-line',
-        link: '/finance/list-facture-non-payer',
         parentId: 12,
-      },
-      {
-        id: 15,
-        label: 'Factures payées',
-        icon: 'ri-dashboard-line',
-        link: '/finance/list-facture-payer',
-        parentId: 12,
+        subItems: [
+          {
+            id: 15,
+            label: 'Facturer',
+            icon: 'ri-dashboard-line',
+            link: '/finance/facturer-classique',
+            parentId: 14,
+          },
+
+          {
+            id: 16,
+            label: 'Factures non payées',
+            icon: 'ri-dashboard-line',
+            link: '/finance/list-facture-non-payer',
+            parentId: 14,
+          },
+          {
+            id: 17,
+            label: 'Factures payées',
+            icon: 'ri-dashboard-line',
+            link: '/finance/list-facture-payer',
+            parentId: 14,
+          },
+        ],
       },
 
+      {
+        id: 18,
+        label: 'E-Commerce',
+        icon: 'ri-dashboard-line',
+        parentId: 12,
+        subItems: [
+          {
+            id: 19,
+            label: 'Facturer',
+            icon: 'ri-dashboard-line',
+            link: '/finance/facturer-e-commerce',
+            parentId: 18,
+          },
+          {
+            id: 20,
+            label: 'Liste des factures',
+            icon: 'ri-dashboard-line',
+            link: '/finance/list-factures-e-commerce',
+            parentId: 18,
+          },
+        ],
+      },
+      {
+        id: 21,
+        label: 'Sans recouvrement',
+        icon: 'ri-dashboard-line',
+        parentId: 12,
+        subItems: [
+          {
+            id: 22,
+            label: 'Facturer',
+            icon: 'ri-dashboard-line',
+            link: '/finance/facturer-zero',
+            parentId: 21,
+          },
+
+          {
+            id: 23,
+            label: 'Factures non payées',
+            icon: 'ri-dashboard-line',
+            link: '/finance/list-facture-zero-non-payer',
+            parentId: 21,
+          },
+          {
+            id: 24,
+            label: 'Factures payées',
+            icon: 'ri-dashboard-line',
+            link: '/finance/list-facture-zero-payer',
+            parentId: 21,
+          },
+        ],
+      },
     ],
   },
   {
-    id: 16,
+    id: 25,
     label: 'Colis',
     icon: 'fas fa-box-open',
     subItems: [
       {
-        id: 17,
+        id: 26,
         label: 'Colis internes',
         link: '/operations/interne-shipment',
-        parentId: 16,
+        parentId: 25,
       },
     ],
   },

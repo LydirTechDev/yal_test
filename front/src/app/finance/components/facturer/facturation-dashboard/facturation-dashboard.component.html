@@ -1,0 +1,187 @@
+<app-pagetitle title="Facturation - Dashboard"> </app-pagetitle>
+<div class="row mt-4 mx-auto container-fluid">
+  <div class="col-xl-12 row">
+
+    <div class="col-md-4">
+      <div class="card col-12">
+        <div class="card-body col-12">
+          <div class="d-flex row col-12">
+            <div class="col-12 flex-1 overflow-hidden">
+              <p class="text-truncate font-size-14 mb-2">Nombre totale de factures</p>
+              <h4 class="mb-0">{{nombreTotal}}</h4>
+            </div>
+            <div *ngIf="nombreTotal>0" class="col-12 flex-1 overflow-hidden">
+              <p class="text-truncate font-size-14 mb-2">Montant</p>
+              <h4 class="mb-0"> {{sommeTotal | currency:'DA':'symbol' :'1.2-2' :'fr'}} </h4>
+            </div>
+
+            <div *ngIf="nombreTotal==0" class="col-12 flex-1 overflow-hidden">
+              <p class="text-truncate font-size-14 mb-2">Montant</p>
+              <h4 class="mb-0">00,00 DA</h4>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card col-12">
+        <div class="card-body col-12">
+          <div class="d-flex row col-12">
+            <div class="col-12 flex-1 overflow-hidden">
+              <p class="text-truncate font-size-14 mb-2">Factures Classique:</p>
+              <h4 class="mb-0"> {{nombreTotalClassique}} </h4>
+            </div>
+            <div *ngIf="nombreTotalClassique>0" class="col-12 flex-1 overflow-hidden">
+              <p class="text-truncate font-size-14 mb-2">Montant</p>
+              <h4 class="mb-0"> {{sommeTotalClassique  | currency:'DA':'symbol' :'1.2-2' :'fr'}} </h4>
+            </div>
+
+            <div *ngIf="nombreTotalClassique==0" class="col-12 flex-1 overflow-hidden">
+              <p class="text-truncate font-size-14 mb-2">Montant</p>
+              <h4 class="mb-0">00,00 DA</h4>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card col-12">
+        <div class="card-body col-12">
+          <div class="d-flex row col-12">
+            <div class="col-12 flex-1 overflow-hidden">
+              <p class="text-truncate font-size-14 mb-2">Factures Ecommerce:</p>
+              <h4 class="mb-0"> {{nombreTotalEcommerce}} </h4>
+            </div>
+            <div *ngIf="nombreTotalEcommerce>0" class="col-12 flex-1 overflow-hidden">
+              <p class="text-truncate font-size-14 mb-2">Montant</p>
+              <h4 class="mb-0"> {{sommeTotalEcommerce  | currency:'DA':'symbol' :'1.2-2' :'fr'}} </h4>
+            </div>
+
+            <div *ngIf="nombreTotalEcommerce==0" class="col-12 flex-1 overflow-hidden">
+              <p class="text-truncate font-size-14 mb-2">Montant</p>
+              <h4 class="mb-0">00,00 DA</h4>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card col-12">
+        <div class="card-body col-12">
+          <div class="d-flex row col-12">
+            <div class="col-12 flex-1 overflow-hidden">
+              <p class="text-truncate font-size-14 mb-2">Factures Classique non payées:</p>
+              <h4 class="mb-0"> {{nombreTotalClassiqueNonPayer}} </h4>
+            </div>
+            <div *ngIf="nombreTotalClassiqueNonPayer>0" class="col-12 flex-1 overflow-hidden">
+              <p class="text-truncate font-size-14 mb-2">Montant</p>
+              <h4 class="mb-0"> {{sommeTotalClassiqueNonPayer | currency:'DA':'symbol' :'1.2-2' :'fr'}} </h4>
+            </div>
+
+            <div *ngIf="nombreTotalClassiqueNonPayer==0" class="col-12 flex-1 overflow-hidden">
+              <p class="text-truncate font-size-14 mb-2">Montant</p>
+              <h4 class="mb-0">00,00 DA </h4>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card col-12">
+        <div class="card-body col-12">
+          <div class="d-flex row col-12">
+            <div class="col-12 flex-1 overflow-hidden">
+              <p class="text-truncate font-size-14 mb-2">Factures Classique payées:</p>
+              <h4 class="mb-0"> {{nombreTotalClassiquePayer}} </h4>
+            </div>
+            <div *ngIf="nombreTotalClassiquePayer>0" class="col-12 flex-1 overflow-hidden">
+              <p class="text-truncate font-size-14 mb-2">Montant</p>
+              <h4 class="mb-0"> {{sommeTotalClassiquePayer | currency:'DA':'symbol' :'1.2-2' :'fr'}} </h4>
+            </div>
+            <div *ngIf="nombreTotalClassiquePayer==0" class="col-12 flex-1 overflow-hidden">
+              <p class="text-truncate font-size-14 mb-2">Montant</p>
+              <h4 class="mb-0">00,00 DA</h4>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+        <div class="col-md-4">
+          <div class="card col-12">
+            <div class="card-body col-12">
+              <div class="d-flex row col-12">
+                <div class="col-12 flex-1 overflow-hidden">
+                  <p class="text-truncate font-size-14 mb-2">Factures ecommerce zéro:</p>
+                  <h4 class="mb-0"> {{ nombreTotalEcommerceZero }} </h4>
+                </div>
+                <div *ngIf="nombreTotalEcommerceZero>0" class="col-12 flex-1 overflow-hidden">
+                  <p class="text-truncate font-size-14 mb-2">Montant</p>
+                  <h4 class="mb-0"> {{sommeTotalEcommerceZero | currency:'DA':'symbol' :'1.2-2' :'fr'}} </h4>
+                </div>
+                <div *ngIf="nombreTotalClassiquePayer==0" class="col-12 flex-1 overflow-hidden">
+                  <p class="text-truncate font-size-14 mb-2">Montant</p>
+                  <h4 class="mb-0">00,00 DA</h4>
+                </div>
+        
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="card col-12">
+            <div class="card-body col-12">
+              <div class="d-flex row col-12">
+                <div class="col-12 flex-1 overflow-hidden">
+                  <p class="text-truncate font-size-14 mb-2">Factures ecommerce zéro payée:</p>
+                  <h4 class="mb-0"> {{ nombreTotalEcommerceZeroPayer }} </h4>
+                </div>
+                <div *ngIf="nombreTotalEcommerceZeroPayer>0" class="col-12 flex-1 overflow-hidden">
+                  <p class="text-truncate font-size-14 mb-2">Montant</p>
+                  <h4 class="mb-0"> {{sommeTotalEcommerceZeroPayer | currency:'DA':'symbol' :'1.2-2' :'fr'}} </h4>
+                </div>
+                <div *ngIf="nombreTotalClassiquePayer==0" class="col-12 flex-1 overflow-hidden">
+                  <p class="text-truncate font-size-14 mb-2">Montant</p>
+                  <h4 class="mb-0">00,00 DA</h4>
+                </div>
+        
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="card col-12">
+            <div class="card-body col-12">
+              <div class="d-flex row col-12">
+                <div class="col-12 flex-1 overflow-hidden">
+                  <p class="text-truncate font-size-14 mb-2">Factures ecommerce zéro non payée:</p>
+                  <h4 class="mb-0"> {{ nombreTotalEcommerceZeroNonPayer }} </h4>
+                </div>
+                <div *ngIf="nombreTotalEcommerceZeroNonPayer>0" class="col-12 flex-1 overflow-hidden">
+                  <p class="text-truncate font-size-14 mb-2">Montant</p>
+                  <h4 class="mb-0"> {{sommeTotalEcommerceZeroNonPayer | currency:'DA':'symbol' :'1.2-2' :'fr'}} </h4>
+                </div>
+                <div *ngIf="nombreTotalClassiquePayer==0" class="col-12 flex-1 overflow-hidden">
+                  <p class="text-truncate font-size-14 mb-2">Montant</p>
+                  <h4 class="mb-0">00,00 DA</h4>
+                </div>
+        
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+  </div>
+</div>

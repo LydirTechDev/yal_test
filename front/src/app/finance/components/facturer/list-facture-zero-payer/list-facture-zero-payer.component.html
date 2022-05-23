@@ -1,0 +1,182 @@
+<div class="container-fluid">
+  <app-pagetitle [breadcrumbItems]="breadCrumbItems"> </app-pagetitle>
+  <div class="row mb-3 ml-1" style="margin-top: -24px">
+      <!-- <a href="javascript:void(0);" class="btn btn-outline-primary" (click)="openModal(content)">
+      <i class="fas fa-plus-circle">
+        <span class="mt-1 font-weight-normal pl-1">Ajouter Wilaya</span>
+      </i>
+    </a> -->
+  </div>
+  <div class="row">
+      <div class="col-12">
+          <div class="card">
+              <div class="card-body">
+                  <div class="row mb-md-2">
+                      <!-- Search -->
+                      <div class="col-sm-12 col-md-12">
+                          <div id="tickets-table_filter" class="dataTables_filter text-md-right">
+                              <label class="d-inline-flex align-items-center">Recherche:
+                                  <input type="text" name="searchTerm" class="form-control form-control-sm ml-2"
+                                      aria-controls="tickets-table" [(ngModel)]="searchFactureTerm"
+                                      (ngModelChange)="searchTermUpdate(searchFactureTerm)" /></label>
+                          </div>
+                      </div>
+                      <!-- End search -->
+                  </div>
+                  <!-- Table -->
+                  <div class="table-responsive">
+                      <table id="basic-datatable"
+                          class="table table-centered dt-responsive nowrap no-footer dtr-inline table-hover">
+                          <thead>
+                              <tr>
+                                  <th>N° Facture</th>
+                                  <th>Client</th>
+                                  <th>Montant</th>
+                                  <th>Mode de paiement</th>
+                                  <th>Date de paiement</th>
+                                  <th>Action</th>
+                              </tr>
+                          </thead>
+                          <tbody *ngIf="!isLoading; else spiner">
+
+                              <tr *ngFor="let facture of factureData">
+                                  <td (click)="showDetail(facture.id)">
+                                      <a class="text-dark font-weight-bold">
+                                          {{ facture.numFacture }}
+                                      </a>
+                                  </td>
+                                  <td (click)="showDetail(facture.id)">
+                                      {{ facture.client.nomCommercial }} {{ facture.client.raisonSociale }}
+                                  </td>
+                                  <td (click)="showDetail(facture.id)">
+                                    {{ facture.montantTotal  | currency:'DA':'symbol' :'1.2-2' :'fr'}}
+                                  </td>
+                                  <td (click)="showDetail(facture.id)">
+                                    {{ moyenPaiement[facture.modePaiement].text }} {{facture.numCheque}}
+                                  </td>
+                                  <td (click)="showDetail(facture.id)">
+                                    {{ facture.datePaiement  | date:'dd-MM-YYYY HH:mm:ss' }}
+                                  </td>
+                                  <td>
+                                    <button class="btn btn-sm btn-primary" (click)="openModalFacture(contentFacture,facture.id)"><i class="fa fa-print" aria-hidden="true"></i></button>
+                                  </td>
+                              </tr>
+                              <tr *ngIf="factureData.length <= 0">
+                                  <th colspan="4" class="text-center">
+                                      <div class="text-center">
+                                          <p class="m-0 p-0"><i class="ri-error-warning-line customIcone"> </i> Pas
+                                              de factures! </p>
+                                      </div>
+                                  </th>
+                              </tr>
+                          </tbody>
+
+                          <ng-template #spiner>
+                              <tbody>
+                                  <tr>
+                                      <th colspan="4" class="text-center">
+                                          <div class="spinner-border text-primary m-1" role="status">
+                                              <span class="sr-only">Loading...</span>
+                                          </div>
+                                          <span class="d-block">Chargement ...</span>
+                                      </th>
+                                  </tr>
+                              </tbody>
+                          </ng-template>
+                      </table>
+                  </div>
+                  <!-- End table -->
+                  <div class="row justify-content-md-between align-items-md-center mt-2">
+                      <div class="col-sm-12 col-md-5">
+                          <div class="dataTables_info mb-2" id="tickets-table_info" role="status" aria-live="polite">
+                              Total factures {{ metaData.totalItems }}
+                          </div>
+                      </div>
+                      <!-- Pagination -->
+                      <div class="col-sm-12 col-md-5">
+                          <nav aria-label="...">
+                              <ul class="pagination justify-content-end">
+                                  <!-- <li class="page-item">
+                                      <button class="page-link info">
+                                          total utilistaeur : {{ metaData.totalItems }}
+                                      </button>
+                                  </li> -->
+                                  <li class="page-item">
+                                      <button class="page-link" [disabled]="metaLinks.previous.length <= 0"
+                                          (click)="funcPaginate(metaLinks.previous)">
+                                          <span aria-hidden="true">&laquo;</span>
+                                          <span class="sr-only">Previous</span>
+                                      </button>
+                                  </li>
+                                  <li class="page-item">
+                                      <button class="page-link" *ngIf="metaData.currentPage - 2 > 0"
+                                          (click)="funcPaginate('', metaData.currentPage - 2)">
+                                          {{ metaData.currentPage - 2
+                                          }}<span class="sr-only"></span>
+                                      </button>
+                                  </li>
+                                  <li class="page-item">
+                                      <button class="page-link" *ngIf="metaData.currentPage - 1 > 0"
+                                          (click)="funcPaginate('', metaData.currentPage - 1)">
+                                          {{ metaData.currentPage - 1
+                                          }}<span class="sr-only"></span>
+                                      </button>
+                                  </li>
+                                  <li class="page-item active">
+                                      <button class="page-link" (click)="funcPaginate('', metaData.currentPage)">
+                                          {{ metaData.currentPage
+                                          }}<span class="sr-only">(current)</span>
+                                      </button>
+                                  </li>
+                                  <li class="page-item">
+                                      <button class="page-link" (click)="funcPaginate('', metaData.currentPage + 1)"
+                                          *ngIf="metaData.currentPage + 1 <= metaData.totalPages">
+                                          {{ metaData.currentPage + 1
+                                          }}<span class="sr-only"></span>
+                                      </button>
+                                  </li>
+                                  <li class="page-item">
+                                      <button class="page-link" (click)="funcPaginate('', metaData.currentPage + 2)"
+                                          *ngIf="metaData.currentPage + 2 < metaData.totalPages">
+                                          {{ metaData.currentPage + 2
+                                          }}<span class="sr-only"></span>
+                                      </button>
+                                  </li>
+                                  <li class="page-item">
+                                      <button class="page-link" *ngIf="
+                  metaLinks.next.length != 0 &&
+                  metaData.currentPage + 2 <= metaData.totalPages
+                ">
+                                          ...
+                                      </button>
+                                  </li>
+                                  <li class="page-item">
+                                      <button class="page-link" [disabled]="metaLinks.next.length <= 0"
+                                          (click)="funcPaginate(metaLinks.next)">
+                                          <span aria-hidden="true">&raquo;</span>
+                                          <span class="sr-only">Next</span>
+                                      </button>
+                                  </li>
+                              </ul>
+                          </nav>
+                      </div>
+                      <!-- End Pagination -->
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+
+
+
+<ng-template #contentFacture role="document" let-modal="close">
+  <div class="col-12 text-center mt-3 ">
+    <h5>VOULEZ VOUS UNE FACTURE: </h5>
+  </div>
+
+  <div class="col-12 text-center mt-2 mb-3 ">
+    <button (click)="printFactureDetail()" class="btn btn-danger">Detaillée</button>
+    <button (click)="printFactureSimplifier()" class="btn btn-success">Simplifiée</button>
+  </div>
+  </ng-template>

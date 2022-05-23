@@ -3,7 +3,7 @@ import { SacTypeEnum } from "src/enums/sacTypeEnum";
 // import { IsNull } from "typeorm";
 
 export class CreateSacDto {
-    @Matches(/^sac-\d{3}\w{3}$/i)
+    // @Matches(/^sac-\d{3}\w{3}$/i)
     tracking: string;
 
     @IsEnum(SacTypeEnum)

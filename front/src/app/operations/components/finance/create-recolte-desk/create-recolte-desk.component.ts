@@ -41,7 +41,7 @@ export class CreateRecolteDeskComponent implements OnInit {
   }
   createRecolteDesk() {
     const title = 'Valider la récolte';
-    const alertMessage = 'voulez vous confirmer la réception de la récolte!'
+    const alertMessage = 'voulez vous confirmer la création de la récolte!'
     const successTitle = 'Validé avec succés'
     const errorTitle = "Validation echouée"
     const action = this.financeOpsService.createRecolteDesk()

@@ -1,4 +1,3 @@
-import { type } from 'os';
 import { Agence } from 'src/resources/agences/entities/agence.entity';
 import { Shipment } from 'src/resources/shipments/entities/shipment.entity';
 import { User } from 'src/resources/users/entities/user.entity';
@@ -29,7 +28,7 @@ export class Recolte {
   })
   receivedAt: Date;
   // colis
-
+  
   @Column({
     nullable: true,
   })
@@ -46,6 +45,7 @@ export class Recolte {
   })
   shipment: Shipment[];
 
+  
   @OneToMany(() => Shipment, (shipment) => shipment.recolteCs, {
     nullable: true,
   })
@@ -67,10 +67,8 @@ export class Recolte {
     nullable: true,
   })
   receivedOn: Agence;
-
   @ManyToOne(() => User, (coursier) => coursier.recolteCoursier)
   recolteCoursier: User;
-
   @ManyToOne(() => User, (agentServiceClient) => agentServiceClient.recolteCs)
   recolteCS: User;
 }

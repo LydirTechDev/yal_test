@@ -56,9 +56,13 @@ export class ServiceClientService {
 
     // ###################### -- Classique Divers -- ######################
     const service = await this.service.findOneByName('Classique Divers');
+    console.log(
+      '🚀 ~// ###################### -- Classique Divers -- ###################### ~ line 58 ~ ServiceClientService ~ service',
+      service,
+    );
     const codeTarifId = service.codeTarif[0].id;
-    this.logger.debug(
-      '###################### -- Classique Divers -- ######################',
+    console.log(
+      '🚀 ~ file: service-client.service.ts ~ line 60 ~ ServiceClientService ~ codeTarifId',
       codeTarifId,
     );
 
@@ -66,13 +70,15 @@ export class ServiceClientService {
     const userInfo = await this.userService.findInformationsEmploye(
       requestedUser.id,
     );
+    console.log(
+      '🚀 ~ // ###################### -- Rotation -- ###################### ~ line 65 ~ ServiceClientService ~ userInfo',
+      userInfo,
+    );
     const wilayaDepartId = userInfo.employe.agence.commune.wilaya.id;
     const wilayaDestination = await this.wilayaService.findOne(
       estimateTarifDto.wilayaId,
     );
-    this.logger.debug(
-      '// ###################### -- Rotation -- ######################',
-    );
+
     const wilayaDestinationId = wilayaDestination.id;
     const rotation =
       await this.rotationsService.findOneRotationByDepartId_DestinationId(
@@ -80,6 +86,10 @@ export class ServiceClientService {
         wilayaDestinationId,
       );
     const zoneId = rotation.zone.id;
+    console.log(
+      '🚀 ~ file: service-client.service.ts ~ line 64 ~ ServiceClientService ~ zoneId',
+      zoneId,
+    );
 
     // ###################### -- Plage Poids -- ######################
     const poidReel = estimateTarifDto.poids;
@@ -99,6 +109,10 @@ export class ServiceClientService {
 
     const plagePoid = await this.plagePoidService.getPlagePoids(poidTarifier);
     const plagePoidsId = plagePoid.id;
+    console.log(
+      '🚀 ~ file: service-client.service.ts ~ line 83 ~ ServiceClientService ~ plagePoidsId',
+      plagePoidsId,
+    );
 
     // ###################### -- Code Tarif Zone Poids -- ######################
 
@@ -117,7 +131,10 @@ export class ServiceClientService {
         tarifUnitaire[0].tarifStopDesk +
         tarifUnitaire[0].tarifPoidsParKg * poidTarifier;
     }
-
+    console.log(
+      '🚀 ~ file: service-client.service.ts ~ line 105 ~ ServiceClientService ~ tarifUnitaire',
+      tarifUnitaire,
+    );
     return tarifApayer;
   }
 

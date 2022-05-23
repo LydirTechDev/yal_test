@@ -1,6 +1,4 @@
-import { Component } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
-import { JWTTokenService } from './core/services/jwt.service';
+import {  Component, Renderer2 } from '@angular/core';
 
 @Component({
   selector: 'app-root',
@@ -10,7 +8,7 @@ import { JWTTokenService } from './core/services/jwt.service';
 export class AppComponent {
   title = 'yalidine';
 
-  constructor() {
+  constructor( private renderer: Renderer2) {
     const userAgent = window.navigator.userAgent;
     if (
       navigator.userAgent.match(/iPhone/i) ||
@@ -31,4 +29,5 @@ export class AppComponent {
     }
     console.log(userAgent);
   }
+
 }
