@@ -1,4 +1,4 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityNotFoundError, Repository } from 'typeorm';
 import { CodeTarifService } from '../code-tarif/code-tarif.service';
@@ -13,6 +13,7 @@ import { CodeTarifsZone } from './entities/code-tarifs-zone.entity';
  */
 @Injectable()
 export class CodeTarifsZonesService {
+  logger = new Logger(CodeTarifService.name)
   constructor(
     @InjectRepository(CodeTarifsZone)
     private codeTarifZonesRepository: Repository<CodeTarifsZone>,
@@ -31,6 +32,7 @@ export class CodeTarifsZonesService {
   async createTarifsByFile(createCodeTarifsZoneDto) {
     for await (const tarif of createCodeTarifsZoneDto) {
       const zone = await this.zonesService.findOne(parseInt(tarif.zoneId));
+
       const poids = await this.poidsService.findPoidsPlage(
         tarif.poidsMin,
         tarif.poidsMax,
@@ -38,6 +40,11 @@ export class CodeTarifsZonesService {
       const codeTarif = await this.codeTarifService.findCodeTarifsByNom(
         tarif.codeTarif,
       );
+      
+      if (typeof(tarif.tarifStopDesk).IsString) {
+        tarif.tarifStopDesk = null
+      }
+
       await this.create({
         codeTarif: codeTarif,
         zone: zone,

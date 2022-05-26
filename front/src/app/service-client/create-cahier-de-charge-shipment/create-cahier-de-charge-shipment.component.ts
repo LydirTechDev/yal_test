@@ -40,6 +40,22 @@ export class CreateCahierDeChargeShipmentComponent implements OnInit {
         '',
         Validators.compose([Validators.required, Validators.maxLength(10)]),
       ],
+      nom: [
+        '*-*',
+        Validators.compose([
+          Validators.required,
+          Validators.minLength(3),
+          Validators.maxLength(35),
+        ]),
+      ],
+      prenom: [
+        '*-*',
+        Validators.compose([
+          Validators.required,
+          Validators.minLength(3),
+          Validators.maxLength(35),
+        ]),
+      ],
       numIdentite: [
         '',
         Validators.compose([Validators.required, Validators.maxLength(9)]),
@@ -94,6 +110,41 @@ export class CreateCahierDeChargeShipmentComponent implements OnInit {
           Validators.maxLength(50),
         ]),
       ],
+      poids: [0
+        ,
+        Validators.compose([
+          Validators.required,
+          Validators.min(0),
+          Validators.max(150),
+        ]),
+      ],
+      longueur: [0
+        ,
+        Validators.compose([
+          Validators.required,
+          Validators.min(0),
+          Validators.max(2),
+        ]),
+      ],
+      largeur: [0
+        ,
+        Validators.compose([
+          Validators.required,
+          Validators.min(0),
+          Validators.max(2),
+        ]),
+      ],
+      hauteur: [0
+        ,
+        Validators.compose([
+          Validators.required,
+          Validators.min(0),
+          Validators.max(2),
+        ]),
+      ],
+      livraisonStopDesck: [false, Validators.required],
+      livraisonDomicile: [true, Validators.required],
+      service: ['cahier de charge', Validators.required]
     });
   }
 

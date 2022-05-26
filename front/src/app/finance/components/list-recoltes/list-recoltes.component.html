@@ -35,6 +35,7 @@
                                 <th>Agence</th>
                                 <th>Date création</th>
                                 <th>Nombre de colis</th>
+                                <th>Type</th>
                                 <th>Montant (DA)</th>
                                 <th>Imprimer</th>
                             </tr>
@@ -68,6 +69,9 @@
                                         > recolte.createdBy.employe.agence.commune.wilaya.dureeReceptionRecolte ? 'text-danger': 'text-dark' }}">
                                     {{recolte.createdAt | date:'dd-MM-YYYY HH:mm:ss' }}</td>
                                 <td class="text-uppercase">{{recolte.shipment.length}}</td>
+                                <td class="text-uppercase">
+                                    {{recolte.typeRtc}}
+                                </td>
                                 <td class="text-uppercase">
                                     {{recolte.montant | currency :' ':'symbol':'4.2-2':'fr'}}
                                 </td>

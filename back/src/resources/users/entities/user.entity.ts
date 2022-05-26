@@ -30,7 +30,7 @@ export class User {
 
   @Column({
     unique: true,
-    length: 30,
+    length: 50,
   })
   email: string;
 
@@ -82,6 +82,9 @@ export class User {
   @OneToMany(() => Recolte, (recolteCreateBy) => recolteCreateBy.createdBy)
   recolteCreateBy: Recolte[];
 
+  @OneToMany(() => Shipment, (shipmentCreateBy) => shipmentCreateBy.createdBy)
+  shipmentCreateBy: Shipment[];
+  
   @OneToMany(
     () => Recolte,
     (recolteCoursier) => recolteCoursier.recolteCoursier,

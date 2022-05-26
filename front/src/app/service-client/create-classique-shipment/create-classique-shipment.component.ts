@@ -154,6 +154,7 @@ export class CreateClassiqueShipmentComponent implements OnInit {
       ],
       livraisonStopDesck: [true, Validators.required],
       livraisonDomicile: [false, Validators.required],
+      cashOnDelivery: [false, Validators.required]
     });
   }
 

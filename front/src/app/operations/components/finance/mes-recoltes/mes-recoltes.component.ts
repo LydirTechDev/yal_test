@@ -158,8 +158,8 @@ searchTermUpdateRecolte(searchRecolte: string): void {
 }, 330);
   }
 
-print(id: number) {
-  return this.financeOpsService.printRecolte(id).subscribe({
+print(id: number, typeRtc: string) {
+  return this.financeOpsService.printRecolte(id, typeRtc).subscribe({
     next: (response) => {
       this.openFile(response, 'application/pdf');
     },

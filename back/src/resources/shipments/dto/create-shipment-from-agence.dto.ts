@@ -63,4 +63,7 @@ export class CreateShipmentFromAgenceDto {
 
   @IsObject()
   expiditeurPublic: ExpiditeurPublic;
+
+  @IsBoolean()
+  cashOnDelivery: boolean;
 }

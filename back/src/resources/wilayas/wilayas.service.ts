@@ -122,7 +122,7 @@ export class WilayasService {
             { nomLatin: ILike(`%${searchWilayaTerm}%`) },
           ],
           order: {
-            createdAt: 'DESC',
+            codeWilaya: 'DESC',
           },
         },
       );
@@ -136,7 +136,7 @@ export class WilayasService {
         },
         {
           order: {
-            createdAt: 'DESC',
+            id: 'ASC',
           },
         },
       );

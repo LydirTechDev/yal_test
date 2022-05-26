@@ -18,7 +18,7 @@ export class CreateShipmentByServiceClientDto {
 
   @IsString()
   @MinLength(3)
-  @MaxLength(30)
+  @MaxLength(50)
   raisonSociale: string;
 
   @IsString()
@@ -70,4 +70,7 @@ export class CreateShipmentByServiceClientDto {
 
   @IsBoolean()
   livraisonStopDesck: boolean;
+
+  @IsBoolean()
+  cashOnDelivery: boolean;
 }

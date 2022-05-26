@@ -55,10 +55,11 @@ export class ServiceClientService {
      */
 
     // ###################### -- Classique Divers -- ######################
-    const service = await this.service.findOneByName('Classique Divers');
+    
+    const service = await this.service.findOneByName(estimateTarifDto.service);
     console.log(
       '🚀 ~// ###################### -- Classique Divers -- ###################### ~ line 58 ~ ServiceClientService ~ service',
-      service,
+      estimateTarifDto.service,
     );
     const codeTarifId = service.codeTarif[0].id;
     console.log(
@@ -165,7 +166,7 @@ export class ServiceClientService {
     });
 
     const tarifLivraison = await this.getEstimateTarif(requestedUser, {
-      serviceId: service.id,
+      service: service.nom,
       poids: shipment.poids,
       longueur: shipment.longueur,
       largeur: shipment.largeur,
@@ -189,12 +190,13 @@ export class ServiceClientService {
         longueur: shipment.longueur,
         largeur: shipment.largeur,
         hauteur: shipment.hauteur,
-        livraisonStopDesck: false,
-        livraisonDomicile: true,
+        livraisonDomicile: shipment.livraisonDomicile,
+        livraisonStopDesck: shipment.livraisonStopDesck,
         createdBy: userInfo,
         service: service,
         commune: communeDest,
         expiditeurPublic: exp,
+        cashOnDelivery: shipment.cashOnDelivery
       },
       userInfo,
       tarifLivraison,

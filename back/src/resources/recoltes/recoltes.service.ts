@@ -23,7 +23,7 @@ import { UpdateRecolteDto } from './dto/update-recolte.dto';
 import { Recolte } from './entities/recolte.entity';
 
 @Injectable()
-export class RecoltesService {  
+export class RecoltesService {
   logger: Logger = new Logger(RecoltesService.name);
   constructor(
     @InjectRepository(Recolte) private recolteRepository: Repository<Recolte>,
@@ -33,9 +33,10 @@ export class RecoltesService {
     private coursierService: CoursierService,
     private employeService: EmployesService,
     private clientService: ClientsService,
-    private pdfService: PdfService,    
+    private pdfService: PdfService,
     private readonly serviceClientService: ServiceClientService,
   ) {}
+
   async getPaginateRecolteOfUser(
     user,
     options: IPaginationOptions,
@@ -69,6 +70,7 @@ export class RecoltesService {
       route: 'http://localhost:3000/recoltes/paginateRecolteOfUser',
     });
   }
+
   async getPaginateAllRecolte(
     options: IPaginationOptions,
     searchRecolteTerm?: string,
@@ -238,6 +240,7 @@ export class RecoltesService {
       const recolte = this.recolteRepository.create();
       recolte.createdBy = userStation;
       recolte.createdOn = userStation.employe.agence;
+      recolte.typeRtc = 'coursier';
       recolte.receivedAt = null;
       recolte.receivedBy = null;
       recolte.receivedOn = null;
@@ -279,8 +282,9 @@ export class RecoltesService {
       throw new NotFoundException();
     }
   }
-  
+
   async createRecolteDesk(user, resp) {
+    let montant = 0;
     const dateRecolte = new Date();
     const listOfRecolte: string[] = [];
     const employeInfo = await this.userService.findInformationsEmploye(user.id);
@@ -296,6 +300,7 @@ export class RecoltesService {
       const recolte = this.recolteRepository.create();
       recolte.createdBy = employeInfo;
       recolte.createdOn = employeInfo.employe.agence;
+      recolte.typeRtc = 'desk';
       recolte.receivedAt = null;
       recolte.receivedBy = null;
       recolte.receivedOn = null;
@@ -306,6 +311,44 @@ export class RecoltesService {
         tracking: tracking,
       });
       for await (const shipment of shipmentLivreDesk) {
+        let cost = 0;
+        if (shipment.service_nom.toLowerCase() == 'classique divers' ) {
+          if (shipment.shipment_cashOnDelivery) {
+            console.log(
+              '*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/',
+            );
+            console.log(shipment);
+            const createdCs = await this.userService.findOne(
+              shipment.shipment_createdById,
+            );
+            cost = await this.serviceClientService.getEstimateTarif(createdCs, {
+              communeId: shipment.commune_id,
+              poids: shipment.shipment_poids,
+              longueur: shipment.shipment_longueur,
+              largeur: shipment.shipment_largeur,
+              hauteur: shipment.shipment_hauteur,
+              wilayaId: shipment.commune_wilayaId,
+              livraisonDomicile: shipment.shipment_livraisonDomicile,
+              livraisonStopDesck: shipment.shipment_livraisonStopDesck,
+              service: shipment.service_nom
+            });
+          } else {
+            cost = 0;
+          }
+          montant += cost;
+        } else {
+          const tarifLivraison =
+            await this.shipmentService.calculTarifslivraison(
+              shipment.shipment_tracking,
+            );
+          if (shipment.shipment_livraisonGratuite) {
+            cost += shipment.shipment_prixVente;
+            montant += cost;
+          } else {
+            cost += tarifLivraison + shipment.shipment_prixVente;
+            montant += cost;
+          }
+        }
         console.log(
           '🚀 ~ file: recoltes.service.ts ~ line 284 ~ RecoltesService ~ forawait ~ shipment',
           shipment,
@@ -336,39 +379,46 @@ export class RecoltesService {
           //
         }
       }
+      await this.recolteRepository.update(recolteSave.id, {
+        montant: montant,
+      });
       return await this.printRecolteManifest(recolteSave.id, resp);
     } else {
       throw new NotFoundException();
     }
   }
-  
+
   async createRecolteCs(user: User, resp) {
-    this.logger.debug(this.createRecolteCs.name);
-    this.logger.debug(this.createRecolteCs.name);
-    this.logger.debug(this.createRecolteCs.name);
-    this.logger.debug(this.createRecolteCs.name);
     const employeInfo = await this.userService.findInformationsEmploye(user.id);
+
     const shipments = await this.shipmentService.findShipmentCreatedInDesk(
       employeInfo,
     );
+
     let montant = 0;
     for await (const shipment of shipments) {
-      const tarifLivraison = await this.serviceClientService.getEstimateTarif(
-        shipment.createdBy,
-        {
-          communeId: shipment.commune.id,
-          poids: shipment.poids,
-          longueur: shipment.longueur,
-          largeur: shipment.largeur,
-          hauteur: shipment.hauteur,
-          wilayaId: shipment.commune.wilaya.id,
-          livraisonDomicile: shipment.livraisonDomicile,
-          livraisonStopDesck: shipment.livraisonStopDesck,
-          serviceId: null,
-        },
-      );
+      let tarifLivraison = 0;
+      if (shipment.cashOnDelivery == true) {
+        tarifLivraison = 0;
+      } else {
+        tarifLivraison = await this.serviceClientService.getEstimateTarif(
+          user,
+          {
+            communeId: shipment.commune.id,
+            poids: shipment.poids,
+            longueur: shipment.longueur,
+            largeur: shipment.largeur,
+            hauteur: shipment.hauteur,
+            wilayaId: shipment.commune.wilaya.id,
+            livraisonDomicile: shipment.livraisonDomicile,
+            livraisonStopDesck: shipment.livraisonStopDesck,
+            service: shipment.service.nom,
+          },
+        );
+      }
       montant += tarifLivraison;
     }
+
     if (shipments.length > 0) {
       const recolteSc = this.recolteRepository.create({
         shipmentCs: shipments,
@@ -378,15 +428,13 @@ export class RecoltesService {
         montant: montant,
         typeRtc: 'cs',
       });
+
       const recolteScSave = await this.recolteRepository.save(recolteSc);
       const tracking = 'rec-' + (await this.generateTracking(recolteScSave.id));
       await this.recolteRepository.update(recolteScSave.id, {
         tracking: tracking,
       });
-      // console.log(
-      //   '🚀 ~ file: recoltes.service.ts ~ line 360 ~ RecoltesService ~ createRecolteCs ~ recolteScSave',
-      //   recolteScSave,
-      // );
+
       this.logger.error('recolteScSave');
       return await this.printRecolteCs(recolteScSave.id, resp);
     }
@@ -399,7 +447,7 @@ export class RecoltesService {
     return newDateObj;
   }
   async getRecoltePresRecolte() {
-    console.log('88888888888888888888888888888888888888')
+    console.log('88888888888888888888888888888888888888');
     const listRctTrackings = [];
     const recoltes = await this.recolteRepository.find({
       where: {
@@ -449,10 +497,13 @@ export class RecoltesService {
   }
 
   async getRecolteAgencePresRecolte(user: User) {
-    console.log('4444444444444444444444444')
+    console.log('4444444444444444444444444');
     const listRctTrackings = [];
     const userStation = await this.userService.findInformationsEmploye(user.id);
-    console.log("🚀 ~ file: recoltes.service.ts ~ line 393 ~ RecoltesService ~ getRecolteAgencePresRecolte ~ userStation", userStation)
+    console.log(
+      '🚀 ~ file: recoltes.service.ts ~ line 393 ~ RecoltesService ~ getRecolteAgencePresRecolte ~ userStation',
+      userStation,
+    );
     const recoltes = await this.recolteRepository.find({
       relations: ['createdOn', 'createdOn.commune', 'createdOn.commune.wilaya'],
       where: {
@@ -461,7 +512,10 @@ export class RecoltesService {
       },
       select: ['tracking'],
     });
-    console.log("🚀 ~ file: recoltes.service.ts ~ line 402 ~ RecoltesService ~ getRecolteAgencePresRecolte ~ recoltes", recoltes)
+    console.log(
+      '🚀 ~ file: recoltes.service.ts ~ line 402 ~ RecoltesService ~ getRecolteAgencePresRecolte ~ recoltes',
+      recoltes,
+    );
     for (const rct of recoltes) {
       listRctTrackings.push(rct.tracking);
     }
@@ -590,11 +644,15 @@ export class RecoltesService {
         .leftJoinAndSelect('recolte.shipment', 'shipment')
         .leftJoinAndSelect('shipment.status', 'status')
         .leftJoinAndSelect('recolte.createdOn', 'agence')
+        .leftJoinAndSelect('shipment.service', 'service')
         .where(
           `recolte.receivedBy is not null and status.libelle = '${StatusShipmentEnum.recolte}'`,
         )
         .andWhere(`agence.id=${userStation.employe.agence.id}`)
         .getMany();
+      this.logger.error(
+        '/////////////---------------------------///////////////////////////////',
+      );
     } else if (userStation.typeUser === TypeUserEnum.caissierRegional) {
       recoltes = await this.recolteRepository
         .createQueryBuilder('recolte')
@@ -602,6 +660,7 @@ export class RecoltesService {
         .leftJoinAndSelect('shipment.status', 'status')
         .leftJoinAndSelect('recolte.createdOn', 'agence')
         .leftJoinAndSelect('agence.commune', 'commune')
+        .leftJoinAndSelect('shipment.service', 'service')
         .leftJoinAndSelect('commune.wilaya', 'wilaya')
         .where(
           `recolte.receivedBy is not null and status.libelle = '${StatusShipmentEnum.recolte}'`,
@@ -612,6 +671,7 @@ export class RecoltesService {
       recoltes = await this.recolteRepository
         .createQueryBuilder('recolte')
         .leftJoinAndSelect('recolte.shipment', 'shipment')
+        .leftJoinAndSelect('shipment.service', 'service')
         .leftJoinAndSelect('shipment.status', 'status')
         .where(
           `recolte.receivedBy is not null and status.libelle = '${StatusShipmentEnum.recolte}'`,
@@ -621,73 +681,77 @@ export class RecoltesService {
 
     for await (const recolte of recoltes) {
       for await (const shipment of recolte.shipment) {
-        const statusShipment = await this.statusService.getShipmentStatusById(
-          shipment.id,
-        );
-        if (
-          statusShipment[statusShipment.length - 1].libelle ===
-          StatusShipmentEnum.recolte
-        ) {
-          let tarifsBordereau = 0;
-          const tarifLivraison =
-            await this.shipmentService.calculTarifslivraison(shipment.tracking);
-
-          const clientInfo = await this.clientService.findOne(
-            statusShipment[0].user.id,
+        if (shipment.service.nom.toLowerCase() != 'classique divers' && shipment.service.nom.toLowerCase() != 'soumission' && shipment.service.nom.toLowerCase() != 'cahier de charge' ) {
+          const statusShipment = await this.statusService.getShipmentStatusById(
+            shipment.id,
           );
-
-          const client = {
-            id: clientInfo.client_id,
-            nomCommercial: clientInfo.client_nomCommercial,
-          };
-
-          if (!listClients.some((c) => c.id === client.id)) {
-            listClients.push(client);
-          }
-
-          if (shipment.livraisonGratuite) {
-            tarifsBordereau = shipment.prixVente;
-            totalRamasse += shipment.prixVente;
-          } else {
-            tarifsBordereau = shipment.prixVente + tarifLivraison;
-            totalRamasse += tarifLivraison + shipment.prixVente;
-          }
-          let totalFraiCOD = 0;
-          console.log(
-            'hhhhhhhhhhhhhhhhhhhhhhhhhhh',
-            shipment.prixVente,
-            clientInfo.client_c_o_d_ApartirDe,
-          );
-          if (shipment.prixEstimer > clientInfo.client_c_o_d_ApartirDe) {
-            totalFraiCOD +=
-              (clientInfo.client_tauxCOD / 100) * shipment.prixEstimer;
-          }
-          netClient += tarifsBordereau - tarifLivraison - totalFraiCOD;
-          gain += tarifLivraison;
-          nbrColis += 1;
           if (
-            recolte.shipment.length > 0 &&
-            !listRecolte.includes(recolte.tracking)
+            statusShipment[statusShipment.length - 1].libelle ===
+            StatusShipmentEnum.recolte
           ) {
-            listRecolte.push(recolte.tracking);
-          }
+            let tarifsBordereau = 0;
+            const tarifLivraison =
+              await this.shipmentService.calculTarifslivraison(
+                shipment.tracking,
+              );
 
-          if (
-            !listDateRecolte.includes(
-              recolte.receivedAt.toLocaleDateString('fr-CA', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-              }),
-            )
-          ) {
-            listDateRecolte.push(
-              recolte.receivedAt.toLocaleDateString('fr-CA', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-              }),
+            const clientInfo = await this.clientService.findOne(
+              statusShipment[0].user.id,
             );
+
+            const client = {
+              id: clientInfo.client_id,
+              nomCommercial: clientInfo.client_nomCommercial,
+            };
+
+            if (!listClients.some((c) => c.id === client.id)) {
+              listClients.push(client);
+            }
+
+            if (shipment.livraisonGratuite) {
+              tarifsBordereau = shipment.prixVente;
+              totalRamasse += shipment.prixVente;
+            } else {
+              tarifsBordereau = shipment.prixVente + tarifLivraison;
+              totalRamasse += tarifLivraison + shipment.prixVente;
+            }
+            let totalFraiCOD = 0;
+            console.log(
+              'hhhhhhhhhhhhhhhhhhhhhhhhhhh',
+              shipment.prixVente,
+              clientInfo.client_c_o_d_ApartirDe,
+            );
+            if (shipment.prixEstimer > clientInfo.client_c_o_d_ApartirDe) {
+              totalFraiCOD +=
+                (clientInfo.client_tauxCOD / 100) * shipment.prixEstimer;
+            }
+            netClient += tarifsBordereau - tarifLivraison - totalFraiCOD;
+            gain += tarifLivraison;
+            nbrColis += 1;
+            if (
+              recolte.shipment.length > 0 &&
+              !listRecolte.includes(recolte.tracking)
+            ) {
+              listRecolte.push(recolte.tracking);
+            }
+
+            if (
+              !listDateRecolte.includes(
+                recolte.receivedAt.toLocaleDateString('fr-CA', {
+                  year: 'numeric',
+                  month: '2-digit',
+                  day: '2-digit',
+                }),
+              )
+            ) {
+              listDateRecolte.push(
+                recolte.receivedAt.toLocaleDateString('fr-CA', {
+                  year: 'numeric',
+                  month: '2-digit',
+                  day: '2-digit',
+                }),
+              );
+            }
           }
         }
       }
@@ -724,11 +788,14 @@ export class RecoltesService {
       reqestedUser.id,
     );
 
+    this.logger.error(reqestedUser.id);
     if (userStation.typeUser === TypeUserEnum.caissierAgence) {
+      this.logger.error(TypeUserEnum.caissierAgence);
       recoltes = await this.recolteRepository
         .createQueryBuilder('recolte')
         .leftJoinAndSelect('recolte.shipment', 'shipment')
         .leftJoinAndSelect('shipment.createdBy', 'createdBy')
+        .leftJoinAndSelect('shipment.service', 'service')
         .leftJoinAndSelect('recolte.receivedOn', 'agence')
         .where(
           `recolte.receivedBy is not null and shipment.lastStatus = '${StatusShipmentEnum.pretAPayer}'`,
@@ -762,78 +829,78 @@ export class RecoltesService {
         recoltes,
       );
     }
-
+    this.logger.error(`nb Recolte ${recoltes.length}`);
     for await (const recolte of recoltes) {
+      this.logger.warn(`recolte n°: ${recolte.tracking}`);
+      this.logger.warn(`recolte nb shipment°: ${recolte.shipment.length}`);
       for await (const shipment of recolte.shipment) {
+        this.logger.debug(`shipment n° ${shipment.tracking}`);
         if (
-          shipment.lastStatus ===
-          StatusShipmentEnum.pretAPayer
+          shipment.lastStatus === StatusShipmentEnum.pretAPayer &&
+          shipment.service.nom.toLowerCase() != 'classique divers' && shipment.service.nom.toLowerCase() != 'soumission' && shipment.service.nom.toLowerCase() != 'cahier de charge'
         ) {
           let tarifsBordereau = 0;
           const tarifLivraison =
             await this.shipmentService.calculTarifslivraison(shipment.tracking);
 
-          if (tarifLivraison >= shipment.prixVente) {
-            console.log("🚀 ~ file: recoltes.service.ts ~ line 714 ~ RecoltesService ~ forawait ~ tarifLivraison", tarifLivraison)
+          const clientInfo = await this.clientService.findOne(
+            shipment.createdBy.id,
+          );
 
-            const clientInfo = await this.clientService.findOne(
-              shipment.createdBy.id,
+          const client = {
+            id: clientInfo.client_id,
+            nomCommercial: clientInfo.client_nomCommercial,
+          };
+
+          if (!listClients.some((c) => c.id === client.id)) {
+            listClients.push(client);
+          }
+
+          if (shipment.livraisonGratuite) {
+            tarifsBordereau = shipment.prixVente;
+            totalRamasse += shipment.prixVente;
+          } else {
+            tarifsBordereau = shipment.prixVente + tarifLivraison;
+            totalRamasse += tarifLivraison + shipment.prixVente;
+          }
+          let totalFraiCOD = 0;
+          if (shipment.prixEstimer > clientInfo.client_c_o_d_ApartirDe) {
+            totalFraiCOD +=
+              (clientInfo.client_tauxCOD / 100) * shipment.prixEstimer;
+          }
+
+          netClient += tarifsBordereau - tarifLivraison - totalFraiCOD;
+          gain += tarifLivraison;
+          nbrColis += 1;
+
+          if (
+            recolte.shipment.length > 0 &&
+            !listRecolte.includes(recolte.tracking)
+          ) {
+            listRecolte.push(recolte.tracking);
+          }
+
+          if (
+            !listDateRecolte.includes(
+              recolte.receivedAt.toLocaleDateString('fr-CA', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+              }),
+            )
+          ) {
+            listDateRecolte.push(
+              recolte.receivedAt.toLocaleDateString('fr-CA', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+              }),
             );
-
-            const client = {
-              id: clientInfo.client_id,
-              nomCommercial: clientInfo.client_nomCommercial,
-            };
-
-            if (!listClients.some((c) => c.id === client.id)) {
-              listClients.push(client);
-            }
-
-            if (shipment.livraisonGratuite) {
-              tarifsBordereau = shipment.prixVente;
-              totalRamasse += shipment.prixVente;
-            } else {
-              tarifsBordereau = shipment.prixVente + tarifLivraison;
-              totalRamasse += tarifLivraison + shipment.prixVente;
-            }
-            let totalFraiCOD = 0;
-            if (shipment.prixEstimer > clientInfo.client_c_o_d_ApartirDe) {
-              totalFraiCOD +=
-                (clientInfo.client_tauxCOD / 100) * shipment.prixEstimer;
-            }
-
-            netClient += tarifsBordereau - tarifLivraison - totalFraiCOD;
-            gain += tarifLivraison;
-            nbrColis += 1;
-
-            if (
-              recolte.shipment.length > 0 &&
-              !listRecolte.includes(recolte.tracking)
-            ) {
-              listRecolte.push(recolte.tracking);
-            }
-
-            if (
-              !listDateRecolte.includes(
-                recolte.receivedAt.toLocaleDateString('fr-CA', {
-                  year: 'numeric',
-                  month: '2-digit',
-                  day: '2-digit',
-                }),
-              )
-            ) {
-              listDateRecolte.push(
-                recolte.receivedAt.toLocaleDateString('fr-CA', {
-                  year: 'numeric',
-                  month: '2-digit',
-                  day: '2-digit',
-                }),
-              );
-            }
           }
         }
       }
     }
+
     /**
      * sommer tt les frai retoure de tt les client pre a payer
      */
@@ -866,6 +933,7 @@ export class RecoltesService {
       .createQueryBuilder('recolte')
       .leftJoinAndSelect('recolte.shipment', 'shipment')
       .leftJoinAndSelect('shipment.status', 'status')
+      .leftJoinAndSelect('shipment.service', 'service')
       .where(
         `recolte.tracking = '${tracking.toLowerCase()}' and  recolte.receivedBy is not null and status.libelle = '${
           StatusShipmentEnum.recolte
@@ -877,32 +945,34 @@ export class RecoltesService {
       recolte,
     );
     for await (const shipment of recolte.shipment) {
-      const statusShipment = await this.statusService.getShipmentStatusById(
-        shipment.id,
-      );
-      if (
-        statusShipment[statusShipment.length - 1].libelle ===
-        StatusShipmentEnum.recolte
-      ) {
-        console.log(
-          '--------------',
-          statusShipment[statusShipment.length - 1].userAffect,
+      if (shipment.service.nom.toLowerCase() != 'classique divers' && shipment.service.nom.toLowerCase() != 'soumission' && shipment.service.nom.toLowerCase() != 'cahier de charge') {
+        const statusShipment = await this.statusService.getShipmentStatusById(
+          shipment.id,
         );
-        delete shipment.status;
-        await this.statusService.create({
-          shipment: shipment,
-          user: user.id,
-          libelle: StatusShipmentEnum.pretAPayer,
-          userAffect: statusShipment[statusShipment.length - 1].userAffect
-            ? statusShipment[statusShipment.length - 1].userAffect.id
-            : null,
-        });
+        if (
+          statusShipment[statusShipment.length - 1].libelle ===
+          StatusShipmentEnum.recolte
+        ) {
+          console.log(
+            '--------------',
+            statusShipment[statusShipment.length - 1].userAffect,
+          );
+          delete shipment.status;
+          await this.statusService.create({
+            shipment: shipment,
+            user: user.id,
+            libelle: StatusShipmentEnum.pretAPayer,
+            userAffect: statusShipment[statusShipment.length - 1].userAffect
+              ? statusShipment[statusShipment.length - 1].userAffect.id
+              : null,
+          });
 
-        await this.shipmentService.update_v2(shipment.id, {
-          libererAt: new Date(),
-          libererBy: userAgence,
-          libererOn: userAgence.employe.agence,
-        });
+          await this.shipmentService.update_v2(shipment.id, {
+            libererAt: new Date(),
+            libererBy: userAgence,
+            libererOn: userAgence.employe.agence,
+          });
+        }
       }
     }
     if (recolte.shipment.length > 0) {
@@ -922,6 +992,7 @@ export class RecoltesService {
     const recoltes = await this.recolteRepository
       .createQueryBuilder('recolte')
       .leftJoinAndSelect('recolte.shipment', 'shipment')
+      .leftJoinAndSelect('shipment.service', 'service')
       .leftJoinAndSelect('shipment.status', 'status')
       .where(
         `recolte.receivedBy is not null and 
@@ -933,29 +1004,34 @@ export class RecoltesService {
 
     for await (const recolte of recoltes) {
       for await (const shipment of recolte.shipment) {
-        const statusShipment = await this.statusService.getShipmentStatusById(
-          shipment.id,
-        );
-        if (
-          statusShipment[statusShipment.length - 1].libelle ===
-          StatusShipmentEnum.recolte
-        ) {
-          delete shipment.status;
-          await this.statusService.create({
-            // shipment: await this.shipmentService.findOne(shipment.id),
-            shipment: shipment,
-            user: user.id,
-            libelle: StatusShipmentEnum.pretAPayer,
-            userAffect: statusShipment[statusShipment.length - 1].userAffect
-              ? statusShipment[statusShipment.length - 1].userAffect.id
-              : null,
-          });
+        if (shipment.service.nom.toLowerCase() != 'classique divers' && shipment.service.nom.toLowerCase() != 'soumission' && shipment.service.nom.toLowerCase() != 'cahier de charge') {
+          const statusShipment = await this.statusService.getShipmentStatusById(
+            shipment.id,
+          );
+          if (
+            statusShipment[statusShipment.length - 1].libelle ===
+            StatusShipmentEnum.recolte
+          ) {
+            delete shipment.status;
+            await this.statusService.create({
+              // shipment: await this.shipmentService.findOne(shipment.id),
+              shipment: shipment,
+              user: user.id,
+              libelle: StatusShipmentEnum.pretAPayer,
+              userAffect: statusShipment[statusShipment.length - 1].userAffect
+                ? statusShipment[statusShipment.length - 1].userAffect.id
+                : null,
+            });
 
-          await this.shipmentService.updateLibererPaiementParDate(shipment.id, {
-            libererAt: new Date(),
-            libererBy: userAgence,
-            libererOn: userAgence.employe.agence,
-          });
+            await this.shipmentService.updateLibererPaiementParDate(
+              shipment.id,
+              {
+                libererAt: new Date(),
+                libererBy: userAgence,
+                libererOn: userAgence.employe.agence,
+              },
+            );
+          }
         }
       }
     }
@@ -1000,36 +1076,52 @@ export class RecoltesService {
   }
   //
   async getRecolteDetail(tracking) {
-    const listColis = []
+    const listColis = [];
     const recolte = await this.recolteRepository.findOne({
-      relations: ['recolteCoursier', 'createdBy', 'createdBy.employe' , 'shipment'],
+      relations: [
+        'recolteCoursier',
+        'createdBy',
+        'createdBy.employe',
+        'shipment',
+        'shipmentCs',
+      ],
       where: {
         tracking: tracking,
       },
     });
+    this.logger.error(
+      '*-----------------------*-----------------------*-----------------------------*',
+    );
+    console.log('shipment --->', recolte.shipment.length);
+    console.log('shipmentCs --->', recolte.shipmentCs.length);
     if (recolte) {
       for await (const shipment of recolte.shipment) {
-        console.log("🚀 ~ file: recoltes.service.ts ~ line 945 ~ RecoltesService ~ forawait ~ shipment", shipment.tracking)
+        console.log(
+          '🚀 ~ file: recoltes.service.ts ~ line 945 ~ RecoltesService ~ forawait ~ shipment',
+          shipment.tracking,
+        );
         let cost = 0;
         const tarifLivraison = await this.shipmentService.calculTarifslivraison(
           shipment.tracking,
         );
-        console.log("🚀 ~ file: recoltes.service.ts ~ line 950 ~ RecoltesService ~ forawait ~ tarifLivraison", tarifLivraison)
+        console.log(
+          '🚀 ~ file: recoltes.service.ts ~ line 950 ~ RecoltesService ~ forawait ~ tarifLivraison',
+          tarifLivraison,
+        );
         if (shipment.livraisonGratuite) {
           cost += shipment.prixVente;
         } else {
           cost += tarifLivraison + shipment.prixVente;
         }
-        
-        shipment['recouvrement'] = cost
+
+        shipment['recouvrement'] = cost;
         listColis.push(shipment);
       }
-      console.log(listColis)
-      return [recolte ,listColis]
+      console.log(listColis);
+      return [recolte, listColis];
+    } else {
+      throw new EntityNotFoundError(Recolte, tracking);
     }
-     else {
-       throw new EntityNotFoundError(Recolte, tracking);
-     }
   }
   //
   async printRecolteManifest(recolteId, res) {
@@ -1058,21 +1150,38 @@ export class RecoltesService {
       }
       for await (const shipment of listShipmentOfRecolte) {
         let cost = 0;
-        let tarifLivraison;
-        if (shipment.service.nom.toLowerCase() == 'classique divers') {
-          tarifLivraison = 0;
+        let tarifLivraison = 0;
+        if (shipment.service.nom.toLowerCase() == 'classique divers' || shipment.service.nom.toLowerCase() == 'soumission' || shipment.service.nom.toLowerCase() == 'cahier de charge') {
+          if (shipment.cashOnDelivery) {
+            cost = await this.serviceClientService.getEstimateTarif(
+              shipment.createdBy,
+              {
+                communeId: shipment.commune.id,
+                poids: shipment.poids,
+                longueur: shipment.longueur,
+                largeur: shipment.largeur,
+                hauteur: shipment.hauteur,
+                wilayaId: shipment.commune.wilaya.id,
+                livraisonDomicile: shipment.livraisonDomicile,
+                livraisonStopDesck: shipment.livraisonStopDesck,
+                service: shipment.service.nom
+              },
+            );
+          } else {
+            cost = 0;
+          }
+          montant += cost;
         } else {
           tarifLivraison = await this.shipmentService.calculTarifslivraison(
             shipment.tracking,
           );
-        }
-
-        if (shipment.livraisonGratuite) {
-          cost += shipment.prixVente;
-          montant += cost;
-        } else {
-          cost += tarifLivraison + shipment.prixVente;
-          montant += cost;
+          if (shipment.livraisonGratuite) {
+            cost += shipment.prixVente;
+            montant += cost;
+          } else {
+            cost += tarifLivraison + shipment.prixVente;
+            montant += cost;
+          }
         }
         listTracking.push([shipment.tracking + ' ' + cost + '   ']);
       }
@@ -1088,7 +1197,6 @@ export class RecoltesService {
     }
   }
   async printRecolteCs(recolteId: number, res) {
-    this.logger.verbose(recolteId);
     const listTracking = [];
     let montant = 0;
     const recolte = await this.recolteRepository.findOne({
@@ -1108,31 +1216,38 @@ export class RecoltesService {
         id: recolteId,
       },
     });
+
     for await (const shipment of recolte.shipmentCs) {
-      const tarifLivraison = await this.serviceClientService.getEstimateTarif(
-        shipment.createdBy,
-        {
-          communeId: shipment.commune.id,
-          poids: shipment.poids,
-          longueur: shipment.longueur,
-          largeur: shipment.largeur,
-          hauteur: shipment.hauteur,
-          wilayaId: shipment.commune.wilaya.id,
-          livraisonDomicile: shipment.livraisonDomicile,
-          livraisonStopDesck: shipment.livraisonStopDesck,
-          serviceId: null,
-        },
-      );
-      this.logger.debug('in boucle', shipment.tracking);
-      montant += tarifLivraison;
+      let tarifLivraison = 0;
+      if (shipment.cashOnDelivery) {
+        tarifLivraison = 0;
+      } else {
+        tarifLivraison = await this.serviceClientService.getEstimateTarif(
+          shipment.createdBy,
+          {
+            communeId: shipment.commune.id,
+            poids: shipment.poids,
+            longueur: shipment.longueur,
+            largeur: shipment.largeur,
+            hauteur: shipment.hauteur,
+            wilayaId: shipment.commune.wilaya.id,
+            livraisonDomicile: shipment.livraisonDomicile,
+            livraisonStopDesck: shipment.livraisonStopDesck,
+            service: shipment.service.nom,
+          },
+        );
+      }
       listTracking.push([shipment.tracking] + ' ' + tarifLivraison);
+      montant += tarifLivraison;
     }
+
     const buffer = await this.pdfService.printRecolteCsManifest(
       recolte,
       listTracking,
       recolte.createdBy,
       montant,
     );
+
     const buf = Buffer.from(buffer);
     res.send(buf);
     return res;

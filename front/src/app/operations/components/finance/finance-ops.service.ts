@@ -43,9 +43,12 @@ export class FinanceOpsService {
       `${environment.apiV1}recoltes/paginateRecolteOfUser?searchRecolteTerm=${searchRecolte}`
     );
   }
-  printRecolte(id: number) {
-    return this.http.get(`${environment.apiV1}recoltes/printRecolte/${id}`, {
-      responseType: 'blob',
-    })
+  printRecolte(id: number, typeRtc: string) {
+    return this.http.get(
+      `${environment.apiV1}recoltes/printRecolte/${id}/${typeRtc}`,
+      {
+        responseType: 'blob',
+      }
+    );
   }
 }

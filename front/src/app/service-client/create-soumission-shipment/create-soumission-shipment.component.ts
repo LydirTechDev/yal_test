@@ -32,6 +32,7 @@ export class CreateSoumissionShipmentComponent implements OnInit {
      * init classiqueShippmentForm
      */
     this.classiqueShippmentForm = this.formBuilder.group({
+      
       raisonSociale: [
         '',
         Validators.compose([Validators.minLength(3), Validators.maxLength(50)]),
@@ -39,6 +40,22 @@ export class CreateSoumissionShipmentComponent implements OnInit {
       telephone: [
         '',
         Validators.compose([Validators.required, Validators.maxLength(10)]),
+      ],
+      nom: [
+        '*-*',
+        Validators.compose([
+          Validators.required,
+          Validators.minLength(3),
+          Validators.maxLength(35),
+        ]),
+      ],
+      prenom: [
+        '*-*',
+        Validators.compose([
+          Validators.required,
+          Validators.minLength(3),
+          Validators.maxLength(35),
+        ]),
       ],
       numIdentite: [
         '',
@@ -94,6 +111,41 @@ export class CreateSoumissionShipmentComponent implements OnInit {
           Validators.maxLength(50),
         ]),
       ],
+      poids: [0
+        ,
+        Validators.compose([
+          Validators.required,
+          Validators.min(0),
+          Validators.max(150),
+        ]),
+      ],
+      longueur: [0
+        ,
+        Validators.compose([
+          Validators.required,
+          Validators.min(0),
+          Validators.max(2),
+        ]),
+      ],
+      largeur: [0
+        ,
+        Validators.compose([
+          Validators.required,
+          Validators.min(0),
+          Validators.max(2),
+        ]),
+      ],
+      hauteur: [0
+        ,
+        Validators.compose([
+          Validators.required,
+          Validators.min(0),
+          Validators.max(2),
+        ]),
+      ],
+      livraisonStopDesck: [false, Validators.required],
+      livraisonDomicile: [true, Validators.required],
+      service: ['soumission', Validators.required]
     });
   }
 

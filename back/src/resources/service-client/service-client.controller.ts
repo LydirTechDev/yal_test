@@ -68,7 +68,7 @@ export class ServiceClientController {
     return this.serviceClientService.createShipment(
       req.user,
       shipment,
-      'Retrait Cahier De Charge',
+      'Cahier De Charge',
       res,
     );
   }

@@ -184,7 +184,8 @@ export class PmtService {
     return `This action removes a #${id} pmt`;
   }
 
-  async payerClient(requestedUser: User, clientId: any, res: any) {
+  async payerClient(requestedUser: User, clientId: any, res: any, reg?: string) {
+
     const infoPayment = await this.shipmentService.getSoldeClient(
       requestedUser,
       clientId,
@@ -192,6 +193,7 @@ export class PmtService {
 
 
     let tarifs = '';
+
     const tarifClient = await this.clientsService.tarifClient(
       infoPayment.clientInfo.id,
       infoPayment.clientInfo.communeDepart.wilaya.id,

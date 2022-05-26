@@ -1,4 +1,4 @@
-import { IsBoolean, IsNumber } from 'class-validator';
+import { IsBoolean, IsNumber, IsString } from 'class-validator';
 
 export class EstimateTarifDto {
   @IsNumber()
@@ -25,8 +25,6 @@ export class EstimateTarifDto {
   @IsBoolean()
   livraisonStopDesck: boolean;
 
-  @IsNumber({
-    allowNaN: true,
-  })
-  serviceId: number = NaN;
+  @IsString()
+  service: string = 'Classique Divers'
 }

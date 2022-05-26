@@ -90,6 +90,7 @@ export class Agence {
 
   @OneToMany(() => Sac, (sac) => sac.agenceDestination)
   sac: Sac[];
+
   @OneToMany(() => Wilaya, (wilayaCaisse) => wilayaCaisse.caisseRegional)
   wilayaCaisse: Wilaya[];
 
@@ -116,6 +117,7 @@ export class Agence {
     (pmtCoursierCreatedOn) => pmtCoursierCreatedOn.createdOn,
   )
   pmtCoursierCreatedOn: PmtCoursier[];
+
   @OneToMany(() => Facture, (facture) => facture.createdOn)
   facture: Facture[];
 
@@ -124,6 +126,7 @@ export class Agence {
     array: true,
   })
   communeZoneOne: number[];
+  
   @Column({
     nullable: true,
   })

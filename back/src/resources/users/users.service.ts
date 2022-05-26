@@ -154,9 +154,9 @@ export class UsersService {
     const user = await this.userRepository.findOne({
       relations: ['coursier'],
       where: {
-  //      coursier: {
+        coursier: {
           id: id,
-  //      },
+        },
       },
     });
     if (!user) {
@@ -166,6 +166,21 @@ export class UsersService {
       return user;
     }
   }
+  async findInformationOfCoursierByUserId(id: number) {
+    const user = await this.userRepository.findOne({
+      relations: ['coursier'],
+      where: {
+          id: id,
+      },
+    });
+    if (!user) {
+      throw new EntityNotFoundError(User, id);
+    } else {
+      delete user.password;
+      return user;
+    }
+  }
+
   /**
    * update User
    * @param id

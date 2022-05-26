@@ -40,6 +40,7 @@ export class ProcederPaiementsComponent implements OnInit {
       `finance/proceder-paiement/${this.formData.get('client').value}`,
     ]);
   }
+  
   getSoldeAgence() {
     this.financeService.getSoldeAgence().subscribe((response) => {
       console.log(

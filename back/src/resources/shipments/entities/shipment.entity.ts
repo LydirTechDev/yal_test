@@ -132,8 +132,9 @@ export class Shipment {
   })
   livraisonDomicile: boolean;
 
-  @ManyToOne(() => User, (createdBy) => createdBy.id, { nullable: true })
+  @ManyToOne(() => User, (createdBy) => createdBy.shipmentCreateBy, { nullable: true })
   createdBy: User;
+
   @CreateDateColumn()
   createdAt: Date;
 
@@ -218,4 +219,9 @@ export class Shipment {
   shipmentRelation: Shipment;
   @ManyToOne(() => Facture, (facture) => facture.shipments, { nullable: true })
   facture: Facture;
+
+  @Column({
+    nullable: true,
+  })
+  cashOnDelivery: boolean
 }

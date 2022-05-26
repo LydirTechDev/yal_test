@@ -2921,6 +2921,7 @@ export class PdfService {
     return pdfBytes;
   }
   async printPmt(client: Client, pmt: Pmt) {
+
     const pmtTemplatePath = 'src/assets/pmt.pdf';
     const pdfTemplateBytes = fs.readFileSync(pmtTemplatePath);
     const pdfDoc = await PDFDocument.load(pdfTemplateBytes);

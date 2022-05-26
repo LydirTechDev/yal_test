@@ -127,7 +127,7 @@
                     <label class="col-md-3 col-form-label">N° pièce d'identité*:</label>
                     <div class="col-md-8 text-left">
                         <input class="form-control" formControlName="numIdentite" placeholder="000000000" type="text"
-                        mask="000000000"
+                            mask="000000000"
                             [ngClass]="{'is-invalid': classiqueShippmentForm.controls['numIdentite'].invalid && (classiqueShippmentForm.controls['numIdentite'].dirty || classiqueShippmentForm.controls['numIdentite'].touched),'is-valid': classiqueShippmentForm.controls['numIdentite'].valid && (classiqueShippmentForm.controls['numIdentite'].dirty || classiqueShippmentForm.controls['numIdentite'].touched) }">
                         <div *ngIf="classiqueShippmentForm.controls['numIdentite'].invalid" class="invalid-feedback">
                             <span *ngIf="classiqueShippmentForm.controls['numIdentite'].errors.required">Téléphone
@@ -217,7 +217,7 @@
                 <!-- Adresse -->
                 <div class="form-group row mb-1 text-right">
                     <label class="col-md-3 col-form-label">Adresse*:</label>
-                        <div class="col-md-8 text-left">
+                    <div class="col-md-8 text-left">
                         <input class="form-control" formControlName="adresse" placeholder="Adresse"
                             [ngClass]="{'is-invalid': classiqueShippmentForm.controls['adresse'].invalid && (classiqueShippmentForm.controls['adresse'].dirty || classiqueShippmentForm.controls['adresse'].touched),'is-valid': classiqueShippmentForm.controls['adresse'].valid && (classiqueShippmentForm.controls['adresse'].dirty || classiqueShippmentForm.controls['adresse'].touched) }">
                         <div *ngIf="classiqueShippmentForm.controls['adresse'].invalid" class="invalid-feedback">
@@ -263,6 +263,16 @@
                                     </ui-switch>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 p-2 mt-1">
+                    <div class="row">
+                        <label class="col-6 col-form-label  text-right" for="cashOnDelivery">Paiement a la livraison
+                            :</label>
+                        <div class="col-6 mt-1 ">
+                            <ui-switch uncheckedLabel="Non" checkedLabel="Oui" formControlName="cashOnDelivery">
+                            </ui-switch>
                         </div>
                     </div>
                 </div>
