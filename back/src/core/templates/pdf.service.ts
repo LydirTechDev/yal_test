@@ -70,11 +70,13 @@ export class PdfService {
       y: height - 62,
       size: 8,
     });
+
     firstPage.drawText(shipmentInfo.expiditeurPublic.raisonSocialeExp, {
       x: 95,
       y: height - 72,
       size: 8,
     });
+
     firstPage.drawText(shipmentInfo.expiditeurPublic.adresseExp, {
       x: 95,
       y: height - 82,
@@ -154,6 +156,10 @@ export class PdfService {
       shipmentInfo.service.nom.toLowerCase() == 'classique divers'
     ) {
       jpgUrl = 'src/assets/img/classique.png';
+    }else if ( shipmentInfo.service.nom.toLowerCase() == "soumission"){
+      jpgUrl = 'src/assets/img/soumission.png';
+    }else if (shipmentInfo.service.nom.toLowerCase() == "cahier de charge") {
+      jpgUrl = 'src/assets/img/retrait_cahier_de_charge.png'
     }
 
     const jpgImage = await pdfDoc.embedPng(fs.readFileSync(jpgUrl));
@@ -409,6 +415,7 @@ export class PdfService {
     fs.writeFileSync('dest', pdfBytes);
     return pdfBytes;
   }
+
   async generateInterneShipment(
     shipmentInfo,
     employeInfo,
@@ -595,6 +602,7 @@ export class PdfService {
     fs.writeFileSync(dest, pdfBytes);
     return pdfBytes;
   }
+  
   async generatePackageSlip(
     infoPackageSlip,
     infoClient,
@@ -1145,6 +1153,7 @@ export class PdfService {
 
     return pdfDoc;
   }
+
   async generateFacture(
     infoPackageSlip,
     infoClient,
@@ -1365,6 +1374,7 @@ export class PdfService {
     fs.writeFileSync(dest, pdfBytes);
     return pdfDoc;
   }
+
   async printCarteClient(client) {
     const conventionTemplatePath = 'src/assets/carte_client.pdf';
     const pdfTemplateBytes = fs.readFileSync(conventionTemplatePath);
@@ -1436,6 +1446,7 @@ export class PdfService {
     fs.writeFileSync('dest', pdfBytes);
     return pdfBytes;
   }
+
   async templateConventionFretORClassic(client, service) {
     let conventionTemplatePath;
     let xFret;
@@ -2554,6 +2565,7 @@ export class PdfService {
     console.log(dateFormat);
     return dateFormat;
   }
+
   async printRecolteManifest(recolte, trackings, userInfo, montant) {
     const tracking = trackings.join(' ');
     const dateRecolte = await this.formatDate(recolte.createdAt);
@@ -2763,6 +2775,7 @@ export class PdfService {
     fs.writeFileSync('dest', pdfBytes);
     return pdfBytes;
   }
+
   async printSacVersVendeur(sac, trackings, clientInfo) {
     const tracking = trackings.join(' ');
     const dateSac = await this.formatDate(sac.sacShipment_createdAt);
@@ -2848,6 +2861,7 @@ export class PdfService {
     fs.writeFileSync('dest', pdfBytes);
     return pdfBytes;
   }
+
   async printManifestRetourClient(sac, trackings, clientInfo) {
     const tracking = trackings.join(' ');
     const dateSac = await this.formatDate(sac.sacShipment_createdAt);
@@ -2920,6 +2934,7 @@ export class PdfService {
     fs.writeFileSync('dest', pdfBytes);
     return pdfBytes;
   }
+
   async printPmt(client: Client, pmt: Pmt) {
 
     const pmtTemplatePath = 'src/assets/pmt.pdf';
@@ -3146,6 +3161,7 @@ export class PdfService {
     fs.writeFileSync('dest', pdfBytes);
     return pdfBytes;
   }
+
   async printPmtCoursier(pmtCoursier) {
     if (pmtCoursier.shipments.length > 0) {
       console.log(
@@ -3324,8 +3340,6 @@ export class PdfService {
     }
   }
 
-  
-
   async printFactureClassique(facture) {
     console.log(
       '🚀 ~ file: pdf.service.ts ~ line 2985 ~ PdfService ~ printFactureClassique ~ facture',
@@ -3395,6 +3409,7 @@ export class PdfService {
     fs.writeFileSync('dest', pdfBytes);
     return pdfBytes;
   }
+
   async drawFactureClassic(facture, factureAll, page, pagesTotales, footer?) {
     const conventionTemplatePath = 'src/assets/FactureClassique.pdf';
     const pdfTemplateBytes = fs.readFileSync(conventionTemplatePath);
@@ -3865,6 +3880,7 @@ export class PdfService {
     return pdfDoc;
   }
   //
+  
   async drawFactureClassicFooter(facture, factureAll, page, pagesTotales) {
     const conventionTemplatePath = 'src/assets/FactureClassique.pdf';
     const pdfTemplateBytes = fs.readFileSync(conventionTemplatePath);

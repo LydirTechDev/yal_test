@@ -455,7 +455,7 @@
                 </div>
                 <div class="form-group col-12 ">
                     <div class="col-12 text-center">
-                        <h2>Frais d'envoi <span class="text-muted" *ngIf="estimateTarif != null">{{estimateTarif |
+                        <h2>Frais d'envoi <span  *ngIf="classiqueShippmentForm.controls['cashOnDelivery'].value"  class="text-danger pt-1"> à payer par le destinataire </span><br> <span class="text-muted mt-2" *ngIf="estimateTarif != null">{{estimateTarif |
                                 currency:' ':'symbol':'2.0-3'}} Da</span></h2>
                     </div>
                 </div>

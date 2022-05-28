@@ -312,7 +312,7 @@ export class RecoltesService {
       });
       for await (const shipment of shipmentLivreDesk) {
         let cost = 0;
-        if (shipment.service_nom.toLowerCase() == 'classique divers' ) {
+        if (shipment.service_nom.toLowerCase() == 'classique divers' || shipment.service_nom.toLowerCase() == 'soumission' || shipment.service_nom.toLowerCase() == 'cahier de charge' ) {
           if (shipment.shipment_cashOnDelivery) {
             console.log(
               '*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/',
@@ -368,14 +368,14 @@ export class RecoltesService {
             createdOn: employeInfo.employe.agence.id,
           });
           //
-          await this.statusService.create({
-            shipment: await this.shipmentService.findOne(shipment.shipment_id),
-            user: user,
-            libelle: StatusShipmentEnum.recolte,
-            createdAt: this.addToDate(dateRecolte),
-            userAffect: null,
-            createdOn: employeInfo.employe.agence.id,
-          });
+          // await this.statusService.create({
+          //   shipment: await this.shipmentService.findOne(shipment.shipment_id),
+          //   user: user,
+          //   libelle: StatusShipmentEnum.recolte,
+          //   createdAt: this.addToDate(dateRecolte),
+          //   userAffect: null,
+          //   createdOn: employeInfo.employe.agence.id,
+          // });
           //
         }
       }
@@ -1210,6 +1210,7 @@ export class RecoltesService {
         'shipmentCs',
         'shipmentCs.createdBy',
         'shipmentCs.commune',
+        'shipmentCs.service',
         'shipmentCs.commune.wilaya',
       ],
       where: {
@@ -1219,6 +1220,7 @@ export class RecoltesService {
 
     for await (const shipment of recolte.shipmentCs) {
       let tarifLivraison = 0;
+      this.logger.error(shipment.service.nom)
       if (shipment.cashOnDelivery) {
         tarifLivraison = 0;
       } else {

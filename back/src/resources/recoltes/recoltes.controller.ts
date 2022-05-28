@@ -104,6 +104,13 @@ export class RecoltesController {
   createRecolteCs(@Request() req, @Response() res) {
     return this.recoltesService.createRecolteCs(req.user, res);
   }
+  /**
+   * coursier
+   * @param req 
+   * @param createRecolteDto 
+   * @param res 
+   * @returns 
+   */
   @Post()
   create(
     @Request() req,
@@ -119,6 +126,13 @@ export class RecoltesController {
     @Response() res,
   ) {
     if (typeRtc == 'cs') {
+      console.log('***********************************************')
+      console.log('***********************************************')
+      console.log('***********************************************')
+      console.log('***********************************************')
+      console.log('***********************************************')
+      console.log('***********************************************')
+      console.log('***********************************************')
       return await this.recoltesService.printRecolteCs(idRecolte, res);
     }
     return await this.recoltesService.printRecolteManifest(idRecolte, res);

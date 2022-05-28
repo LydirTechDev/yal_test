@@ -532,7 +532,7 @@ export class ClientsService {
       .leftJoin('status.user', 'user')
       .leftJoinAndSelect('shipment.service', 'service')
       .where(
-        `(service.nom='Classique Entreprise' or service.nom ='Classique Divers') and client.caisseAgenceId=${agenceId}`,
+        `(service.nom='Classique Entreprise' or service.nom ='classique divers') and client.caisseAgenceId=${agenceId}`,
       )
       .andWhere(
         `status.libelle = '${StatusShipmentEnum.expidie}' and shipment.facture IsNull`,

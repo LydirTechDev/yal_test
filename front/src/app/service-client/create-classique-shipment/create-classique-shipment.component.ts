@@ -14,7 +14,7 @@ export class CreateClassiqueShipmentComponent implements OnInit {
   classiqueShippmentForm: FormGroup;
   wilayasData: any;
   communesData: any;
-  estimateTarif: number;
+  estimateTarif: number = 0;
   selected: boolean;
   typeShipment: string;
   constructor(
@@ -161,6 +161,7 @@ export class CreateClassiqueShipmentComponent implements OnInit {
   onChangeShippmentTypeDesk(value: boolean) {
     this.classiqueShippmentForm.controls['communeId'].reset();
     this.classiqueShippmentForm.controls['wilayaId'].reset();
+    this.estimateTarif = 0
     if (value === true) {
       this.classiqueShippmentForm.controls['livraisonDomicile'].setValue(false);
       this.getEstimateTarif();
@@ -173,6 +174,7 @@ export class CreateClassiqueShipmentComponent implements OnInit {
   onChangeShippmentTypeHome(value: boolean) {
     this.classiqueShippmentForm.controls['communeId'].reset();
     this.classiqueShippmentForm.controls['wilayaId'].reset();
+    this.estimateTarif =0
     if (value === true) {
       this.classiqueShippmentForm.controls['livraisonStopDesck'].setValue(
         false

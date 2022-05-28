@@ -50,7 +50,7 @@ export class DetailClientComponent implements OnInit {
   touched:boolean=false;
   isDureePaiement= false;
   isJourneePayment=false
-  listDureePaiement = ['Fret', 'Classique Divers','Classique Entreprise']
+  listDureePaiement = ['Fret', 'classique divers','Classique Entreprise']
   listJourPayment = ['E-Commerce Express Divers', 'E-Commerce Economy Entreprise',
    'E-Commerce Express Entreprise', 'E-Commerce Economy Divers']
   selectedServiceDureePaiement = []

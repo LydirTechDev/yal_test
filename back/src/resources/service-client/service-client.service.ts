@@ -54,11 +54,11 @@ export class ServiceClientService {
      * poids Reel et pois volumique
      */
 
-    // ###################### -- Classique Divers -- ######################
+    // ###################### -- classique divers -- ######################
     
     const service = await this.service.findOneByName(estimateTarifDto.service);
     console.log(
-      '🚀 ~// ###################### -- Classique Divers -- ###################### ~ line 58 ~ ServiceClientService ~ service',
+      '🚀 ~// ###################### -- classique divers -- ###################### ~ line 58 ~ ServiceClientService ~ service',
       estimateTarifDto.service,
     );
     const codeTarifId = service.codeTarif[0].id;
@@ -149,7 +149,7 @@ export class ServiceClientService {
       requestedUser.id,
     );
 
-    // ###################### -- Classique Divers -- ######################
+    // ###################### -- classique divers -- ######################
     const service = await this.service.findOneByName(nomService);
     const codeTarifId = service.codeTarif[0].id;
 

@@ -26,5 +26,5 @@ export class EstimateTarifDto {
   livraisonStopDesck: boolean;
 
   @IsString()
-  service: string = 'Classique Divers'
+  service: string = 'classique divers'
 }

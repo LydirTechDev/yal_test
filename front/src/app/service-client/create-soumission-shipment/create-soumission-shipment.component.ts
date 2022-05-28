@@ -221,31 +221,7 @@ export class CreateSoumissionShipmentComponent implements OnInit {
   }
 
   createShipment() {
-    console.log(
-      '🚀 ~ file: create-classique-shipment.component.ts ~ line 190 ~ CreateClassiqueShipmentComponent ~ createShipment ~ this.classiqueShippmentForm.value',
-      this.classiqueShippmentForm.value
-    );
-    console.log(
-      '🚀 ~ file: create-classique-shipment.component.ts ~ line 190 ~ CreateClassiqueShipmentComponent ~ createShipment ~ this.classiqueShippmentForm.value',
-      this.classiqueShippmentForm.valid
-    );
     if (this.classiqueShippmentForm.valid) {
-      console.log(
-        '🚀 ~ file: create-classique-shipment.component.ts ~ line 236 ~ CreateClassiqueShipmentComponent ~ createShipment ~ this.classiqueShippmentForm.valid',
-        this.classiqueShippmentForm.valid
-      );
-      console.log(
-        '🚀 ~ file: create-classique-shipment.component.ts ~ line 236 ~ CreateClassiqueShipmentComponent ~ createShipment ~ this.classiqueShippmentForm.valid',
-        this.classiqueShippmentForm.valid
-      );
-      console.log(
-        '🚀 ~ file: create-classique-shipment.component.ts ~ line 236 ~ CreateClassiqueShipmentComponent ~ createShipment ~ this.classiqueShippmentForm.valid',
-        this.classiqueShippmentForm.valid
-      );
-      console.log(
-        '🚀 ~ file: create-classique-shipment.component.ts ~ line 236 ~ CreateClassiqueShipmentComponent ~ createShipment ~ this.classiqueShippmentForm.valid',
-        this.classiqueShippmentForm.valid
-      );
       this.shippmentsServiceClient
         .createShipmentSoumission(this.classiqueShippmentForm.value)
         .subscribe(

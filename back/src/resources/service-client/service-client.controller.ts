@@ -47,7 +47,7 @@ export class ServiceClientController {
     const buffer = await this.serviceClientService.createShipment(
       req.user,
       shipment,
-      'Classique Divers',
+      'classique divers',
       res,
     );
     const buf = Buffer.from(buffer);
@@ -56,51 +56,49 @@ export class ServiceClientController {
   }
 
   @Post('create-shipment-retrait-cahier-de-charge')
-  createShipmentRetraitCahierDeCharge(
+  async createShipmentRetraitCahierDeCharge(
     @Req() req,
     @Body() shipment: CreateShipmentByServiceClientDto,
-    @Res() res: Response,
+    @Response() res,
   ) {
     console.log(
       '🚀 ~ file: service-client.controller.ts ~ line 44 ~ ServiceClientController ~ shipment',
       shipment,
     );
-    return this.serviceClientService.createShipment(
+    const buffer = await this.serviceClientService.createShipment(
       req.user,
       shipment,
-      'Cahier De Charge',
+      'cahier de charge',
       res,
     );
+    const buf = Buffer.from(buffer);
+    res.send(buf);
+    return res;
   }
 
   @Post('create-shipment-soumission')
-  createShipmentSoumission(
+  async createShipmentSoumission(
     @Req() req,
     @Body() shipment: CreateShipmentByServiceClientDto,
-    @Res() res: Response,
+    @Response() res,
   ) {
     console.log(
       '🚀 ~ file: service-client.controller.ts ~ line 44 ~ ServiceClientController ~ shipment',
       shipment,
     );
-    return this.serviceClientService.createShipment(
+    const buffer = await this.serviceClientService.createShipment(
       req.user,
       shipment,
-      'Soumission',
+      'soumission',
       res,
     );
+    const buf = Buffer.from(buffer);
+    res.send(buf);
+    return res;
   }
 
   @Post('estimate-tarif')
   getEstimateTarif(@Req() req, @Body() estimateTarifDto: EstimateTarifDto) {
-    console.log(
-      '🚀 ~ file: service-client.controller.ts ~ line 43 ~ ServiceClientController ~ req',
-      req,
-    );
-    console.log(
-      '🚀 ~ file: service-client.controller.ts ~ line 48 ~ ServiceClientController ~ estimateTarifDto',
-      estimateTarifDto,
-    );
     return this.serviceClientService.getEstimateTarif(
       req.user,
       estimateTarifDto,

@@ -630,35 +630,39 @@ export class ShipmentsService {
           shipment,
           user,
         );
-        if (shipment.service.nom.toLowerCase() == 'classique divers' || shipment.service.nom.toLowerCase() == 'soumission' || shipment.service.nom.toLowerCase() == 'cahier de charge') {
-          console.log(
-            '🚀 ~ file: shipments.service.ts ~ line 469 ~ ShipmentsService ~ forawait ~ shipment.service.nom',
-            shipment.service.nom,
-          );
-          if (
-            shipmentStatus[shipmentStatus.length - 1].libelle ==
-              StatusShipmentEnum.affectedToCoursier &&
-            shipmentStatus.length <= 3
-          ) {
-            listShipmentsReseive.push(shipment.tracking);
-          }
-        } else {
-          const client = await this.clientService.findClientByShipment(shipment);
-          console.log(
-            '🚀 ~ file: shipments.service.ts ~ line 143 ~ ShipmentsService ~ forawait ~ client',
-            client,
-          );
-          if (
-            shipmentStatus[shipmentStatus.length - 1].libelle ==
-              StatusShipmentEnum.affectedToCoursier &&
-            shipmentStatus.length <= client.nbTentative
-          ) {
-            listShipmentsReseive.push(shipment.tracking);
-          }
+      if (
+        shipment.service.nom.toLowerCase() == 'classique divers' ||
+        shipment.service.nom.toLowerCase() == 'soumission' ||
+        shipment.service.nom.toLowerCase() == 'cahier de charge'
+      ) {
+        console.log(
+          '🚀 ~ file: shipments.service.ts ~ line 469 ~ ShipmentsService ~ forawait ~ shipment.service.nom',
+          shipment.service.nom,
+        );
+        if (
+          shipmentStatus[shipmentStatus.length - 1].libelle ==
+            StatusShipmentEnum.affectedToCoursier &&
+          shipmentStatus.length <= 3
+        ) {
+          listShipmentsReseive.push(shipment.tracking);
+        }
+      } else {
+        const client = await this.clientService.findClientByShipment(shipment);
+        console.log(
+          '🚀 ~ file: shipments.service.ts ~ line 143 ~ ShipmentsService ~ forawait ~ client',
+          client,
+        );
+        if (
+          shipmentStatus[shipmentStatus.length - 1].libelle ==
+            StatusShipmentEnum.affectedToCoursier &&
+          shipmentStatus.length <= client.nbTentative
+        ) {
+          listShipmentsReseive.push(shipment.tracking);
         }
       }
-      return listShipmentsReseive;
     }
+    return listShipmentsReseive;
+  }
 
   async receiveShipmentCoursier(user: User, trackings: string[]) {
     const employeInfo = await this.employeService.findOneByUserId(user.id);
@@ -817,9 +821,8 @@ export class ShipmentsService {
     }
   }
   async setShipmentRamasser(user: any, trackings: any) {
-    const coursierInfo = await this.userService.findInformationOfCoursierByUserId(
-      user.id,
-    );
+    const coursierInfo =
+      await this.userService.findInformationOfCoursierByUserId(user.id);
     if (trackings.length != null) {
       for (let tracking of trackings) {
         tracking = tracking.toLowerCase();
@@ -858,9 +861,9 @@ export class ShipmentsService {
               await this.statusService.getShipmentStatusById(shipment.id);
             if (
               statusShipment[statusShipment.length - 1].libelle ==
-              StatusShipmentEnum.presExpedition ||
-            statusShipment[statusShipment.length - 1].libelle ==
-              StatusShipmentEnum.ramasse
+                StatusShipmentEnum.presExpedition ||
+              statusShipment[statusShipment.length - 1].libelle ==
+                StatusShipmentEnum.ramasse
             ) {
               const createStautsShipment = await this.statusService.create({
                 user: user,
@@ -1139,7 +1142,7 @@ export class ShipmentsService {
       libelle: StatusShipmentEnum.presExpedition,
       createdOn: createdBy.employe.agence.id,
     });
-    
+
     saveShipment.lastStatus = StatusShipmentEnum.presExpedition;
     await this.shipmentRepository.save(saveShipment);
 
@@ -1223,7 +1226,7 @@ export class ShipmentsService {
         const surpoidsConventionne = await this.calculeSurpoidsConvention(
           shipment.client_poidsBase,
           shipment.client_poidsBase,
-           codeTarifZoneConv.codeTarifZone_tarifPoidsParKg,
+          codeTarifZoneConv.codeTarifZone_tarifPoidsParKg,
         );
         console.log(
           '🚀 ~ file: shipments.service.ts ~ line 1166 ~ ShipmentsService ~ calculTarifslivraison ~ surpoidsConventionne',
@@ -1232,7 +1235,9 @@ export class ShipmentsService {
         tarifsLivraison =
           costSurpoids +
           (codeTarifZone.codeTarifZone_tarifStopDesk + surpoidsConventionne) -
-        (shipment.client_poidsBase * codeTarifZoneConv.codeTarifZone_tarifPoidsParKg) / 5;
+          (shipment.client_poidsBase *
+            codeTarifZoneConv.codeTarifZone_tarifPoidsParKg) /
+            5;
       }
     }
     return tarifsLivraison;
@@ -1297,11 +1302,15 @@ export class ShipmentsService {
       ],
     });
     for await (const shipment of shipments) {
-      if (shipment.service.nom.toLowerCase() != 'classique divers' && shipment.service.nom.toLowerCase() != 'soumission' && shipment.service.nom.toLowerCase() != 'cahier de charge') {
+      if (
+        shipment.service.nom.toLowerCase() != 'classique divers' &&
+        shipment.service.nom.toLowerCase() != 'soumission' &&
+        shipment.service.nom.toLowerCase() != 'cahier de charge'
+      ) {
         const inforClient = await this.clientService.infoClientByUserId(
           shipment.createdBy.id,
         );
-  
+
         if (
           !listTracking.includes(shipment.tracking) &&
           infoEmploye.agence.commune.wilaya.id ===
@@ -1309,13 +1318,15 @@ export class ShipmentsService {
         ) {
           listTracking.push(shipment.tracking);
         }
-      }else {
-        const infoExp = await this.employeService.findOneByUserId(shipment.createdBy.id)
+      } else {
+        const infoExp = await this.employeService.findOneByUserId(
+          shipment.createdBy.id,
+        );
 
         if (
           !listTracking.includes(shipment.tracking) &&
           infoEmploye.agence.commune.wilaya.id ===
-          infoExp.agence.commune.wilaya.id
+            infoExp.agence.commune.wilaya.id
         ) {
           listTracking.push(shipment.tracking);
         }
@@ -1331,9 +1342,8 @@ export class ShipmentsService {
       user.id,
     );
     const listTracking: string[] = [];
-    const coursierInfo = await this.userService.findInformationOfCoursierByUserId(
-      user.id,
-    );
+    const coursierInfo =
+      await this.userService.findInformationOfCoursierByUserId(user.id);
     console.log(
       '🚀 ~ file: shipments.service.ts ~ line 1059 ~ ShipmentsService ~ getTrackingPresExpPickup ~ coursierInfo',
       coursierInfo,
@@ -1462,7 +1472,7 @@ export class ShipmentsService {
         shipment.recolteId is null`,
       )
       .getRawMany();
-      console.log(shipmentsCoursier)
+    console.log(shipmentsCoursier);
     for (const shipment of shipmentsCoursier) {
       const statusShipment = await this.statusService.getShipmentStatusById(
         shipment.shipment_id,
@@ -1473,10 +1483,16 @@ export class ShipmentsService {
       ) {
         let cost = 0;
         let tarifLivraison = 0;
-        if (shipment.service.nom.toLowerCase() == 'classique divers' || shipment.service.nom.toLowerCase() == 'soumission' || shipment.service.nom.toLowerCase() == 'cahier de charge') {
+        if (
+          shipment.service_nom.toLowerCase() == 'classique divers' ||
+          shipment.service_nom.toLowerCase() == 'soumission' ||
+          shipment.service_nom.toLowerCase() == 'cahier de charge'
+        ) {
           if (shipment.shipment_cashOnDelivery) {
-            const createdCs = await this.userService.findOne(shipment.shipment_createdById)
-            tarifLivraison =  await this.serviceClientService.getEstimateTarif(
+            const createdCs = await this.userService.findOne(
+              shipment.shipment_createdById,
+            );
+            tarifLivraison = await this.serviceClientService.getEstimateTarif(
               createdCs,
               {
                 communeId: shipment.commune_id,
@@ -1490,11 +1506,11 @@ export class ShipmentsService {
                 service: shipment.service_nom,
               },
             );
-          }else {
+          } else {
             tarifLivraison = 0;
           }
-          cost = tarifLivraison
-          montant += cost
+          cost = tarifLivraison;
+          montant += cost;
         } else {
           tarifLivraison = await this.calculTarifslivraison(
             shipment.shipment_tracking,
@@ -1522,32 +1538,38 @@ export class ShipmentsService {
     let montant = 0;
     const listColisDeskLivre = [];
     const shipments = await this.findShipmentLivreDesk(user);
+    console.log('*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/');
     for await (const shipment of shipments) {
       let cost = 0;
-      if (shipment.service.nom.toLowerCase() == 'classique divers' || shipment.service.nom.toLowerCase() == 'soumission' || shipment.service.nom.toLowerCase() == 'cahier de charge') {
+
+      if (
+        shipment.service_nom.toLowerCase() == 'classique divers' ||
+        shipment.service_nom.toLowerCase() == 'soumission' ||
+        shipment.service_nom.toLowerCase() == 'cahier de charge'
+      ) {
         if (shipment.shipment_cashOnDelivery) {
-          console.log('*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/')
-          console.log(shipment)
-          const createdCs = await this.userService.findOne(shipment.shipment_createdById)
-          cost =  await this.serviceClientService.getEstimateTarif(
-            createdCs,
-            {
-              communeId: shipment.commune_id,
-              poids: shipment.shipment_poids,
-              longueur: shipment.shipment_longueur,
-              largeur: shipment.shipment_largeur,
-              hauteur: shipment.shipment_hauteur,
-              wilayaId: shipment.commune_wilayaId,
-              livraisonDomicile: shipment.shipment_livraisonDomicile,
-              livraisonStopDesck: shipment.shipment_livraisonStopDesck,
-              service: shipment.service_nom,
-            },
+          console.log('*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/');
+          console.log(shipment);
+          const createdCs = await this.userService.findOne(
+            shipment.shipment_createdById,
           );
-        }else {
-          cost = 0
+          cost = await this.serviceClientService.getEstimateTarif(createdCs, {
+            communeId: shipment.commune_id,
+            poids: shipment.shipment_poids,
+            longueur: shipment.shipment_longueur,
+            largeur: shipment.shipment_largeur,
+            hauteur: shipment.shipment_hauteur,
+            wilayaId: shipment.commune_wilayaId,
+            livraisonDomicile: shipment.shipment_livraisonDomicile,
+            livraisonStopDesck: shipment.shipment_livraisonStopDesck,
+            service: shipment.service_nom,
+          });
+        } else {
+          cost = 0;
         }
-        montant += cost
-      }else{
+        montant += cost;
+        this.logger.warn(`montant------------------> : ${montant}`);
+      } else {
         const tarifLivraison = await this.calculTarifslivraison(
           shipment.shipment_tracking,
         );
@@ -1637,7 +1659,13 @@ export class ShipmentsService {
   }
   async getShipmentsOfRecolte(id: number) {
     const listShipmentOfRecolte = await this.shipmentRepository.find({
-      relations: ['createdBy','recolte', 'service', 'commune', 'commune.wilaya'],
+      relations: [
+        'createdBy',
+        'recolte',
+        'service',
+        'commune',
+        'commune.wilaya',
+      ],
       where: {
         recolte: {
           id: id,
@@ -2290,7 +2318,7 @@ export class ShipmentsService {
       echange: 0,
       enAttente: 0,
       montant: 0,
-        gain: 0,
+      gain: 0,
     };
     const shipmentsOfCoursier = await this.shipmentRepository
       .createQueryBuilder('shipment')
@@ -2302,7 +2330,7 @@ export class ShipmentsService {
           status.userAffectId = ${user.id}`,
       )
       .getMany();
-      const freelanceInfo =
+    const freelanceInfo =
       await this.coursierService.findInformationOfCoursierByUserId(user.id);
     for await (const shipment of shipmentsOfCoursier) {
       const status = await this.statusService.getShipmentStatusById(
@@ -2335,8 +2363,11 @@ export class ShipmentsService {
           }
 
           statistique.livre += 1;
-          if (shipment.service.nom.toLowerCase() == 'classique divers' || shipment.service.nom.toLowerCase() == 'soumission' || shipment.service.nom.toLowerCase() == 'cahier de charge') {
-
+          if (
+            shipment.service.nom.toLowerCase() == 'classique divers' ||
+            shipment.service.nom.toLowerCase() == 'soumission' ||
+            shipment.service.nom.toLowerCase() == 'cahier de charge'
+          ) {
           } else {
             const tarifLivraison = await this.calculTarifslivraison(
               shipment.tracking,
@@ -2352,12 +2383,12 @@ export class ShipmentsService {
           }
           //
           break;
-          case StatusShipmentEnum.preRecolte:
-            if (!shipment.payer) {
-              statistique.gain += freelanceInfo.montantLivraison;
-            }
-            break;
-          //
+        case StatusShipmentEnum.preRecolte:
+          if (!shipment.payer) {
+            statistique.gain += freelanceInfo.montantLivraison;
+          }
+          break;
+        //
         case StatusShipmentEnum.tentativeEchoue:
           statistique.total += 1;
           //
@@ -2380,12 +2411,12 @@ export class ShipmentsService {
     const listColisCs = [];
     const shipments = await this.findShipmentCreatedInDesk(user);
     for await (const shipment of shipments) {
-      let tarifLivraison = 0
-     
+      let tarifLivraison = 0;
+
       if (shipment.cashOnDelivery) {
-        tarifLivraison =0
-      }else{
-        tarifLivraison  = await this.serviceClientService.getEstimateTarif(
+        tarifLivraison = 0;
+      } else {
+        tarifLivraison = await this.serviceClientService.getEstimateTarif(
           user,
           {
             communeId: shipment.commune.id,
@@ -2409,10 +2440,10 @@ export class ShipmentsService {
         cost: tarifLivraison,
       });
     }
-    console.log("getRecoltesCsInformation",montant,listColisCs)
+    console.log('getRecoltesCsInformation', montant, listColisCs);
     return { montant, listColisCs };
   }
-  
+
   async getStatistiqueClient(user) {
     const statusAller = [
       StatusShipmentEnum.enPreparation,
@@ -3022,28 +3053,32 @@ export class ShipmentsService {
       )
       .getMany();
     for await (const shipment of shipments) {
-      if (shipment.service.nom.toLowerCase() != 'classique divers' && shipment.service.nom.toLowerCase() != 'soumission' && shipment.service.nom.toLowerCase() != 'cahier de charge') {
-      const lastStatus = await this.statusService.getShipmentStatusById(
-        shipment.id,
-      );
-      console.log(
-        '🚀 ~ file: shipments.service.ts ~ line 400 ~ ShipmentsService ~ forawait ~ lastStatus',
-        lastStatus[lastStatus.length - 1].libelle,
-      );
-      if (
-        lastStatus[lastStatus.length - 1].libelle ===
-        StatusShipmentEnum.preRecolte
-      ) {
-        delete shipment.status;
-        await this.statusService.create({
-          shipment: shipment,
-          user: user,
-          libelle: StatusShipmentEnum.recolte,
-          userAffect: lastStatus[lastStatus.length - 1].userAffect,
-        });
+      // if (
+      //   shipment.service.nom.toLowerCase() != 'classique divers' &&
+      //   shipment.service.nom.toLowerCase() != 'soumission' &&
+      //   shipment.service.nom.toLowerCase() != 'cahier de charge'
+      // ) {
+        const lastStatus = await this.statusService.getShipmentStatusById(
+          shipment.id,
+        );
+        console.log(
+          '🚀 ~ file: shipments.service.ts ~ line 400 ~ ShipmentsService ~ forawait ~ lastStatus',
+          lastStatus[lastStatus.length - 1].libelle,
+        );
+        if (
+          lastStatus[lastStatus.length - 1].libelle ===
+          StatusShipmentEnum.preRecolte
+        ) {
+          delete shipment.status;
+          await this.statusService.create({
+            shipment: shipment,
+            user: user,
+            libelle: StatusShipmentEnum.recolte,
+            userAffect: lastStatus[lastStatus.length - 1].userAffect,
+          });
         }
       }
-    }
+    // }
   }
   async update_v2(id: number, updateShipmentDto: any) {
     return await this.shipmentRepository.update(id, updateShipmentDto);
@@ -3190,7 +3225,7 @@ export class ShipmentsService {
       .leftJoin('status.user', 'user')
       .leftJoinAndSelect('shipment.service', 'service')
       .where(
-        `(service.nom='Classique Entreprise' or service.nom ='Classique Divers')
+        `(service.nom='Classique Entreprise' or service.nom ='classique divers')
     and shipment.createdBy = ${userClient.user.id}`,
       )
       .andWhere(
