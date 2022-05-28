@@ -105,6 +105,12 @@ export class ShipmentsController {
       );
     }
   }
+
+  @Post('one-shipment-of-coursier-a-livrer')
+  async oneShipmentOfCoursierAlivrer(@Request() req, @Body('tracking') tracking: string,) {
+    return await this.shipmentsService.oneShipmentOfCoursierAlivrer(tracking, req.user);
+  }
+  
   @Get('getPickupFreelance')
   findAllShipmentsPresExpPickup(@Request() req) {
     return this.shipmentsService.getTrackingPresExpPickup(req.user);

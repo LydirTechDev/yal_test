@@ -1336,6 +1336,72 @@ export class ShipmentsService {
     return listTracking;
   }
 
+  async oneShipmentOfCoursierAlivrer(tracking: string, user: User) {
+    const listShipmnetsOfCoursier: Shipment[] = [];
+    const shipmnets = await this.shipmentRepository
+      .createQueryBuilder('shipment')
+      .leftJoinAndSelect('shipment.status', 'status')
+      .leftJoinAndSelect('shipment.service', 'service')
+      .leftJoinAndSelect('shipment.createdBy', 'user')
+      .leftJoinAndSelect('user.client', 'client')
+      .leftJoinAndSelect('shipment.commune', 'commune')
+      .leftJoinAndSelect('commune.wilaya', 'wilaya')
+      .where(
+        `status.libelle = '${StatusShipmentEnum.affectedToCoursier}' and
+      status.userAffectId = ${user.id} and
+      shipment.recolteId is null and shipment.tracking = '${tracking}'`,
+      )
+      .getMany();
+
+    let alertedAt = new Date()
+    for await (const shipment of shipmnets) {
+      const shipmnetStatus =
+        await this.statusService.getShipmentStatusByShipmentUserAffected(
+          shipment,
+          user,
+        );
+      if (
+        (shipmnetStatus[shipmnetStatus.length - 1].libelle ==
+          StatusShipmentEnum.sortiEnLivraison ||
+          shipmnetStatus[shipmnetStatus.length - 1].libelle ==
+            StatusShipmentEnum.enAlerte ||
+          shipmnetStatus[shipmnetStatus.length - 1].libelle ==
+            StatusShipmentEnum.tentativeEchoue ||
+          shipmnetStatus[shipmnetStatus.length - 1].libelle ==
+            StatusShipmentEnum.enAttenteDuClient) &&
+        !listShipmnetsOfCoursier.includes(shipment)
+      ) {
+        listShipmnetsOfCoursier.push(shipment);
+      }
+      if ( shipmnetStatus[shipmnetStatus.length - 1].libelle ==
+        StatusShipmentEnum.enAlerte) {
+        alertedAt = shipment.updatedAt
+      }
+    }
+    const tarif = await this.calculTarifslivraison(tracking)
+
+    const shipment = {
+      id: listShipmnetsOfCoursier[0].id,
+      tracking: listShipmnetsOfCoursier[0].tracking,
+      tarif: tarif.toString(),
+      alertedAt: alertedAt,
+      nom_dest: shipmnets[0].nom,
+      prom_dest: shipmnets[0].prenom,
+      telephone_dest: shipmnets[0].telephone,
+      address_dest: shipmnets[0].adresse,
+      nom_exp: shipmnets[0].createdBy.client.nomCommercial,
+      prom_exp: shipmnets[0].createdBy.client.prenomGerant,
+      telephone_exp: shipmnets[0].createdBy.client.telephone,
+      address_exp: shipmnets[0].createdBy.client.adresse
+    }
+
+    this.logger.debug("***********************************")
+    this.logger.debug("***********************************")
+    this.logger.debug("***********************************")
+    console.log(shipment)
+    return shipment;
+  }
+  
   async getTrackingPresExpPickup(user: User) {
     console.log(
       '🚀 ~ file: shipments.service.ts ~ line 1055 ~ ShipmentsService ~ getTrackingPresExpPickup ~ user',
