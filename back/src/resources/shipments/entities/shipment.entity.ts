@@ -224,4 +224,14 @@ export class Shipment {
     nullable: true,
   })
   cashOnDelivery: boolean
+
+  /**
+   * le parent de lacuser
+   */
+  
+   @ManyToOne(type => Shipment, shipment => shipment.accShipment)
+   parentShipment: Shipment;
+   
+   @OneToMany(type => Shipment, shipment => shipment.parentShipment)
+   accShipment: Shipment[];
 }

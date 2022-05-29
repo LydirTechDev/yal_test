@@ -1,3 +1,4 @@
+import { BlobOptions } from 'buffer';
 import {
   IsBoolean,
   IsNumber,
@@ -66,4 +67,7 @@ export class CreateShipmentFromAgenceDto {
 
   @IsBoolean()
   cashOnDelivery: boolean;
+
+  @IsBoolean()
+  switched: ExpiditeurPublic = null
 }

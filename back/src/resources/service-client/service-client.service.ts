@@ -149,7 +149,7 @@ export class ServiceClientService {
       requestedUser.id,
     );
 
-    // ###################### -- classique divers -- ######################
+    // ###################### -- service All divers -- ######################
     const service = await this.service.findOneByName(nomService);
     const codeTarifId = service.codeTarif[0].id;
 
@@ -165,6 +165,17 @@ export class ServiceClientService {
       raisonSocialeExp: shipment.raisonSocialeExp,
     });
 
+    let switched = null
+    if(shipment.acc){
+      switched  = await this.expiditeurPublicService.findOrCreate({
+        nomExp: shipment.nom,
+        prenomExp: shipment.prenom,
+        adresseExp: shipment.adresse,
+        telephoneExp: shipment.telephoneExp,
+        raisonSocialeExp: shipment.raisonSociale,
+        numIdentite: ''
+      });
+    }
     const tarifLivraison = await this.getEstimateTarif(requestedUser, {
       service: service.nom,
       poids: shipment.poids,
@@ -176,6 +187,7 @@ export class ServiceClientService {
       communeId: communeDest.id,
       wilayaId: communeDest.wilaya.id,
     });
+
     // ###################### -- create new shipment -- ######################
     return await this.shipmentService.createFromAgence(
       {
@@ -196,7 +208,8 @@ export class ServiceClientService {
         service: service,
         commune: communeDest,
         expiditeurPublic: exp,
-        cashOnDelivery: shipment.cashOnDelivery
+        cashOnDelivery: shipment.cashOnDelivery,
+        switched: switched
       },
       userInfo,
       tarifLivraison,

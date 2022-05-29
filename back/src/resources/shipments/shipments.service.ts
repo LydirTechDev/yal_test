@@ -47,6 +47,7 @@ import { RotationsService } from '../rotations/rotations.service';
 import { CreateAspirationShipmentDto } from './dto/createAspirationShipmentDto';
 import { Facture } from '../facture/entities/facture.entity';
 import { ServiceClientService } from '../service-client/service-client.service';
+import { ExpiditeurPublic } from '../expiditeur-public/entities/expiditeur-public.entity';
 
 /**
  *
@@ -1113,21 +1114,11 @@ export class ShipmentsService {
     tarifLivraison: number,
     res: any,
   ) {
-    console.log(
-      '################################################################################ ',
-    );
-    console.log(
-      '🚀 ~ file: shipments.service.ts ~ line 852 ~ ShipmentsService ~ setShipmentsPreExpedition ~ tarifLivraison',
-      tarifLivraison,
-    );
-    console.log(
-      '🚀 ~ file: shipments.service.ts ~ line 852 ~ ShipmentsService ~ setShipmentsPreExpedition ~ createdBy',
-      createdBy,
-    );
+
     const newShipment = this.shipmentRepository.create(shipment);
 
     const saveShipment = await this.shipmentRepository.save(newShipment);
-
+    console.log(`-----------> SERVICE ::::>>>> ${saveShipment.service.nom}`)
     const saveStatus = await this.statusService.create({
       shipment: saveShipment,
       user: createdBy,
@@ -1146,10 +1137,70 @@ export class ShipmentsService {
     saveShipment.lastStatus = StatusShipmentEnum.presExpedition;
     await this.shipmentRepository.save(saveShipment);
 
-    return await this.pdfService.generateShipmentAgence(
-      saveShipment,
-      tarifLivraison,
-    );
+    let accShipment: Shipment;
+    let page_2;
+    if (shipment.switched != null) {
+      this.logger.error("//**/*/*/*/*/*///**/*/*/*/*/*///**/*/*/*/*/*///**/*/*/*/*/*///**/*/*/*/*/*/--0")
+      this.logger.error(shipment.switched)
+      switch (saveShipment.service.nom.toLowerCase()) {
+        case 'cahier de charge':
+          accShipment = this.shipmentRepository.create({
+            nom: saveShipment.expiditeurPublic.nomExp,
+            prenom: saveShipment.expiditeurPublic.prenomExp,
+            telephone: saveShipment.expiditeurPublic.telephoneExp,
+            raisonSociale: saveShipment.expiditeurPublic.raisonSocialeExp,
+            adresse: saveShipment.expiditeurPublic.adresseExp,
+            service: saveShipment.service,
+            prixEstimer: shipment.prixEstimer,
+            poids: 0,
+            longueur:0,
+            largeur: 0,
+            hauteur: 0,
+            createdBy: createdBy,
+            livraisonDomicile: true,
+            livraisonStopDesck: false,
+            expiditeurPublic: shipment.switched,
+            designationProduit: 'acuser de ' + saveShipment.designationProduit,
+            cashOnDelivery: false,
+            commune: createdBy.employe.agence.commune,
+            parentShipment: saveShipment
+          })
+          
+          this.logger.error("//**/*/*/*/*/*///**/*/*/*/*/*///**/*/*/*/*/*///**/*/*/*/*/*///**/*/*/*/*/*/--1")
+          const savedAcc = await this.shipmentRepository.save(accShipment)
+          const saveStatus = await this.statusService.create({
+            shipment: savedAcc,
+            user: createdBy,
+            libelle: StatusShipmentEnum.enPreparation,
+            createdOn: createdBy.employe.agence.id,
+          });
+          this.logger.error("//**/*/*/*/*/*///**/*/*/*/*/*///**/*/*/*/*/*///**/*/*/*/*/*///**/*/*/*/*/*/--2")
+      
+          savedAcc.tracking = await this.generateYal(savedAcc.id);
+          await this.shipmentRepository.save(savedAcc)
+          const setPreExpidier = await this.statusService.create({
+            shipment: savedAcc,
+            user: createdBy,
+            libelle: StatusShipmentEnum.enAttenteDeLiveraison,
+            createdOn: createdBy.employe.agence.id,
+          });
+          saveShipment.accShipment = [accShipment]
+          await this.shipmentRepository.save(saveShipment)
+          this.logger.error("//**/*/*/*/*/*///**/*/*/*/*/*///**/*/*/*/*/*///**/*/*/*/*/*///**/*/*/*/*/*/--3")
+          break;
+    
+        default:
+          break;
+      }
+    }
+
+
+    return this.pdfService.generateShipmentAgenceAccuser(saveShipment, tarifLivraison)
+      // return await this.pdfService.generateShipmentAgence(
+      //   saveShipment,
+      //   tarifLivraison,
+      // );  
+  
   }
   async calculTarifslivraison(ShipmentTraking) {
     const shipment = await this.shipmentRepository
@@ -1720,6 +1771,7 @@ export class ShipmentsService {
         `shipment.recolteCsId is null
         and agence.id = ${employeInfo.agence.id} `,
       )
+      .andWhere(`service.id != 1`)
       .getMany();
     return shipments;
   }

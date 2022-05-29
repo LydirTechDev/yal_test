@@ -15,7 +15,7 @@ export class ExpiditeurPublicService {
   async findOrCreate(createExpiditeurPublicDto: CreateExpiditeurPublicDto) {
     let expiditeur = await this.findOne(createExpiditeurPublicDto.numIdentite);
     
-    if (expiditeur == null) {
+    if (expiditeur == null ||createExpiditeurPublicDto.numIdentite == '' ) {
       const newExp = this.expidituerPuclicRepository.create(
         createExpiditeurPublicDto,
       );

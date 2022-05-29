@@ -71,8 +71,8 @@ export class CreateShipmentByServiceClientDto {
   @IsBoolean()
   livraisonStopDesck: boolean;
 
-  @IsBoolean({
-    
-  })
+  @IsBoolean()
   cashOnDelivery: boolean = false;
+  @IsBoolean()
+  acc: boolean = false
 }

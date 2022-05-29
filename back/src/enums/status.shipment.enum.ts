@@ -1,5 +1,6 @@
 export enum StatusShipmentEnum {
   enPreparation = 'EN PREPARATION',
+  enAttenteDeLiveraison = 'EN ATTENTE DE LIVRAISON',
   presExpedition = 'PRÉS A EXPIDIÉ',
   ramasse = 'RAMASSÉ',
   expidie = 'EXPIDIÉ',

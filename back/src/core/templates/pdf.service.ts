@@ -31,6 +31,25 @@ export class PdfService {
     private clientService:ClientsService
   ) {}
 
+  async  generateShipmentAgenceAccuser(shipmentInfo: Shipment, tarifLivraison: number){
+    let brd = null;
+    console.log("🚀 ~ file: pdf.service.ts ~ line 36 ~ PdfService ~ generateShipmentAgenceAccuser ~ brd", brd)
+    const brdr1 = await this.generateShipmentAgence(shipmentInfo, tarifLivraison)
+    const pdfBytes = await brdr1.save();
+    if (shipmentInfo.accShipment == null ) {
+      fs.writeFileSync('dest', pdfBytes);
+      return pdfBytes;
+    }else {
+      const brdr2 = await this.generateShipmentAgence(shipmentInfo.accShipment[0], 0)
+      brd = brdr2
+      const allbrd = await brd.copyPages(brdr1, [0])
+      brd.addPage(allbrd[0])
+      const pdfBytes = await brd.save();
+      fs.writeFileSync('dest', pdfBytes);
+      return pdfBytes;
+    }
+  }
+
   async generateShipmentAgence(shipmentInfo: Shipment, tarifLivraison: number) {
     console.log(
       '🚀 ~ file: pdf.service.ts ~ line 25 ~ PdfService ~ generateShipmentAgence ~ tarifLivraison',
@@ -48,7 +67,7 @@ export class PdfService {
     const firstPage = pages[0];
 
     const { width, height } = firstPage.getSize();
-
+    
     //infoPackageSliprmation service
 
     const text = shipmentInfo.service.nom.toUpperCase();
@@ -159,7 +178,11 @@ export class PdfService {
     }else if ( shipmentInfo.service.nom.toLowerCase() == "soumission"){
       jpgUrl = 'src/assets/img/soumission.png';
     }else if (shipmentInfo.service.nom.toLowerCase() == "cahier de charge") {
-      jpgUrl = 'src/assets/img/retrait_cahier_de_charge.png'
+      if (shipmentInfo.parentShipment != null) {
+        jpgUrl = 'src/assets/img/cahier_des_charge.png'
+      }else{
+        jpgUrl = 'src/assets/img/retrait_cahier_de_charge.png'
+      }
     }
 
     const jpgImage = await pdfDoc.embedPng(fs.readFileSync(jpgUrl));
@@ -411,9 +434,11 @@ export class PdfService {
       height: barcodeDims.height,
     });
 
-    const pdfBytes = await pdfDoc.save();
-    fs.writeFileSync('dest', pdfBytes);
-    return pdfBytes;
+   // pdfDoc.addPage(this.generateShipmentAgence(shipmentInfo.accShipment[0],0))
+
+  //  const pdfBytes = await pdfDoc.save();
+ //   fs.writeFileSync('dest', pdfBytes);
+    return pdfDoc;
   }
 
   async generateInterneShipment(
@@ -600,7 +625,7 @@ export class PdfService {
 
     const pdfBytes = await pdfDoc.save();
     fs.writeFileSync(dest, pdfBytes);
-    return pdfBytes;
+    return pdfDoc;
   }
   
   async generatePackageSlip(

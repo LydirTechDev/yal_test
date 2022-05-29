@@ -144,7 +144,8 @@ export class CreateCahierDeChargeShipmentComponent implements OnInit {
       ],
       livraisonStopDesck: [false, Validators.required],
       livraisonDomicile: [true, Validators.required],
-      service: ['cahier de charge', Validators.required]
+      service: ['cahier de charge', Validators.required],
+      acc: [true, Validators.required], 
     });
   }
 
