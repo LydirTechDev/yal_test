@@ -31,7 +31,7 @@ export class DetailWilayaComponent implements OnInit {
   listAgences=[];
   hidden: boolean = true;
   wilayaForm = this.formBuilder.group({
-    codeWilaya: [,Validators.compose([Validators.required,Validators.minLength(2),Validators.maxLength(2)])],
+    codeWilaya: [,Validators.compose([Validators.required,Validators.minLength(1),Validators.maxLength(2)])],
     nomLatin: [,Validators.compose([Validators.required,Validators.minLength(3),Validators.maxLength(30)]) ],
     nomArabe: [,Validators.compose([Validators.required,Validators.minLength(3),Validators.maxLength(30)])],
     agenceRetourId: [,Validators.compose([Validators.required,Validators.minLength(3),Validators.maxLength(30)])],

@@ -292,7 +292,7 @@ export class AgenceComponent implements OnInit {
           );
           this.getPaginateAgence();
           this.btnSpinner = false;
-          this.agenceForm.reset;
+          this.agenceForm.reset();
           this.modalService.dismissAll();
         },
         (error) => {

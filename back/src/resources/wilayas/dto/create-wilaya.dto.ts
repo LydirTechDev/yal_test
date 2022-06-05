@@ -12,7 +12,7 @@ export class CreateWilayaDto {
     example: '16'
   })
   @IsString()
-  @MinLength(2)
+  @MinLength(1)
   @MaxLength(2)
   codeWilaya: string;
 

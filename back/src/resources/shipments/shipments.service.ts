@@ -2486,6 +2486,7 @@ export class ShipmentsService {
             shipment.service.nom.toLowerCase() == 'soumission' ||
             shipment.service.nom.toLowerCase() == 'cahier de charge'
           ) {
+            
           } else {
             const tarifLivraison = await this.calculTarifslivraison(
               shipment.tracking,

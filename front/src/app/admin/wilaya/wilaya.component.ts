@@ -117,7 +117,7 @@ export class WilayaComponent implements OnInit {
         [
           Validators.required,
           Validators.pattern('[0-9]+'),
-          Validators.minLength(2),
+          Validators.minLength(1),
           Validators.maxLength(2),
         ],
       ],

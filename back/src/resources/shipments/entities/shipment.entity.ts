@@ -212,11 +212,13 @@ export class Shipment {
     nullable: true,
   })
   pmtCoursier: PmtCoursier;
+  
   @OneToOne(() => Shipment, (shipmentRelation) => shipmentRelation, {
     nullable: true,
   })
   @JoinColumn()
   shipmentRelation: Shipment;
+
   @ManyToOne(() => Facture, (facture) => facture.shipments, { nullable: true })
   facture: Facture;
 
