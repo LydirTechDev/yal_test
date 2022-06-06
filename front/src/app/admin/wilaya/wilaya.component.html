@@ -6,13 +6,14 @@
                 <span class="mt-1 font-weight-normal pl-1">Ajouter Wilaya</span>
             </i>
         </a>
-                <div class="custom-file col-3 mt-2 mr-auto">
-                    <input type="file" class="custom-file-input" id="customFile" (change)="addfile($event)" placeholder="Upload file"
-                        accept=".csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
-                    <label class="custom-file-label" for="customFile">Choisir un fichier des wilayas</label>
-                </div>
+        <div class="custom-file col-3 mt-2 mr-auto">
+            <input type="file" class="custom-file-input" id="customFile" (change)="addfile($event)"
+                placeholder="Upload file"
+                accept=".csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
+            <label class="custom-file-label" for="customFile">Choisir un fichier des wilayas</label>
+        </div>
     </div>
-    
+
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -189,7 +190,7 @@
                             <span *ngIf="wilayaForm.controls['codeWilaya'].errors.required">code Wilaya requis </span>
                             <span *ngIf="wilayaForm.controls['codeWilaya'].errors.pattern">le code doit étre un nombre
                             </span>
-                            <span *ngIf="wilayaForm.controls['codeWilaya'].errors.minlength">longueur minimale 1
+                            <span *ngIf="wilayaForm.controls['codeWilaya'].errors.minlength">longueur minimale 2
                                 characters </span>
                             <span *ngIf="wilayaForm.controls['codeWilaya'].errors.maxlength">longueur maximale 2
                                 characters </span>
@@ -246,6 +247,22 @@
                         <span
                             *ngIf="wilayaForm.controls['agenceRetourId'].invalid && wilayaForm.controls['agenceRetourId'].touched"
                             class="invalid-feedback-custom">Agence requise</span>
+                    </div>
+                </div>
+                <!--duree reception-->
+                <div class="form-group row col-12">
+                    <label class="col-3 col-form-label text-right">Durée d'envoi de récolte * </label>
+                    <div class="col-9 text-left">
+                        <ng-select formControlName="dureeReceptionRecolte" placeholder=" Selectionner la durée">
+                            <ng-option [value]="1"> 1 journée</ng-option>
+                            <ng-option [value]="2"> 2 jours</ng-option>
+                            <ng-option [value]="3"> 3 jours</ng-option>
+                            <ng-option [value]="4"> 4 jours</ng-option>
+                            <ng-option [value]="5"> 5 jours</ng-option>
+                        </ng-select>
+                        <span
+                            *ngIf="wilayaForm.controls['dureeReceptionRecolte'].invalid && wilayaForm.controls['dureeReceptionRecolte'].touched"
+                            class="invalid-feedback-custom">Durée requise</span>
                     </div>
                 </div>
 

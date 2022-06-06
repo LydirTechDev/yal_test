@@ -132,7 +132,7 @@ export class Shipment {
   })
   livraisonDomicile: boolean;
 
-  @ManyToOne(() => User, (createdBy) => createdBy.shipmentCreateBy, { nullable: true })
+  @ManyToOne(() => User, (createdBy) => createdBy.shipmentsCreated, { nullable: true })
   createdBy: User;
 
   @CreateDateColumn()
@@ -212,13 +212,11 @@ export class Shipment {
     nullable: true,
   })
   pmtCoursier: PmtCoursier;
-  
   @OneToOne(() => Shipment, (shipmentRelation) => shipmentRelation, {
     nullable: true,
   })
   @JoinColumn()
   shipmentRelation: Shipment;
-
   @ManyToOne(() => Facture, (facture) => facture.shipments, { nullable: true })
   facture: Facture;
 

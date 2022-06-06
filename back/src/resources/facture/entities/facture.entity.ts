@@ -1,6 +1,6 @@
 import { Agence } from 'src/resources/agences/entities/agence.entity';
 import { Client } from 'src/resources/clients/entities/client.entity';
-import { RecolteFacture } from 'src/resources/recolte-facture/entities/recolte-facture.entity';
+import { Recolte } from 'src/resources/recoltes/entities/recolte.entity';
 import { Shipment } from 'src/resources/shipments/entities/shipment.entity';
 import { User } from 'src/resources/users/entities/user.entity';
 import {
@@ -121,8 +121,10 @@ export class Facture {
   })
   nbrColis: number;
 
-  @OneToOne(() => RecolteFacture, (recolte) => recolte.facture, {
+  @ManyToOne(() => Recolte, (recolte) => recolte.factures, {
     nullable: true,
   })
-  recolte: RecolteFacture;
+  recolte: Recolte;
+
+
 }

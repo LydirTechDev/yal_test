@@ -1,0 +1,31 @@
+
+<app-pagetitle title="Régularisation"> </app-pagetitle>
+
+<hr>
+
+<table class="table table-bordered table-centered bg-white table-hover mt-3">
+  <thead class="">
+    <tr>
+      <th scope="col">Nom commercial</th>
+      <th scope="col">Gérant</th>
+      <th scope="col">Nombre colis</th>
+      <th scope="col">Total ramassé</th>
+      <th scope="col">Frais de livraison</th>
+      <th scope="col">Montant à régulariser</th>
+      <th scope="col">Action</th>
+
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let client of listClient">
+      <td>{{client.client.nomCommercial}}</td>
+      <td>{{client.client.nomGerant}} {{client.client.prenomGerant}}</td>
+      <td>{{client.nbrColis}}</td>
+      <td>{{client.totalRamasser | currency:'DA':'symbol' :'1.2-2':'fr'}}</td>
+      <td>{{client.soldeAgence | currency:'DA':'symbol' :'1.2-2':'fr'}}</td>
+      <td>{{client.soldeAregulariser | currency:'DA':'symbol' :'1.2-2':'fr'}}</td>
+      <td scope="col"><button class="btn btn-sm btn-danger" (click)="payeClient(client.client.id)">Régulariser</button></td>
+    </tr>
+  </tbody>
+
+</table>

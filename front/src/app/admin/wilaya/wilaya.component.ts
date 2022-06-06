@@ -145,6 +145,11 @@ export class WilayaComponent implements OnInit {
           Validators.maxLength(30),
         ]),
       ],
+      dureeReceptionRecolte: [
+        ,
+        Validators.compose([
+        Validators.required])
+      ]
     });
 
     /**

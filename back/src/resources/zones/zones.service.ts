@@ -38,7 +38,11 @@ export class ZonesService {
    * @returns
    */
   async findAllZone(): Promise<Zone[]> {
-    const zones = await this.zoneRepository.find();
+    const zones = await this.zoneRepository.find({
+      order: {
+        id: 'ASC',
+      },
+    });
     if (zones.length <= 0) {
       throw new EntityNotFoundError(Zone, 'No Zones');
     }

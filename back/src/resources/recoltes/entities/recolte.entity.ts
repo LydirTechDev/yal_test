@@ -1,4 +1,6 @@
 import { Agence } from 'src/resources/agences/entities/agence.entity';
+import { Facture } from 'src/resources/facture/entities/facture.entity';
+import { Pmt } from 'src/resources/pmt/entities/pmt.entity';
 import { Shipment } from 'src/resources/shipments/entities/shipment.entity';
 import { User } from 'src/resources/users/entities/user.entity';
 import {
@@ -44,6 +46,16 @@ export class Recolte {
     nullable: true,
   })
   shipment: Shipment[];
+
+  @OneToMany(() => Pmt, (pmt) => pmt.recolte, {
+    nullable: true,
+  })
+  pmts: Pmt[];
+
+  @OneToMany(() => Facture, (facture) => facture.recolte, {
+    nullable: true,
+  })
+  factures: Facture[];
 
   
   @OneToMany(() => Shipment, (shipment) => shipment.recolteCs, {

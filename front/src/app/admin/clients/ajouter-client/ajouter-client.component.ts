@@ -17,7 +17,7 @@ export class AjouterClientComponent implements OnInit {
     private clientService: ClientService,
     private sweetalertService: SweetAlertService,
     private router: Router
-  ) {}
+  ) { }
 
 
   listCodeTarif = [];
@@ -56,7 +56,7 @@ export class AjouterClientComponent implements OnInit {
   newService = [];
 
 
-   delaiPaiementEnum;
+  delaiPaiementEnum;
   emailPattern =
     '^([a-zA-Z0-9_\\-\\.]+)@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.)|(([a-zA-Z0-9\\-]+\\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\\]?)$';
 
@@ -135,6 +135,7 @@ export class AjouterClientComponent implements OnInit {
     nbTentative: [3, Validators.compose([Validators.required])],
     poidsBase: [, Validators.compose([Validators.required])],
     tauxCOD: [, Validators.compose([Validators.required])],
+    c_o_d_ApartirDe: [, Validators.compose([Validators.required])],
     moyenPayement: [, Validators.compose([Validators.required])],
     jourPayement: [],
     delaiPaiement: [],
@@ -165,8 +166,8 @@ export class AjouterClientComponent implements OnInit {
 
   newTypeTarif(): FormGroup {
     return this.formBuilder.group({
-      serviceId: [,Validators.required],
-      codeTarifId: [,Validators.required],
+      serviceId: [, Validators.required],
+      codeTarifId: [, Validators.required],
     });
   }
 
@@ -335,7 +336,7 @@ export class AjouterClientComponent implements OnInit {
   }
 
   private _validateThirdtStep(): boolean {
-      
+
     if ((this.typeTarif.at(0) as FormGroup).get('codeTarifId').valid && this.clientForm.get('jourPayement').valid && this.clientForm.get('delaiPaiement').valid ) {
       return true;
     } else {
@@ -360,7 +361,7 @@ export class AjouterClientComponent implements OnInit {
     });
   }
   onChangeService(i: number) {
-    
+
     let id = (this.typeTarif.at(i) as FormGroup).get('serviceId').value;
     let service = this.listService.find((service) => service.id == id);
     if (this.listDureePaiement.includes(service.nom)) {
@@ -403,7 +404,7 @@ export class AjouterClientComponent implements OnInit {
 
   createClient() {
     this.clientForm.value['tauxCOD'] = +this.clientForm.value['tauxCOD']
-    console.log("🚀 ~ this.clientForm.value['tauxCOD']",typeof this.clientForm.value['tauxCOD'])
+    console.log("🚀 ~ this.clientForm.value['tauxCOD']", typeof this.clientForm.value['tauxCOD'])
     return this.clientService.createClient(this.clientForm.value).subscribe(
       (response) => {
         this.openFile(response, "application/pdf")

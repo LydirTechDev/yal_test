@@ -1,0 +1,166 @@
+<nav class="navbar navbar-expand-md navbar-light bg-light py-0 my-0" style="
+  background: rgb(2,0,36);
+background: linear-gradient(90deg, rgba(2,0,36,0) 0%, rgba(246,129,129,0.12958686892725846) 44%, rgba(255,245,247,0) 100%, rgba(0,212,255,1) 100%);
+ ;border-bottom: #d62e2f 3px solid;">
+    <!-- LOGO -->
+
+    <div class="navbar-brand-box py-0 my-0" style="line-height: 60px;">
+        <!-- bg-white -->
+        <a href="/" class="logo " style="line-height: 60px;">
+            <span class="logo-sm">
+                <img src="assets/images/logo-v1.png" width=220px height=45px>
+            </span>
+            <span class="logo-lg">
+                <img src="assets/images/logo-v1.png" width=220px height=45px>
+            </span>
+        </a>
+    </div>
+    <button class="navbar-toggler ml-auto" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto font-weight-bold">
+            <li class="nav-item">
+                <a class="nav-link text-dark" href="/">Accueil</a>
+            </li>
+
+            <li class="nav-item ">
+                <a class="nav-link text-dark" routerLink="/services">Services</a>
+            </li>
+
+            <li class="nav-item ">
+                <a class="nav-link text-dark" routerLink="/contact">Contact</a>
+            </li>
+            <li class="nav-item ">
+                <a class="nav-link text-dark" routerLink="/apropos">A propos</a>
+            </li>
+            <li class="nav-item ">
+                <a type="link" class=" nav-link text-danger" routerLink="/auth/login">
+                    se connecter
+                </a>
+
+            </li>
+        </ul>
+    </div>
+
+</nav>
+<div class="" style="text-align: center;
+    background: rgb(203, 211, 241);
+    padding: 40px 0;">
+    <h1 style="color: #333333;
+    text-transform: uppercase;
+    font-size: 36px;
+    font-weight: 300;
+    letter-spacing: 0.08em;
+    text-align: center;">SUIVRE UN COLIS</h1>
+
+</div>
+<div *ngIf="dataLoaded" class="text-center mx-auto mt-4">
+    <h4>Le suivi du colis <span class="font-weight-bold text-uppercase">{{detailColis[0].tracking }}</span></h4>
+</div>
+<hr class="mt-0">
+<div class="row container-fluid" *ngIf="dataLoaded">
+    <div class="col-12 col-lg-8 mt-1 mx-auto">
+        <!-- Timeline -->
+        <ul class="timeline" style="z-index: -9999999;">
+            <li class="timeline-item bg-white shadow rounded ml-3 p-3  shadow" *ngFor="let d of detailColis[1]">
+                <div class="timeline-arrow"></div>
+                <div class="row w-100 col-12 my-0 py-0">
+                    <div class="col-12 col-md-4">
+                        <p class="font-weight-bold mb-0">{{d.status}}</p>
+                    </div>
+                    <div class="col-12 col-md-4 ">
+                        <p class=" text-left text-dark"><i class="fa fa-clock-o "></i>
+                            {{d.date | date:'dd-MM-YYYY HH:mm:ss'}}
+                        </p>
+                    </div>
+                    <div class="col-12 col-md-4 ">
+                        <p class="font-weight-light ml-auto text-right ">{{d.adress}} </p>
+                    </div>
+                </div>
+
+            </li>
+
+        </ul><!-- End -->
+
+    </div>
+
+</div>
+
+<footer id="footer" class=" mt-5 pt-5">
+    <div class="footer1">
+        <div class="container">
+            <div class="row">
+
+                <div class="col-md-3 widget">
+                    <h3 class="widget-title">Contact info</h3>
+                    <div class="widget-body">
+                        <p> Zone d’activité Kaidi Lot 63, Bordj El Kiffan,<br> Algérie 16000 Alger, Algérie</p>
+
+                        <p> RC N°: 13B 0986869-00/16</p>
+                        <p> AI N°: 16097109014</p>
+                        <p> NIF N°: 001316098686984</p>
+                        <p> NIS N°: 001316300106759</p>
+                        <p> (+213) 0560 477 119</p>
+                        <p>+234 23 9873237<br>
+                            <a href="mailto:#">contact@yalidine.com</a>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-md-3 widget">
+                    <h3 class="widget-title">Nous suivre</h3>
+                    <div class="widget-body">
+                        <p class="follow-me-icons">
+                            <a href=""><i class="fab fa-facebook fa-2"></i></a>
+                            <a href=""><i class="fab fa-instagram fa-2"></i></a>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-md-6 widget">
+                    <img src="assets/images/logo-v2.png" width=210px height=50px>
+
+                    <div class="widget-body">
+                        <p>Opérateur de courrier Express en régime
+                            domestique. </p>
+                        <p> Notre mission principale est de nous assurer de transporter vos
+                            courriers et vos colis.</p>
+                    </div>
+                </div>
+
+            </div> <!-- /row of widgets -->
+        </div>
+    </div>
+
+    <div class="footer2">
+        <div class="container">
+            <div class="row">
+
+                <!-- <div class="col-md-6 widget">
+            <div class="widget-body">
+              <p class="simplenav">
+                <a href="#">Home</a> |
+                <a href="about.html">About</a> |
+                <a href="sidebar-right.html">Sidebar</a> |
+                <a href="contact.html">Contact</a> |
+                <b><a href="signup.html">Sign up</a></b>
+              </p>
+            </div>
+          </div> -->
+
+                <div class="col-md-12 widget">
+                    <div class="widget-body">
+                        <p class="text-right">
+                            Copyright 2022 Yalidine El Djazair Service, Tous droits réservés.
+                        </p>
+                    </div>
+                </div>
+
+            </div> <!-- /row of widgets -->
+        </div>
+    </div>
+
+</footer>

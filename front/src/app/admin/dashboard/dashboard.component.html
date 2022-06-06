@@ -1,27 +1,59 @@
 <div class="container-fluid">
-    <app-pagetitle title="Dashboard" [breadcrumbItems]="breadCrumbItems"></app-pagetitle>
-
-    <div class="row">
-        <div class="card col-lg-3">
+  <app-pagetitle title="Dashboard" [breadcrumbItems]="breadCrumbItems"></app-pagetitle>
+  <hr class=" mt-0">
+  <div class="row mt-4 mx-auto container-fluid">
+    <p>Statistiques des utilistaeurs</p>
+    <div class="col-xl-12">
+      <div class="row">
+        <div class="col-md-4">
+          <div class="card">
             <div class="card-body">
-              <div class="media">
-                <div class="media-body overflow-hidden">
-                  <p class="text-truncate font-size-14">Utilisateurs</p>
-                  <h4 class="mb-0">{{countUser}}</h4>
+              <div class="d-flex">
+                <div class="flex-1 overflow-hidden">
+                  <p class="text-truncate font-size-14 mb-2">Employes</p>
+                  <h4 class="mb-0"> {{countUser.countEmploye}}
+                  </h4>
                 </div>
-                <div class="text-primary">
+                <div class="text-dark ml-auto">
+                  <i mdbColor class="ri-user-fill font-size-24"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-body">
+              <div class="d-flex">
+                <div class="flex-1 overflow-hidden">
+                  <p class="text-truncate font-size-14 mb-2">Clients</p>
+                  <h4 class="mb-0">{{countUser.countClient}}</h4>
+                </div>
+                <div class="text-danger ml-auto">
                   <i class="ri-user-fill font-size-24"></i>
                 </div>
               </div>
             </div>
-
-            <!-- <div class="card-body border-top py-3">
-              <div class="text-truncate">
-                  <span class="text-muted ml-2">Connecter : </span>
-                <span class="badge badge-soft-success font-size-11">5</span>
-              </div>
-            </div> -->
           </div>
-
+        </div>
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-body">
+              <div class="d-flex">
+                <div class="flex-1 overflow-hidden">
+                  <p class="text-truncate font-size-14 mb-2">Coursiers</p>
+                  <h4 class="mb-0">{{countUser.countCoursier}}</h4>
+                </div>
+                <div class="text-primary ml-auto">
+                  <i class="ri-user-fill font-size-24"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- end row -->
     </div>
+  </div>
+
 </div>

@@ -1,5 +1,6 @@
 import { Agence } from 'src/resources/agences/entities/agence.entity';
 import { Client } from 'src/resources/clients/entities/client.entity';
+import { Recolte } from 'src/resources/recoltes/entities/recolte.entity';
 import { Shipment } from 'src/resources/shipments/entities/shipment.entity';
 import { User } from 'src/resources/users/entities/user.entity';
 import { Wilaya } from 'src/resources/wilayas/entities/wilaya.entity';
@@ -23,6 +24,11 @@ export class Pmt {
     nullable: true,
   })
   tracking: string;
+
+  @Column({
+    nullable: true,
+  })
+  type: string;
 
   // ----------------------------- create -----------------------------
   @CreateDateColumn()
@@ -90,6 +96,12 @@ export class Pmt {
     nullable: true,
   })
   client: Client;
+
+  @ManyToOne(() => Recolte, (recolte) => recolte.pmts, {
+    nullable: true,
+  })
+  recolte: Recolte;
+
 
   @Column({
     nullable: true,

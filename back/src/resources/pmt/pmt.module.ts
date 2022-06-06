@@ -55,6 +55,7 @@ import { ServiceClientService } from '../service-client/service-client.service';
 import { ExpiditeurPublic } from '../expiditeur-public/entities/expiditeur-public.entity';
 import { Rotation } from '../rotations/entities/rotation.entity';
 import { RotationsService } from '../rotations/rotations.service';
+import { RecoltesService } from '../recoltes/recoltes.service';
 
 @Module({
   imports: [
@@ -116,7 +117,8 @@ import { RotationsService } from '../rotations/rotations.service';
     FactureService,
     ExpiditeurPublicService,
     RotationsService,
-    ServiceClientService
+    ServiceClientService,
+    RecoltesService
   ],
 })
 export class PmtModule {}

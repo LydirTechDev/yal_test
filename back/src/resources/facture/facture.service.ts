@@ -1,4 +1,4 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   IPaginationOptions,
@@ -9,6 +9,7 @@ import { PdfService } from 'src/core/templates/pdf.service';
 import { StatusShipmentEnum } from 'src/enums/status.shipment.enum';
 import { EntityNotFoundError, ILike, Repository } from 'typeorm';
 import { ClientsService } from '../clients/clients.service';
+import { RecoltesService } from '../recoltes/recoltes.service';
 import { ShipmentsService } from '../shipments/shipments.service';
 import { UsersService } from '../users/users.service';
 import { CreateFactureDto } from './dto/create-facture.dto';
@@ -25,6 +26,7 @@ export class FactureService {
     private pdfService: PdfService,
     @Inject(forwardRef(() => ShipmentsService))
     private shipmentService: ShipmentsService,
+    private recolteService: RecoltesService,
   ) {}
 
   async generateNumFacture(id) {
@@ -264,7 +266,7 @@ export class FactureService {
     const infoFacture = await this.findOneFactureEcommerce(factureId);
     return await this.pdfService.printFactureEcommerceSimplifie(infoFacture);
   }
-
+  logger = new Logger(FactureService.name);
   async getStatistique() {
     const sommeTotal = await this.factureRepository
       .createQueryBuilder('facture')
@@ -289,21 +291,6 @@ export class FactureService {
       .createQueryBuilder('facture')
       .select(`SUM(facture.montantTotal)`, 'sommeTotalEcommerce')
       .where(`facture.typeFacture='ecommerce'`)
-      .getRawOne();
-    const sommeTotalEcommerceZero = await this.factureRepository
-      .createQueryBuilder('facture')
-      .select(`SUM(facture.montantTotal)`, 'sommeTotalEcommerceZero')
-      .where(`facture.typeFacture='ecommerceZero'`)
-      .getRawOne();
-    const sommeTotalEcommerceZeroPayer = await this.factureRepository
-      .createQueryBuilder('facture')
-      .select(`SUM(facture.montantTotal)`, 'sommeTotalEcommerceZero')
-      .where(`facture.typeFacture='ecommerceZero'  and facture.payer=true`)
-      .getRawOne();
-    const sommeTotalEcommerceZeroNonPayer = await this.factureRepository
-      .createQueryBuilder('facture')
-      .select(`SUM(facture.montantTotal)`, 'sommeTotalEcommerceZero')
-      .where(`facture.typeFacture='ecommerceZero'  and facture.payer=false`)
       .getRawOne();
 
     const nombreTotal = await this.factureRepository
@@ -330,21 +317,8 @@ export class FactureService {
       .select(`COUNT(facture.id)`, 'nombreTotalEcommerce')
       .where(`facture.typeFacture='ecommerce'`)
       .getRawOne();
-    const nombreTotalEcommerceZero = await this.factureRepository
-      .createQueryBuilder('facture')
-      .select(`COUNT(facture.montantTotal)`, 'nombreTotalEcommerceZero')
-      .where(`facture.typeFacture='ecommerceZero'`)
-      .getRawOne();
-    const nombreTotalEcommerceZeroPayer = await this.factureRepository
-      .createQueryBuilder('facture')
-      .select(`COUNT(facture.montantTotal)`, 'nombreTotalEcommerceZeroPayer')
-      .where(`facture.typeFacture='ecommerceZero' and facture.payer=true`)
-      .getRawOne();
-    const nombreTotalEcommerceZeroNonPayer = await this.factureRepository
-      .createQueryBuilder('facture')
-      .select(`COUNT(facture.montantTotal)`, 'nombreTotalEcommerceZeroNonPayer')
-      .where(`facture.typeFacture='ecommerceZero' and facture.payer=false`)
-      .getRawOne();
+
+      this.logger.log(sommeTotal)
     return [
       {
         sommeTotal: sommeTotal,
@@ -352,18 +326,52 @@ export class FactureService {
         sommeTotalClassiquePayer: sommeTotalClassiquePayer,
         sommeTotalClassiqueNonPayer: sommeTotalClassiqueNonPayer,
         sommeTotalEcommerce: sommeTotalEcommerce,
-        sommeTotalEcommerceZero: sommeTotalEcommerceZero,
-        sommeTotalEcommerceZeroPayer: sommeTotalEcommerceZeroPayer,
-        sommeTotalEcommerceZeroNonPayer: sommeTotalEcommerceZeroNonPayer,
+
         nombreTotal: nombreTotal,
         nombreTotalClassique: nombreTotalClassique,
         nombreTotalClassiquePayer: nombreTotalClassiquePayer,
         nombreTotalClassiqueNonPayer: nombreTotalClassiqueNonPayer,
         nombreTotalEcommerce: nombreTotalEcommerce,
-        nombreTotalEcommerceZero: nombreTotalEcommerceZero,
-        nombreTotalEcommerceZeroPayer: nombreTotalEcommerceZeroPayer,
-        nombreTotalEcommerceZeroNonPayer: nombreTotalEcommerceZeroNonPayer,
       },
     ];
+  }
+
+  async getFactureEspeceNonRecolter(userId): Promise<any> {
+    console.log(
+      '🚀 ~ file: facture.service.ts ~ line 373 ~ FactureService ~ getFactureEspeceNonRecolter ~ userId',
+      userId,
+    );
+    let montantTotal = 0;
+    const factures = await this.factureRepository.find({
+      where: { espece: true, recolte: null, createdBy: { id: userId } },
+      relations: ['client'],
+    });
+    if (factures) {
+      for await (const facture of factures) {
+        if (facture.typeFacture == 'ecommerce') {
+          montantTotal =
+            montantTotal + facture.montantTva + facture.montantTimbre;
+        } else if (facture.typeFacture == 'classique') {
+          montantTotal = montantTotal + facture.montantTotal;
+        }
+      }
+      return [factures, { montantTotal: montantTotal }];
+    }
+    throw new EntityNotFoundError(Facture, 'pas de facture à récolter');
+  }
+
+  async recolterFacture(userId) {
+    const factures = await this.getFactureEspeceNonRecolter(userId);
+    const montantTotal = factures[1].montantTotal;
+    const listFacture = factures[0];
+    if (listFacture.length > 0) {
+      return await this.recolteService.createRecolteFacture(
+        userId,
+        montantTotal,
+        listFacture,
+      );
+    } else {
+      throw new EntityNotFoundError(Facture, 'pas de facture à récolter');
+    }
   }
 }

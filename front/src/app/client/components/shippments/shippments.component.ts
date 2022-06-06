@@ -336,7 +336,7 @@ export class ShippmentsComponent implements OnInit {
 
             .subscribe({
               next: response => {
-                FileSaver.saveAs(response, "Bordereaux.zip");
+                FileSaver.saveAs(response, "Bordereaux_Yalidine.zip");
                 this.getPaginatedColis()
                 this.colisData = []
               },

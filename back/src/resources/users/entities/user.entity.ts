@@ -29,7 +29,7 @@ export class User {
   id: number;
 
   @Column({
-    unique: true,
+    unique:true,
     length: 50,
   })
   email: string;
@@ -84,7 +84,7 @@ export class User {
 
   @OneToMany(() => Shipment, (shipmentCreateBy) => shipmentCreateBy.createdBy)
   shipmentCreateBy: Shipment[];
-  
+
   @OneToMany(
     () => Recolte,
     (recolteCoursier) => recolteCoursier.recolteCoursier,
@@ -93,7 +93,7 @@ export class User {
 
   @OneToMany(() => Recolte, (recolteCs) => recolteCs.recolteCS)
   recolteCs: Recolte;
-  
+
   @OneToMany(() => Recolte, (recolteReceivedBy) => recolteReceivedBy.receivedBy)
   recolteReceivedBy: Recolte[];
 
@@ -107,6 +107,10 @@ export class User {
   pmtConfirmedBy: Pmt[];
   @OneToMany(() => Shipment, (shipmentsLiberer) => shipmentsLiberer.libererBy)
   shipmentsLiberer: Shipment[];
+
+  @OneToMany(() => Shipment, (shipmentsCreated) => shipmentsCreated.createdBy)
+  shipmentsCreated: Shipment[];
+  
   @OneToMany(
     () => PmtCoursier,
     (pmtCoursierCreatedBy) => pmtCoursierCreatedBy.createdBy,

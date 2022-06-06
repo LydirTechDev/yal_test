@@ -23,7 +23,7 @@
                 <div class="form-group position-relative">
                     <!--  -->
                     <input type="text" class="form-control" formControlName="serviceName"
-                        (ngModelChange)="validateServiceNameForm(this.serviceNameForm.controls['serviceName'].value)"
+                        [ngClass]="{'is-invalid': serviceNameForm.controls['serviceName'].invalid ,'is-valid': serviceNameForm.controls['serviceName'].valid }"
                         placeholder="Nom du service" value="e-commerce" [ngClass]="statusForm">
                     <div *ngIf="this.serviceNameForm.controls['serviceName'].errors || validating"
                         class="invalid-feedback">
@@ -33,7 +33,7 @@
         </div>
     </div>
     <div class="row mt-1" *ngIf="numStep =='1'">
-        <div class="col-6 mx-auto" *ngIf="this.serviceNameForm.get('serviceName').valid && validating">
+        <div class="col-6 mx-auto" *ngIf="this.serviceNameForm.get('serviceName').valid ">
             <div class="row col-12 mx-auto pl-1 ml-1">
                 <div class="col-10 text-left pl-0 ml-0">
                     <h6> Enregistrer ?: <u><small class="text-muted font-size-12">{{
@@ -53,7 +53,7 @@
                 <div class="form-group position-relative">
                     <!--  -->
                     <input type="text" class="form-control" formControlName="codeTarifName"
-                        (ngModelChange)="validateServiceCodeTarifForm(this.codeTarifForm.controls['codeTarifName'].value)"
+                        [ngClass]="{'is-invalid': codeTarifForm.controls['codeTarifName'].invalid ,'is-valid': codeTarifForm.controls['codeTarifName'].valid }"
                         placeholder="Nom du Code Tarif" value="e-commerce" [ngClass]="statusForm">
                     <div *ngIf="this.codeTarifForm.controls['codeTarifName'].errors" class="invalid-feedback">
                         <span *ngIf="this.codeTarifForm.controls['codeTarifName'].errors.required">Nom code tarfi
@@ -64,7 +64,7 @@
         </div>
     </div>
     <div class="row mt-1" *ngIf="numStep =='2'">
-        <div class="col-6 mx-auto" *ngIf="this.codeTarifForm.get('codeTarifName').valid && validating">
+        <div class="col-6 mx-auto" *ngIf="this.codeTarifForm.get('codeTarifName').valid">
             <div class="row col-12 mx-auto pl-1 ml-1">
                 <div class="col-10 text-left pl-0 ml-0">
                     <h6> Enregistrer ?: <u><small class="text-muted font-size-12">{{

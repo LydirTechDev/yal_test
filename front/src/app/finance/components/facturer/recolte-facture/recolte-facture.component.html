@@ -1,0 +1,36 @@
+
+<app-pagetitle title="Créer récolte"> </app-pagetitle>
+
+<div class="row col-12">
+  <div class="col-3 pt-5">
+    <h5 class="">Nombre de factures: {{nbrFacture}}</h5>
+  </div>
+  <div class="col-3 pt-5">
+    <h5 class="">Montant total: {{montantTotal | currency:'DA':'symbol' :'1.2-2':'fr'}}</h5>
+  </div>
+  <div class="col-6 d-flex mt-3 mb-3 justify-content-end">
+    <button class="btn btn-danger" [disabled]="nbrFacture == 0" (click)="Confirm()">Créer récolte</button>
+  </div>
+</div>
+
+<table class="table table-bordered table-centered bg-white table-hover mt-3">
+  <thead class="">
+    <tr>
+      <th scope="col">Numéro facture</th>
+      <th scope="col">client</th>
+      <th scope="col">Gérant</th>
+      <th scope="col">Montant recevé</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let facture of listFacture">
+      <td>{{facture.numFacture}}</td>
+      <td>{{facture.client.nomCommercial}}</td>
+      <td>{{facture.client.nomGerant}} {{facture.client.prenomGerant}}</td>
+      <td *ngIf="facture.typeFacture =='ecommerce'">{{facture.montantTva + facture.montantTimbre  | currency:'DA':'symbol' :'1.2-2':'fr'}}</td>
+      <td *ngIf="facture.typeFacture =='classique'">{{facture.montantTotal  | currency:'DA':'symbol' :'1.2-2':'fr'}}</td>
+
+    </tr>
+  </tbody>
+
+</table>

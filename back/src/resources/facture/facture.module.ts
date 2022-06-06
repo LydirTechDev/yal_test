@@ -45,10 +45,11 @@ import { PmtCoursier } from '../pmt-coursier/entities/pmt-coursier.entity';
 import { PmtCoursierService } from '../pmt-coursier/pmt-coursier.service';
 import { RotationsService } from '../rotations/rotations.service';
 import { Rotation } from '../rotations/entities/rotation.entity';
-import { RecolteFacture } from '../recolte-facture/entities/recolte-facture.entity';
 import { ServiceClientService } from '../service-client/service-client.service';
 import { ExpiditeurPublicService } from '../expiditeur-public/expiditeur-public.service';
 import { ExpiditeurPublic } from '../expiditeur-public/entities/expiditeur-public.entity';
+import { Recolte } from '../recoltes/entities/recolte.entity';
+import { RecoltesService } from '../recoltes/recoltes.service';
 
 @Module({
   imports: [
@@ -74,8 +75,8 @@ import { ExpiditeurPublic } from '../expiditeur-public/entities/expiditeur-publi
       Coursier,
       PmtCoursier,
       Rotation,
-      RecolteFacture,
-      ExpiditeurPublic
+      ExpiditeurPublic,
+      Recolte
     ]),
   ],
   controllers: [FactureController],
@@ -104,7 +105,8 @@ import { ExpiditeurPublic } from '../expiditeur-public/entities/expiditeur-publi
     PmtCoursierService,
     RotationsService,
     ServiceClientService,
-    ExpiditeurPublicService
+    ExpiditeurPublicService,
+    RecoltesService
   ],
 })
 export class FactureModule { }

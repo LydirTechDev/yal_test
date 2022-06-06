@@ -1,45 +1,137 @@
-body{
-    background:#f1f1f1;
+body {
+	background: #f1f1f1;
 }
-.navbar-header{
-    background-color: black;
+
+.navbar-header {
+	background-color: black;
 }
-.highlight { margin-top:40px; }
-	.h-caption { text-align: center; } 
-	.h-caption i { display:block; font-size: 54px; color:#000000; margin-bottom:36px; }
-	.h-caption h4 { color:#382526; font-size: 16px; font-weight: bold; margin-bottom:20px; }
-	.h-body { }
+
+.highlight {
+	margin-top: 40px;
+}
+
+.h-caption {
+	text-align: center;
+}
+
+.h-caption i {
+	display: block;
+	font-size: 54px;
+	color: #000000;
+	margin-bottom: 36px;
+}
+
+.h-caption h4 {
+	color: #382526;
+	font-size: 16px;
+	font-weight: bold;
+	margin-bottom: 20px;
+}
+
+.h-body {}
 
 /* Footer */
-.footer1 { background: #000000; padding: 30px 0 0 0; font-size: 12px; color: #999; }
-	.footer1 a { color: #ccc; }
-		.footer1 a:hover {color: #fff; }
-	.footer1 .widget { margin-bottom:30px; }		
-	.footer1 .widget-title { font-size: 17px; font-weight: bold; color: #ccc; margin: 0 0 20px; }
-	.footer1 .entry-meta { border-top: 1px solid #ccc; border-bottom: 1px solid #ccc; margin: 0 0 35px 0; padding: 2px 0; color: #888888; font-size: 12px; font-size: 0.75rem; }
-		.footer1 .entry-meta a { color: #333333; }
-		.footer1 .entry-meta .meta-in { border-top: 1px solid #ccc; border-bottom: 1px solid #ccc; padding: 10px 0; }
-	.follow-me-icons { font-size:30px; }		
-		.follow-me-icons i { float:left; margin:0 10px 0 0; }		
+.footer1 {
+	background: #000000;
+	padding: 30px 0 0 0;
+	font-size: 12px;
+	color: #999;
+}
 
-.footer2 { background: #191919; padding: 15px 0; color: #777; font-size: 12px; }
-	.footer2 a { color: #aaa; }
-		.footer2 a:hover { color: #fff; }
-		.footer2 p { margin: 0; }
+.footer1 a {
+	color: #ccc;
+}
 
-	.widget-simplenav { margin-left:-5px; }		
-	.widget-simplenav a{ margin:0 5px; }		
-    .headroom { -webkit-transition: all 0.4s ease-out; -moz-transition: all 0.4s ease-out; -o-transition: all 0.4s ease-out; transition: all 0.4s ease-out; }
+.footer1 a:hover {
+	color: #fff;
+}
+
+.footer1 .widget {
+	margin-bottom: 30px;
+}
+
+.footer1 .widget-title {
+	font-size: 17px;
+	font-weight: bold;
+	color: #ccc;
+	margin: 0 0 20px;
+}
+
+.footer1 .entry-meta {
+	border-top: 1px solid #ccc;
+	border-bottom: 1px solid #ccc;
+	margin: 0 0 35px 0;
+	padding: 2px 0;
+	color: #888888;
+	font-size: 12px;
+	font-size: 0.75rem;
+}
+
+.footer1 .entry-meta a {
+	color: #333333;
+}
+
+.footer1 .entry-meta .meta-in {
+	border-top: 1px solid #ccc;
+	border-bottom: 1px solid #ccc;
+	padding: 10px 0;
+}
+
+.follow-me-icons {
+	font-size: 30px;
+}
+
+.follow-me-icons i {
+	float: left;
+	margin: 0 10px 0 0;
+}
+
+.footer2 {
+	background: #191919;
+	padding: 15px 0;
+	color: #777;
+	font-size: 12px;
+}
+
+.footer2 a {
+	color: #aaa;
+}
+
+.footer2 a:hover {
+	color: #fff;
+}
+
+.footer2 p {
+	margin: 0;
+}
+
+.widget-simplenav {
+	margin-left: -5px;
+}
+
+.widget-simplenav a {
+	margin: 0 5px;
+}
+
+.headroom {
+	-webkit-transition: all 0.4s ease-out;
+	-moz-transition: all 0.4s ease-out;
+	-o-transition: all 0.4s ease-out;
+	transition: all 0.4s ease-out;
+}
+
 .btnConnect {
-    background-color: transparent;
+	background-color: transparent;
 
 }
+
 //     .btnConnect:hover {
 // 		color: white;
 // background-color: rgb(190, 65, 65);
 // }
 
 .thin {
+	top: 0px;
 	line-height: 1.3;
 	position: relative;
 	animation: heading;
@@ -48,12 +140,51 @@ body{
 }
 
 @keyframes heading {
-0% {
-	opacity: 0
+	0% {
+		opacity: 0
+	}
+
+	100% {
+		opacity: 1
+	}
+
 }
 
-100% {
-	opacity: 1
+
+.search-slt {
+	display: block;
+	width: 100%;
+	font-size: 0.875rem;
+	line-height: 1.5;
+	color: #55595c;
+	background-color: #fff;
+	background-image: none;
+	border: 1px solid #ccc;
+	height: calc(3rem + 2px) !important;
+	border-radius: 0;
 }
 
+.wrn-btn {
+	width: 100%;
+	font-size: 16px;
+	font-weight: 400;
+	text-transform: capitalize;
+	height: calc(3rem + 2px) !important;
+	border-radius: 0;
+}
+
+@media (min-width: 992px) {
+	.search-sec {
+		position: relative;
+		top: -420px;
+		background: rgba(36, 35, 35, 0.51);
+		padding: 2rem;
+	}
+}
+
+@media (max-width: 992px) {
+	.search-sec {
+		background: rgba(0, 0, 0);
+		padding: 2rem 0 2rem 0;
+	}
 }

@@ -32,7 +32,8 @@ import { PmtCoursierModule } from './resources/pmt-coursier/pmt-coursier.module'
 import { FactureModule } from './resources/facture/facture.module';
 import { ServiceClientModule } from './resources/service-client/service-client.module';
 import { ExpiditeurPublicModule } from './resources/expiditeur-public/expiditeur-public.module';
-import { RecolteFactureModule } from './resources/recolte-facture/recolte-facture.module';
+
+
 
 @Module({
   imports: [
@@ -79,7 +80,6 @@ import { RecolteFactureModule } from './resources/recolte-facture/recolte-factur
     FactureModule,
     ServiceClientModule,
     ExpiditeurPublicModule,
-    RecolteFactureModule
   ],
   controllers: [AppController],
   providers: [AppService],

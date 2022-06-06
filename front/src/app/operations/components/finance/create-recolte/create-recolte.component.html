@@ -1,7 +1,7 @@
 <div>
     <div class="row mb-3 col-12 align-center text-center d-flex justify-content-between">
-        <form [formGroup]="coursiersSelect" class="row" *ngIf="!coursierLoaded; else autreCoursier">
-            <h4 class="labtrack mt-1 mx-2"><i class="bi bi-collection "></i>Crée une récolte pour</h4>
+        <form [formGroup]="coursiersSelect" class="row col-12" *ngIf="!coursierLoaded; else autreCoursier">
+            <h5 class="labtrack mt-1 mx-2">Crée une récolte pour</h5>
             <ng-select formControlName="coursierSelected" placeholder=" Selectionner un coursier" [clearable]="false"
                 (change)="getRecoltesCoursierInformation($event)" [readonly]="coursierLoaded" appendTo="body">
                 <ng-option *ngFor="let coursier of coursiers" [value]="coursier">
@@ -10,12 +10,12 @@
             </ng-select>
         </form>
         <ng-template #autreCoursier>
-            <button type="button" class="btn btn-dark text-center" (click)="changeCoursier()">
+            <button type="button" class="btn btn-md btn-dark text-center" (click)="changeCoursier()">
                 <i class="fas fa-arrow-left"></i> Autre coursier</button>
-            <h3 class="customBg text-dark px-3 py-2 rounded text-capitalize font-weight-bold">{{ctl.nom}}
+            <h4 class="customBg text-dark px-3 py-2 rounded text-capitalize font-weight-bold">{{ctl.nom}}
                 {{ctl.prenom}}:
                 <span class="display-5 font-weight-bold">{{nbrColis}} Colis - {{montant}} DA</span>
-            </h3>
+            </h4>
         </ng-template>
     </div>
     <hr class=" mx-auto">

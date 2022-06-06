@@ -3,11 +3,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { IPaginationOptions, paginate } from 'nestjs-typeorm-paginate';
 import { PdfService } from 'src/core/templates/pdf.service';
 import { StatusShipmentEnum } from 'src/enums/status.shipment.enum';
-import { ILike, Repository } from 'typeorm';
+import { EntityNotFoundError, ILike, Repository } from 'typeorm';
 import { ClientsService } from '../clients/clients.service';
 import { Client } from '../clients/entities/client.entity';
 import { EmployesService } from '../employes/employes.service';
 import { PmtCoursier } from '../pmt-coursier/entities/pmt-coursier.entity';
+import { RecoltesService } from '../recoltes/recoltes.service';
 import { ShipmentsService } from '../shipments/shipments.service';
 import { StatusService } from '../status/status.service';
 import { User } from '../users/entities/user.entity';
@@ -26,6 +27,7 @@ export class PmtService {
     private readonly statusService: StatusService,
     private readonly emmplyeService: EmployesService,
     private readonly pdfService: PdfService,
+    private recolteService: RecoltesService,
   ) { }
 
   create(createPmtDto: CreatePmtDto) {
@@ -184,7 +186,7 @@ export class PmtService {
     return `This action removes a #${id} pmt`;
   }
 
-  async payerClient(requestedUser: User, clientId: any, res: any, reg?: string) {
+  async payerClient(requestedUser: User, clientId: any, res: any,  type: string,) {
 
     const infoPayment = await this.shipmentService.getSoldeClient(
       requestedUser,
@@ -218,6 +220,7 @@ export class PmtService {
     const savePmt = await this.pmtRepository.save({
       client: infoPayment.clientInfo,
       createdBy: requestedUser,
+      type:type,
       createdOn: infoPayment.userStation.employe.agence,
       tauxC_O_D: infoPayment.clientInfo.tauxCOD,
       tarifRetour: infoPayment.clientInfo.tarifRetour,
@@ -354,5 +357,39 @@ export class PmtService {
     }
 
     return pmts;
+  }
+
+  async getPmtRegularisationNonRecolterByUserId(userId): Promise<any> {
+    let montantTotal = 0;
+    const pmtRegularisation = await this.pmtRepository.find({
+      where: {
+        type: 'régularisation',
+        recolte: null,
+        createdBy: { id: userId },
+      },
+      relations: ['client', 'recolte'],
+    });
+    if (pmtRegularisation) {
+      for await (const pmt of pmtRegularisation) {
+        montantTotal = montantTotal + pmt.netClient;
+      }
+      return [pmtRegularisation, { montantTotal: montantTotal }];
+    }
+    throw new EntityNotFoundError(Pmt, 'pas de pmt à régulariser');
+  }
+
+  async recolterPmt(userId) {
+    const pmts = await this.getPmtRegularisationNonRecolterByUserId(userId);
+    const montantTotal = -pmts[1].montantTotal;
+    const listPmt = pmts[0];
+    if (listPmt.length > 0) {
+     return await this.recolteService.createRecolteRegularisation(
+          userId,
+          montantTotal,
+          listPmt,
+        );
+    } else {
+      throw new EntityNotFoundError(Pmt, 'pas de pmt a récolter');
+    }
   }
 }

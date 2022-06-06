@@ -191,49 +191,49 @@ export class CreateServiceComponent implements OnInit {
    * dynamique validate service name
    * @param serviceName
    */
-  validateServiceNameForm(serviceName: string) {
-    this.validating = false;
-    this.serviceService
-      .chekIfServiceExist(serviceName)
-      .subscribe((responce) => {
-        if (!responce == false) {
-          this.validating = false;
-          this.sweetAlertService.sipmleAlert(
-            'warning',
-            'ce service existe',
-            '',
-            'top-right',
-            false
-          );
-          this.statusForm = 'is-invalid';
-        } else {
-          this.validating = true;
-          this.statusForm = 'is-valid';
-        }
-      });
-  }
+  // validateServiceNameForm(serviceName: string) {
+  //   this.validating = false;
+  //   this.serviceService
+  //     .chekIfServiceExist(serviceName)
+  //     .subscribe((responce) => {
+  //       if (!responce == false) {
+  //         this.validating = false;
+  //         this.sweetAlertService.sipmleAlert(
+  //           'warning',
+  //           'ce service existe',
+  //           '',
+  //           'top-right',
+  //           false
+  //         );
+  //         this.statusForm = 'is-invalid';
+  //       } else {
+  //         this.validating = true;
+  //         this.statusForm = 'is-valid';
+  //       }
+  //     });
+  // }
 
-  validateServiceCodeTarifForm(codeTarifName: string) {
-    this.validating = false;
-    this.codeTarifService
-      .chekIfServiceExist(codeTarifName)
-      .subscribe((responce) => {
-        if (!responce == false) {
-          this.validating = false;
-          this.sweetAlertService.sipmleAlert(
-            'warning',
-            'ce code tarif existe',
-            '',
-            'top-right',
-            false
-          );
-          this.statusForm = 'is-invalid';
-        } else {
-          this.validating = true;
-          this.statusForm = 'is-valid';
-        }
-      });
-  }
+  // validateServiceCodeTarifForm(codeTarifName: string) {
+  //   this.validating = false;
+  //   this.codeTarifService
+  //     .chekIfServiceExist(codeTarifName)
+  //     .subscribe((responce) => {
+  //       if (!responce == false) {
+  //         this.validating = false;
+  //         this.sweetAlertService.sipmleAlert(
+  //           'warning',
+  //           'ce code tarif existe',
+  //           '',
+  //           'top-right',
+  //           false
+  //         );
+  //         this.statusForm = 'is-invalid';
+  //       } else {
+  //         this.validating = true;
+  //         this.statusForm = 'is-valid';
+  //       }
+  //     });
+  // }
   /**
    * cancel configuring service
    */

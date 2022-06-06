@@ -5,15 +5,14 @@ ul.timeline {
     padding-left: 1.5rem;
 }
 
- /* Timeline vertical line */
+/* Timeline vertical line */
 ul.timeline:before {
     content: ' ';
-    background: #fff;
+    background: rgb(255, 125, 125);
     display: inline-block;
     position: absolute;
     left: 16px;
     width: 4px;
-    height: 100%;
     z-index: 400;
     border-radius: 1rem;
 }
@@ -35,7 +34,7 @@ li.timeline-item {
 /* Timeline item circle marker */
 li.timeline-item::before {
     content: ' ';
-    background: #ddd;
+    background: rgb(0, 0, 0);
     display: inline-block;
     position: absolute;
     border-radius: 50%;
@@ -47,7 +46,6 @@ li.timeline-item::before {
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
 }
 
-
 /*
 *
 * ==========================================
@@ -55,13 +53,96 @@ li.timeline-item::before {
 * ==========================================
 *
 */
-body {
-    background: #E8CBC0;
-    background: -webkit-linear-gradient(to right, #E8CBC0, #636FA4);
-    background: linear-gradient(to right, #E8CBC0, #636FA4);
-    min-height: 100vh;
-}
-
 .text-gray {
     color: #999;
+}
+
+/* Footer */
+.footer1 {
+    background: #000000;
+    padding: 30px 0 0 0;
+    font-size: 12px;
+    color: #999;
+}
+
+.footer1 a {
+    color: #ccc;
+}
+
+.footer1 a:hover {
+    color: #fff;
+}
+
+.footer1 .widget {
+    margin-bottom: 30px;
+}
+
+.footer1 .widget-title {
+    font-size: 17px;
+    font-weight: bold;
+    color: #ccc;
+    margin: 0 0 20px;
+}
+
+.footer1 .entry-meta {
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    margin: 0 0 35px 0;
+    padding: 2px 0;
+    color: #888888;
+    font-size: 12px;
+    font-size: 0.75rem;
+}
+
+.footer1 .entry-meta a {
+    color: #333333;
+}
+
+.footer1 .entry-meta .meta-in {
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    padding: 10px 0;
+}
+
+.follow-me-icons {
+    font-size: 30px;
+}
+
+.follow-me-icons i {
+    float: left;
+    margin: 0 10px 0 0;
+}
+
+.footer2 {
+    background: #191919;
+    padding: 15px 0;
+    color: #777;
+    font-size: 12px;
+}
+
+.footer2 a {
+    color: #aaa;
+}
+
+.footer2 a:hover {
+    color: #fff;
+}
+
+.footer2 p {
+    margin: 0;
+}
+
+.widget-simplenav {
+    margin-left: -5px;
+}
+
+.widget-simplenav a {
+    margin: 0 5px;
+}
+
+.headroom {
+    -webkit-transition: all 0.4s ease-out;
+    -moz-transition: all 0.4s ease-out;
+    -o-transition: all 0.4s ease-out;
+    transition: all 0.4s ease-out;
 }

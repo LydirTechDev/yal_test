@@ -25,9 +25,12 @@ import { FacturerClassiqueComponent } from './components/facturer/facturer-class
 import { ListFactureEcommerceComponent } from './components/facturer/list-facture-ecommerce/list-facture-ecommerce.component';
 import { DetailFactureEcommerceComponent } from './components/facturer/detail-facture-ecommerce/detail-facture-ecommerce.component';
 import { FacturationDashboardComponent } from './components/facturer/facturation-dashboard/facturation-dashboard.component';
-import { FacturerZeroComponent } from './components/facturer/facturer-zero/facturer-zero.component';
-import { ListFactureZeroNonPayerComponent } from './components/facturer/list-facture-zero-non-payer/list-facture-zero-non-payer.component';
-import { ListFactureZeroPayerComponent } from './components/facturer/list-facture-zero-payer/list-facture-zero-payer.component';
+import { RegularisationComponent } from './components/facturer/regularisation/regularisation.component';
+import { RecolteRegularisationComponent } from './components/facturer/recolte-regularisation/recolte-regularisation.component';
+import { RecolteFactureComponent } from './components/facturer/recolte-facture/recolte-facture.component';
+import { ListRecolteRegularisationComponent } from './components/facturer/list-recolte-regularisation/list-recolte-regularisation.component';
+import { ListRecolteFactureComponent } from './components/facturer/list-recolte-facture/list-recolte-facture.component';
+
 
 @NgModule({
   declarations: [
@@ -49,9 +52,13 @@ import { ListFactureZeroPayerComponent } from './components/facturer/list-factur
     ListFactureEcommerceComponent,
     DetailFactureEcommerceComponent,
     FacturationDashboardComponent,
-    FacturerZeroComponent,
-    ListFactureZeroNonPayerComponent,
-    ListFactureZeroPayerComponent
+    RegularisationComponent,
+    RecolteRegularisationComponent,
+    RecolteFactureComponent,
+    ListRecolteRegularisationComponent,
+    ListRecolteFactureComponent,
+
+
   ],
   imports: [
     CommonModule,

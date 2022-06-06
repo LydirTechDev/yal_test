@@ -47,6 +47,8 @@ import { ExpiditeurPublicService } from '../expiditeur-public/expiditeur-public.
 import { ServiceClientService } from '../service-client/service-client.service';
 import { Rotation } from '../rotations/entities/rotation.entity';
 import { RotationsService } from '../rotations/rotations.service';
+import { Recolte } from '../recoltes/entities/recolte.entity';
+import { RecoltesService } from '../recoltes/recoltes.service';
 
 @Module({
   imports: [
@@ -73,7 +75,8 @@ import { RotationsService } from '../rotations/rotations.service';
       PmtCoursier,
       Facture,
       ExpiditeurPublic,
-      Rotation
+      Rotation,
+      Recolte
     ]),
   ],
   providers: [
@@ -101,7 +104,8 @@ import { RotationsService } from '../rotations/rotations.service';
     FactureService,
     ExpiditeurPublicService,
     ServiceClientService,
-    RotationsService
+    RotationsService,
+    RecoltesService
   ],
 })
 export class StatusModule {}

@@ -7,7 +7,7 @@ import { DashboardService } from './dashboard.service';
   styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent implements OnInit {
-countUser: number = 0;
+  countUser
   constructor(
     private dashboardService: DashboardService
   ) {
@@ -21,7 +21,7 @@ countUser: number = 0;
     this.breadCrumbItems = [{ label: 'Yalidine' }, { label: 'Tableau de bord', active: true }];
   }
   getCountUser() {
-    return this.dashboardService.getCountUser().then((resp: number) => {
+    return this.dashboardService.getCountUser().then((resp) => {
       this.countUser = resp
     });
   }

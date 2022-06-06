@@ -35,6 +35,8 @@ export class DetailWilayaComponent implements OnInit {
     nomLatin: [,Validators.compose([Validators.required,Validators.minLength(3),Validators.maxLength(30)]) ],
     nomArabe: [,Validators.compose([Validators.required,Validators.minLength(3),Validators.maxLength(30)])],
     agenceRetourId: [,Validators.compose([Validators.required,Validators.minLength(3),Validators.maxLength(30)])],
+    dureeReceptionRecolte: [, Validators.compose([Validators.required,])],
+
   });
 
   ngOnInit(): void {
@@ -55,6 +57,16 @@ export class DetailWilayaComponent implements OnInit {
           nomArabe: this.wilayas.nomArabe,
           agenceRetourId: this.wilayas.agenceRetour.id,
         });
+        if (this.wilayas.dureeReceptionRecolte) {
+          this.wilayaForm.patchValue({
+            dureeReceptionRecolte: this.wilayas.dureeReceptionRecolte
+          });
+        }
+        if (this.wilayas.agenceRetour) {
+          this.wilayaForm.patchValue({
+            agenceRetourId: this.wilayas.agenceRetour.id
+          });
+        }
       });
       this.wilayaForm.disable();
   }

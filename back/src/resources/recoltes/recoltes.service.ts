@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   IPaginationOptions,
@@ -27,6 +27,7 @@ export class RecoltesService {
   logger: Logger = new Logger(RecoltesService.name);
   constructor(
     @InjectRepository(Recolte) private recolteRepository: Repository<Recolte>,
+    @Inject(forwardRef(() => ShipmentsService))
     private shipmentService: ShipmentsService,
     private statusService: StatusService,
     private userService: UsersService,
@@ -788,15 +789,13 @@ export class RecoltesService {
       reqestedUser.id,
     );
 
-    this.logger.error(reqestedUser.id);
     if (userStation.typeUser === TypeUserEnum.caissierAgence) {
-      this.logger.error(TypeUserEnum.caissierAgence);
       recoltes = await this.recolteRepository
         .createQueryBuilder('recolte')
         .leftJoinAndSelect('recolte.shipment', 'shipment')
         .leftJoinAndSelect('shipment.createdBy', 'createdBy')
-        .leftJoinAndSelect('shipment.service', 'service')
         .leftJoinAndSelect('recolte.receivedOn', 'agence')
+        .leftJoinAndSelect('shipment.service', 'service')
         .where(
           `recolte.receivedBy is not null and shipment.lastStatus = '${StatusShipmentEnum.pretAPayer}'`,
         )
@@ -809,6 +808,7 @@ export class RecoltesService {
         .leftJoinAndSelect('shipment.createdBy', 'createdBy')
         .leftJoinAndSelect('recolte.createdOn', 'agence')
         .leftJoinAndSelect('agence.commune', 'commune')
+        .leftJoinAndSelect('shipment.service', 'service')
         .leftJoinAndSelect('commune.wilaya', 'wilaya')
         .where(
           `recolte.receivedBy is not null and shipment.lastStatus = '${StatusShipmentEnum.pretAPayer}'`,
@@ -819,6 +819,7 @@ export class RecoltesService {
       recoltes = await this.recolteRepository
         .createQueryBuilder('recolte')
         .leftJoinAndSelect('recolte.shipment', 'shipment')
+        .leftJoinAndSelect('shipment.service', 'service')
         .leftJoinAndSelect('shipment.createdBy', 'createdBy')
         .where(
           `recolte.receivedBy is not null and shipment.lastStatus = '${StatusShipmentEnum.pretAPayer}'`,
@@ -829,12 +830,9 @@ export class RecoltesService {
         recoltes,
       );
     }
-    this.logger.error(`nb Recolte ${recoltes.length}`);
+
     for await (const recolte of recoltes) {
-      this.logger.warn(`recolte n°: ${recolte.tracking}`);
-      this.logger.warn(`recolte nb shipment°: ${recolte.shipment.length}`);
       for await (const shipment of recolte.shipment) {
-        this.logger.debug(`shipment n° ${shipment.tracking}`);
         if (
           shipment.lastStatus === StatusShipmentEnum.pretAPayer &&
           shipment.service.nom.toLowerCase() != 'classique divers' && shipment.service.nom.toLowerCase() != 'soumission' && shipment.service.nom.toLowerCase() != 'cahier de charge'
@@ -843,9 +841,12 @@ export class RecoltesService {
           const tarifLivraison =
             await this.shipmentService.calculTarifslivraison(shipment.tracking);
 
+          console.log("🚀 ~ file: recoltes.service.ts ~ line 714 ~ RecoltesService ~ forawait ~ tarifLivraison", tarifLivraison)
+
           const clientInfo = await this.clientService.findOne(
             shipment.createdBy.id,
           );
+          console.log("🚀 ~ file: recoltes.service.ts ~ line 720 ~ RecoltesService ~ forawait ~ clientInfo", clientInfo)
 
           const client = {
             id: clientInfo.client_id,
@@ -897,13 +898,15 @@ export class RecoltesService {
               }),
             );
           }
+
         }
       }
     }
-
     /**
      * sommer tt les frai retoure de tt les client pre a payer
      */
+    console.log("🚀 ~ file: recoltes.service.ts ~ line 780 ~ RecoltesService ~ forawait ~ listClients", listClients)
+
     for await (const client of listClients) {
       const retoure = await this.shipmentService.getInfoFraiRetourOfClient(
         client.id,
@@ -1253,5 +1256,112 @@ export class RecoltesService {
     const buf = Buffer.from(buffer);
     res.send(buf);
     return res;
+  }
+
+  async createRecolteRegularisation(userId, montant, pmts) {
+    let listPmts = [];
+    const userStation = await this.userService.findInformationsEmploye(userId);
+    const recolte = this.recolteRepository.create();
+    const recolteSave = await this.recolteRepository.save({
+      typeRtc: 'régularisation',
+      montant: montant,
+      createdBy: userStation,
+      createdOn: userStation.employe.agence,
+      pmts: pmts,
+    });
+    const tracking = 'rec-' + (await this.generateTracking(recolteSave.id));
+    recolte.tracking = tracking;
+    const recolteToUpdate = this.recolteRepository.update(
+      recolteSave.id,
+      recolte,
+    );
+
+    for await (const pmt of pmts) {
+      listPmts.push(pmt.tracking);
+    }
+
+    const recolteToPrint = await this.recolteRepository.findOne(recolteSave.id);
+    return await this.pdfService.printRecolteRegularisationOrFacture(
+      recolteToPrint,
+      listPmts,
+      userStation.employe,
+      montant,
+    );
+  }
+
+  async createRecolteFacture(userId, montant, factures) {
+    let listFacture = [];
+    const userStation = await this.userService.findInformationsEmploye(userId);
+    const recolte = this.recolteRepository.create();
+    const recolteSave = await this.recolteRepository.save({
+      typeRtc: 'facture',
+      montant: montant,
+      createdBy: userStation,
+      createdOn: userStation.employe.agence,
+      factures: factures,
+    });
+    const tracking = 'rec-' + (await this.generateTracking(recolteSave.id));
+    recolte.tracking = tracking;
+    const recolteToUpdate = this.recolteRepository.update(
+      recolteSave.id,
+      recolte,
+    );
+
+    for await (const facture of factures) {
+      listFacture.push(facture.numFacture);
+    }
+
+    const recolteToPrint = await this.recolteRepository.findOne(recolteSave.id);
+    return await this.pdfService.printRecolteRegularisationOrFacture(
+      recolteToPrint,
+      listFacture,
+      userStation.employe,
+      montant,
+    );
+  }
+
+  async getRecolteRegularisationOrfactureByUserId(userId,type) {
+    const recoltes = await this.recolteRepository.find({
+      where: { typeRtc: type ,createdBy: { id: userId } },
+      relations: ['createdBy', 'receivedBy'],
+      order:{id:"DESC"}
+    });
+    if (recoltes) {
+      return recoltes;
+    } else {
+      throw new EntityNotFoundError(Recolte, 'pas de récoltes');
+    }
+  }
+
+  async printRecolteRegularisationOrFacture(recolteId) {
+    const recolte = await this.recolteRepository.findOne({
+      relations: ['createdBy', 'pmts','factures'],
+      where: {
+        id: recolteId,
+      },
+    });
+    if (recolte) {
+    if (recolte.typeRtc=='régularisation') {
+    const listPmts = [];
+      const userStation  = await this.userService.findInformationsEmploye(recolte.createdBy.id);
+      const montant = recolte.montant;
+      for await (const pmt of recolte.pmts) {
+        listPmts.push(pmt.tracking);
+      }
+    return await this.pdfService.printRecolteRegularisationOrFacture(recolte,listPmts,userStation.employe,montant);
+    } else if(recolte.typeRtc=='facture') {
+      const listFacture = [];
+      const userStation  = await this.userService.findInformationsEmploye(recolte.createdBy.id);
+      const montant = recolte.montant;
+      for await (const facture of recolte.factures) {
+        listFacture.push(facture.numFacture);
+      }
+    return await this.pdfService.printRecolteRegularisationOrFacture(recolte,listFacture,userStation.employe,montant);
+    }
+   
+    }
+      throw new EntityNotFoundError(Recolte, 'pas de récolte');
+    
+    
   }
 }

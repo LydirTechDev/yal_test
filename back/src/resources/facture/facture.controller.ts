@@ -10,6 +10,9 @@ import {
   DefaultValuePipe,
   Query,
   Response,
+  Req,
+  Res,
+  UseGuards,
 } from '@nestjs/common';
 import { FactureService } from './facture.service';
 import { CreateFactureDto } from './dto/create-facture.dto';
@@ -17,7 +20,10 @@ import { UpdateFactureDto } from './dto/update-facture.dto';
 import { Facture } from './entities/facture.entity';
 import { Pagination } from 'nestjs-typeorm-paginate';
 import { ApiQuery } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { RoleGuard } from 'src/auth/guards/role.guard';
 
+@UseGuards(JwtAuthGuard, RoleGuard)
 @Controller('facture')
 export class FactureController {
   constructor(private readonly factureService: FactureService) {}
@@ -83,6 +89,10 @@ export class FactureController {
       type,
     );
   }
+  @Get('getFactureEspeceNonRecolter')
+  getFactureEspeceNonRecolter(@Req() req) {
+    return this.factureService.getFactureEspeceNonRecolter(req.user.id);
+  }
 
   @Get('factureClassique/:id')
   findOneFactureClassique(@Param('id') id: string) {
@@ -97,6 +107,15 @@ export class FactureController {
   @Get('statistique')
   getStatistique() {
     return this.factureService.getStatistique();
+  }
+
+  
+  @Patch('recolterFacture')
+  async recolterFacture(@Req() req,@Res() res ) {
+    const buffer = await this.factureService.recolterFacture(req.user.id);
+    const buf = Buffer.from(buffer);
+    res.send(buf);
+    return res;
   }
 
   @Patch('payer/:id')

@@ -1,0 +1,30 @@
+<app-pagetitle title="Liste des récoltes de régularisation"> </app-pagetitle>
+
+<hr>
+
+<table class="table table-bordered table-centered bg-white table-hover mt-3">
+  <thead class="">
+    <tr>
+      <th scope="col">Tracking</th>
+      <th scope="col">Status</th>
+      <th scope="col">Montant</th>
+      <th scope="col">Date de création</th>
+      <th scope="col">Imprimer</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let recolte of listRecolte">
+      <td>  <h5 class="hover"><span class="px-3 text-white badge badge-secondary" >
+        {{recolte.tracking}}
+        </span>
+    </h5></td>
+      <td *ngIf="recolte.receivedBy == null"><h5><span class="px-3 text-white badge badge-danger">Non Reçue</span></h5></td>
+      <td *ngIf="recolte.receivedBy != null"><h5><span class="px-3 text-white badge badge-danger">Reçue</span></h5></td>
+      <td>{{recolte.montant | currency:'DA':'symbol' :'1.2-2':'fr'}} </td>
+      <td>{{recolte.createdAt | date:'dd-MM-YYYY HH:mm:ss'}} </td>
+      <td><button mdbBtn color="mdb-color" class=" btn-sm btn " (click)="printRecolte(recolte.id)"
+        mdbWavesEffect><i class="fas fa-print fa-lg"></i></button></td>
+    </tr>
+  </tbody>
+
+</table>

@@ -7,6 +7,9 @@ import { ButtonsModule } from 'angular-bootstrap-md';
 import { NosServicesComponent } from './nos-services/nos-services.component';
 import { AProposComponent } from './a-propos/a-propos.component';
 import { ContactComponent } from './contact/contact.component';
+import { SearchResultComponent } from './search-result/search-result.component';
+import { ReactiveFormsModule } from '@angular/forms';
+import { NgxMaskModule } from 'ngx-mask';
 
 
 @NgModule({
@@ -14,12 +17,16 @@ import { ContactComponent } from './contact/contact.component';
     WelcomePageComponent,
     NosServicesComponent,
     AProposComponent,
-    ContactComponent
+    ContactComponent,
+    SearchResultComponent
   ],
   imports: [
     CommonModule,
     ButtonsModule,
-    LandingRoutingModule
+    LandingRoutingModule,
+    ReactiveFormsModule,
+    NgxMaskModule.forRoot(),
+
   ]
 })
 export class LandingModule { }

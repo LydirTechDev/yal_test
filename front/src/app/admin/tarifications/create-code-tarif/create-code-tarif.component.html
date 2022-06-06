@@ -34,7 +34,7 @@
                         </div>
                     </div>
                     <div class="row mt-1 text-center">
-                        <div class="col-12">
+                        <div class="mx-auto">
                             <button class="btn-sm btn-outline-success w-100" (click)="addPoidTarif()"
                                 *ngIf="this.poids.length != this.poidTarif.length">ajouter la plage suivante</button>
 
@@ -57,7 +57,8 @@
                     <span class="text-muted">{{this.newService.nom}}</span>
                 </div>
                 <div class="col-12 text-center m-2 p-2">
-                    <button *ngIf="prevalidate" class="btn btn-outline-danger" (click)="this.tarificationService.cancelCreateService('admin/tarifications')">Annuler</button>
+                    <button *ngIf="prevalidate" class="btn btn-outline-danger"
+                        (click)="this.tarificationService.cancelCreateService('admin/tarifications')">Annuler</button>
                     <button *ngIf="prevalidate" class="btn btn-success" (click)="save()">VALIDER</button>
                 </div>
             </div>

@@ -110,19 +110,15 @@ export class ClientsController {
     );
   }
 
-  @Get('clientsWithEcommerceZeroShipments')
-  getClientsHaveEcommerceZeroShipmentInInterval(
-    @Query('dateDebut') dateDebut,
-    @Query('dateFin') dateFin,
+  @Get('clientsHaveCredit')
+  getClientHaveCredit(
     @Request() req
   ): Promise<any> {
-    console.log("🚀 ~ file: clients.controller.ts ~ line 118 ~ ClientsController ~ dateFin", dateFin)
-    return this.clientsService.getClientsHaveEcommerceZeroShipmentInInterval(
-      dateDebut,
-      dateFin,
+    return this.clientsService.getClientHaveCredit(
       req.user.id
     );
   }
+
 
 
   @Get(':id')

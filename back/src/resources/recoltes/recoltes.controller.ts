@@ -90,6 +90,19 @@ export class RecoltesController {
     }
   }
 
+  @Get('getRecolteRegularisationOrfactureByUserId')
+  getRecolteRegularisationOrfactureByUserId(@Req() req,@Query('type')type) {
+      return this.recoltesService.getRecolteRegularisationOrfactureByUserId(req.user.id,type);
+  }
+
+  @Get('printRecolteRegularisationOrFacture/:id')
+  async printRecolteRegularisationOrFacture(@Param('id') recolteId, @Response() res) {
+    const buffer = await this.recoltesService.printRecolteRegularisationOrFacture(recolteId);
+    const buf = Buffer.from(buffer);
+    res.send(buf);
+    return res;
+  }
+
   @Post('receiveRecoltes')
   receiveRecoltes(@Body('rctTracking') rctTrackings: string[], @Request() req) {
     if (rctTrackings.length > 0) {

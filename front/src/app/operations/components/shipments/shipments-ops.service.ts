@@ -448,5 +448,10 @@ export class ShipmentsOpsService {
     return this.http.get<Pagination<any>>(`${environment.apiV1}sac/paginateAllSac`)
 
   }
+  getStatistiqueShipmentOfCoursierSelected(id) {
+    return this.http.get<any>(
+      `${environment.apiV1}shipments/getStatistiqueShipmentOfCoursierSelected/${id}`
+    );
+  }
 
 }

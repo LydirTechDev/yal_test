@@ -52,6 +52,8 @@ import { ServiceClientService } from '../service-client/service-client.service';
 import { ExpiditeurPublic } from '../expiditeur-public/entities/expiditeur-public.entity';
 import { RotationsService } from '../rotations/rotations.service';
 import { Rotation } from '../rotations/entities/rotation.entity';
+import { Recolte } from '../recoltes/entities/recolte.entity';
+import { RecoltesService } from '../recoltes/recoltes.service';
 
 @Module({
   imports: [
@@ -81,7 +83,8 @@ import { Rotation } from '../rotations/entities/rotation.entity';
       PmtCoursier,
       Facture,
       ExpiditeurPublic,
-      Rotation
+      Rotation,
+      Recolte
     ]),
   ],
   controllers: [SacController],
@@ -112,7 +115,8 @@ import { Rotation } from '../rotations/entities/rotation.entity';
     FactureService,
     ExpiditeurPublicService,
     ServiceClientService,
-    RotationsService
+    RotationsService,
+    RecoltesService
   ],
 })
 export class SacModule {}

@@ -47,6 +47,7 @@ export class WilayasService {
       createWilayaDto.agenceRetourId,
     );
     wilaya.agenceRetour = agenceRetour;
+    wilaya.dureeReceptionRecolte = createWilayaDto.dureeReceptionRecolte;
     return await this.wilayaRepository.save(wilaya);
   }
   async createWilayaByFile(createWilayasDto: CreateWilayaDto[]) {

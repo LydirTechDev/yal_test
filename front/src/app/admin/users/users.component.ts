@@ -30,6 +30,7 @@ export class UsersComponent implements OnInit {
     1548965156: { text: 'Caissier regional' },
     2548965156: { text: 'Caissier agence' },
     2363594520: { text: 'Service client' },
+    48653128185: { text: 'Manager' },
   };
 
   constructor(

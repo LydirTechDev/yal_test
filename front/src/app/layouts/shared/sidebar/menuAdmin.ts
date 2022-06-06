@@ -75,13 +75,13 @@ export const MENUADMIN: MenuItem[] = [
         link: '/admin/agence',
         parentId: 4,
       },
-      {
-        id: 8,
-        label: 'Zones',
-        icon: 'ri-dashboard-line',
-        link: '/admin/zones',
-        parentId: 8,
-      },
+      // {
+      //   id: 8,
+      //   label: 'Zones',
+      //   icon: 'ri-dashboard-line',
+      //   link: '/admin/zones',
+      //   parentId: 8,
+      // },
       {
         id: 9,
         label: 'Rotations',

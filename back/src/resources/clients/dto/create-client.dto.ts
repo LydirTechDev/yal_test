@@ -63,6 +63,10 @@ export class CreateClientDto {
   @IsNumber()
   tauxCOD: number;
 
+  @Type(() => Number)
+  @IsNumber()
+  c_o_d_ApartirDe: number;
+
   @IsString()
   moyenPayement: string;
 

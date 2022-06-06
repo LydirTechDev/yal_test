@@ -6,7 +6,7 @@
     height: 100%;
     top: 0;
     z-index: 1009;
-    background: rgba(185, 167, 167, 0.5);
+    // background: rgba(185, 167, 167, 0.5);
 
     .bee-spinner {
         position: fixed;
@@ -14,7 +14,7 @@
         left: calc(60% - 10%);
         z-index: 100;
         border: 8px solid #fff;
-        border-top: 8px solid #db3434;
+        border-top: 8px solid #d62e2fff;
         border-radius: 50%;
         width: 60px;
         height: 60px;

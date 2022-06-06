@@ -102,20 +102,41 @@ export class FacturerService {
   }
 
 
-  getClientsHaveEcommerceZeroShipmentInInterval(dateDebut,dateFin):Observable<any>{
-    return this.http.get<any>(`${environment.apiV1}clients/clientsWithEcommerceZeroShipments?dateDebut=${dateDebut}&dateFin=${dateFin}`)
-  }
-
-  getShipmentEcommerceZeroWithIntervalOfClient(id:number,dateDebut,dateFin,espece):Observable<any>{
-    return this.http.get<any>(`${environment.apiV1}shipments/getColisOfClientEcommerceZero/${id}?dateDebut=${dateDebut}&dateFin=${dateFin}&espece=${espece}`)
-  }
+    getClientHaveCredit():Observable<any>{
+      return this.http.get<any>(`${environment.apiV1}clients/clientsHaveCredit`)
+    }
 
 
-  facturerShipmentOfClientEcommerceZeroDetail(id:number,dateDebut,dateFin,espece){
-    return this.http.patch(`${environment.apiV1}shipments/facturerShipmentsEcommerceZeroDetail?clientId=${id}&dateDebut=${dateDebut}&dateFin=${dateFin}&espece=${espece}`,'',{responseType:'blob'})
+    regulariserClient(clientId: number) {
+      return this.http.get(`${environment.apiV1}pmt/payerClient/${clientId}?type=régularisation`, {
+        responseType: 'blob',
+      });
+    }
+
+    getPmtRegularisationNonRecolter():Observable<any>{
+      return this.http.get<any>(`${environment.apiV1}pmt/getPmtRegularisationNonRecolter`)
+    }
+
+
+    getFactureEspeceNonRecolter():Observable<any>{
+      return this.http.get<any>(`${environment.apiV1}facture/getFactureEspeceNonRecolter`)
+    }
+
+    creerRecolteRegularisation(){
+      return this.http.patch(`${environment.apiV1}pmt/recolterPmt`,'',{responseType:'blob'})
+    }
+
+    getRecolteRegularisationOrfactureByUserId(type):Observable<any>{
+      return this.http.get<any>(`${environment.apiV1}recoltes/getRecolteRegularisationOrfactureByUserId?type=${type}`)
+    }
+
+
+    printRecolteRegularisationOrFacture(id:number){
+    return this.http.get(`${environment.apiV1}recoltes/printRecolteRegularisationOrFacture/${id}`,{responseType:'blob'})
   }
 
-  facturerShipmentOfClientEcommerceZeroSimple(id:number,dateDebut,dateFin,espece){
-    return this.http.patch(`${environment.apiV1}shipments/facturerShipmentsEcommerceZeroSimplifier?clientId=${id}&dateDebut=${dateDebut}&dateFin=${dateFin}&espece=${espece}`,'',{responseType:'blob'})
+  creerRecolteFacture(){
+    return this.http.patch(`${environment.apiV1}facture/recolterFacture`,'',{responseType:'blob'})
   }
+
 }

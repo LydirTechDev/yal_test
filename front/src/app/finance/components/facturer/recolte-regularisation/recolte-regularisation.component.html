@@ -1,0 +1,35 @@
+
+<app-pagetitle title="Créer récolte"> </app-pagetitle>
+
+<div class="row col-12">
+  <div class="col-3 pt-5">
+    <h5 class="">Nombre de Pmts: {{nbrPmts}}</h5>
+  </div>
+  <div class="col-3 pt-5">
+    <h5 class="">Montant total: {{montantTotal | currency:'DA':'symbol' :'1.2-2':'fr'}}</h5>
+  </div>
+  <div class="col-6 d-flex mt-3 mb-3 justify-content-end">
+    <button class="btn btn-danger" [disabled]="nbrPmts == 0" (click)="Confirm()">Créer récolte</button>
+  </div>
+</div>
+
+<table class="table table-bordered table-centered bg-white table-hover mt-3">
+  <thead class="">
+    <tr>
+      <th scope="col">Tracking</th>
+      <th scope="col">client</th>
+      <th scope="col">Gérant</th>
+      <th scope="col">Montant recevé</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let pmt of listPmt">
+      <td>{{pmt.tracking}}</td>
+      <td>{{pmt.client.nomCommercial}}</td>
+      <td>{{pmt.client.nomGerant}} {{pmt.client.prenomGerant}}</td>
+      <td>{{-pmt.netClient | currency:'DA':'symbol' :'1.2-2':'fr'}}</td>
+
+    </tr>
+  </tbody>
+
+</table>

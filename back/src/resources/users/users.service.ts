@@ -207,8 +207,35 @@ export class UsersService {
     }
   }
 
-  async countUsers(): Promise<number> {
-    const count = await this.userRepository.count();
-    return count;
+  async countUsers(): Promise<object> {
+    const countClient = await this.userRepository
+      .createQueryBuilder('user')
+      .innerJoin('user.client', 'client')
+      .getCount();
+    console.log(
+      '🚀 ~ file: users.service.ts ~ line 205 ~ UsersService ~ countUsers ~ countClient',
+      countClient,
+    );
+    const countEmploye = await this.userRepository
+      .createQueryBuilder('user')
+      .innerJoin('user.employe', 'employe')
+      .getCount();
+    console.log(
+      '🚀 ~ file: users.service.ts ~ line 210 ~ UsersService ~ countUsers ~ countEmploye',
+      countEmploye,
+    );
+    const countCoursier = await this.userRepository
+      .createQueryBuilder('user')
+      .innerJoin('user.coursier', 'coursier')
+      .getCount();
+    console.log(
+      '🚀 ~ file: users.service.ts ~ line 215 ~ UsersService ~ countUsers ~ coursier',
+      countCoursier,
+    );
+    return {
+      countClient: countClient,
+      countEmploye: countEmploye,
+      countCoursier: countCoursier,
+    };
   }
 }

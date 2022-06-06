@@ -64,6 +64,9 @@ import { ServiceClientModule } from '../service-client/service-client.module';
 import { ServiceClientService } from '../service-client/service-client.service';
 import { RotationsService } from '../rotations/rotations.service';
 import { Rotation } from '../rotations/entities/rotation.entity';
+import { PublicRessourcesController } from '../public_ressources/searchController';
+import { Recolte } from '../recoltes/entities/recolte.entity';
+import { RecoltesService } from '../recoltes/recoltes.service';
 
 @Module({
   imports: [
@@ -90,11 +93,12 @@ import { Rotation } from '../rotations/entities/rotation.entity';
       PmtCoursier,
       Facture,
       ExpiditeurPublic,
-      Rotation
+      Rotation,
+      Recolte
     ]),
     BanquesModule,
   ],
-  controllers: [ShipmentsController],
+  controllers: [ShipmentsController, PublicRessourcesController],
   providers: [
     ShipmentsService,
     WilayasService,
@@ -120,7 +124,8 @@ import { Rotation } from '../rotations/entities/rotation.entity';
     FactureService,
     ExpiditeurPublicService,
     ServiceClientService,
-    RotationsService
+    RotationsService,
+    RecoltesService
   ],
   exports: [],
 })

@@ -59,10 +59,6 @@ export class ServicesController {
    */
   @Get('findServicesOfUser')
   async findServicesOfUser(@Request() req) {
-    console.log(
-      '🚀 ~ file: services.controller.ts ~ line 62 ~ ServicesController ~ findServicesOfUser ~ req',
-      req.user,
-    );
     return await this.servicesService.findServicesOfUser(req.user);
   }
 

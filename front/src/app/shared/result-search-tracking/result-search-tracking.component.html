@@ -12,17 +12,19 @@
             <li class="timeline-item bg-white shadow rounded ml-3 p-3  shadow" *ngFor="let d of detailColis[1]">
                 <div class="timeline-arrow"></div>
                 <div class="row w-100 col-12 my-0 py-0">
-                    <div class="col-12 col-md-4">
+                    <div class="col-12 col-md-4 " [ngClass]="{'text-danger':d.status == 'ÉCHEC LIVRAISON', 'text-success':d.status == 'LIVRÉ',
+                'text-primary':d.status == 'EXPIDIÉ' }">
                         <p class="font-weight-bold mb-0">{{d.status}}</p>
                     </div>
                     <div class="col-12 col-md-4 ">
                         <p class=" text-left text-dark"><i class="fa fa-clock-o "></i>
-                            {{d.date | date:'short'}}
-                            <br><span *ngIf = "!isClient()">Par {{d.user}}</span> 
+                            {{d.date | date:'dd-MM-YYYY HH:mm:ss'}}
+                            <br><span *ngIf="!isClient() && !isCoursier()">Par {{d.user}}</span>
                         </p>
                     </div>
                     <div class="col-12 col-md-4 ">
-                        <p class="font-weight-light ml-auto text-right "><span *ngIf = "!isClient()">{{d.station}}</span> {{d.adress}} </p>
+                        <p class="font-weight-light ml-auto text-right "><span *ngIf="!isClient()">{{d.station}}</span>
+                            {{d.adress}} </p>
                     </div>
                 </div>
 
@@ -87,7 +89,7 @@
     <div class="d-flex justify-content-md-between">
         <p class="font-weight-bold text-uppercase"><span style="font-size: 15px;" class="badge badge-secondary">Crée :
             </span>
-            {{ detailColis[1][0].date | date:'short'}}</p>
+            {{ detailColis[1][0].date | date:'dd-MM-YYYY HH:mm:ss'}}</p>
         <p class="font-weight-bold text-uppercase"><span style="font-size: 15px;" class="badge badge-success">
                 {{detailColis[1][2]?detailColis[1][2].status:detailColis[1][1].status}} : </span> {{
             detailColis[1][1].date
@@ -95,6 +97,6 @@
         </p>
         <p class="font-weight-bold text-uppercase"><span style="font-size: 15px;" class="badge badge-info">
                 {{detailColis[1][detailColis[1].length-1].status}} :</span>
-            {{ detailColis[1][detailColis[1].length-1].date | date:'short'}}
+            {{ detailColis[1][detailColis[1].length-1].date | date:'dd-MM-YYYY HH:mm:ss'}}
         </p>
     </div> -->

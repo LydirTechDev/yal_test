@@ -30,6 +30,7 @@ import { CodeTarifsZonesService } from '../code-tarifs-zones/code-tarifs-zones.s
 import { CommunesService } from '../communes/communes.service';
 import { EmployesService } from '../employes/employes.service';
 import { Shipment } from '../shipments/entities/shipment.entity';
+import { ShipmentsService } from '../shipments/shipments.service';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { UpdateUserDto } from '../users/dto/update-user.dto';
 import { UsersService } from '../users/users.service';
@@ -54,9 +55,11 @@ export class ClientsService {
     private clienttTarifService: ClientsTarifsService,
     private pdfService: PdfService,
     private excelService: ExcelService,
-    private wilayaService:WilayasService,
-    private zoneService:ZonesService,
-    private codeTarifZone:CodeTarifsZonesService
+    private wilayaService: WilayasService,
+    private zoneService: ZonesService,
+    private codeTarifZone: CodeTarifsZonesService,
+    @Inject(forwardRef(() => ShipmentsService))
+    private shipmentService: ShipmentsService,
   ) {}
 
   // const clientInfo = await this.clientRepository
@@ -532,7 +535,7 @@ export class ClientsService {
       .leftJoin('status.user', 'user')
       .leftJoinAndSelect('shipment.service', 'service')
       .where(
-        `(service.nom='Classique Entreprise' or service.nom ='classique divers') and client.caisseAgenceId=${agenceId}`,
+        `(service.nom='Classique Entreprise') and client.caisseAgenceId=${agenceId}`,
       )
       .andWhere(
         `status.libelle = '${StatusShipmentEnum.expidie}' and shipment.facture IsNull`,
@@ -558,7 +561,10 @@ export class ClientsService {
     date.setHours(23, 59, 59);
     dateFin = date.toISOString();
     const agenceId = (await this.userService.findOne(userId)).employe.agence.id;
-    console.log("🚀 ~ file: clients.service.ts ~ line 561 ~ ClientsService ~ agenceId", agenceId)
+    console.log(
+      '🚀 ~ file: clients.service.ts ~ line 561 ~ ClientsService ~ agenceId',
+      agenceId,
+    );
 
     const clients = await await getManager()
       .createQueryBuilder(Shipment, 'shipment')
@@ -577,6 +583,9 @@ export class ClientsService {
       .andWhere(
         `(status.libelle = '${StatusShipmentEnum.payer}' or  status.libelle = '${StatusShipmentEnum.retirer}' ) and shipment.facture IsNull`,
       )
+      .andWhere(
+        `shipment.lastStatus = '${StatusShipmentEnum.payer}' or shipment.lastStatus = '${StatusShipmentEnum.retourPayer}' `,
+      )
       .andWhere('status.createdAt >= :dateDebut', { dateDebut: `${dateDebut}` })
       .andWhere('status.createdAt <= :dateFin', { dateFin: `${dateFin}` })
       .select('client')
@@ -589,71 +598,148 @@ export class ClientsService {
     }
   }
 
- 
-
-
-    async getClientsHaveEcommerceZeroShipmentInInterval(
-    dateDebut,
-    dateFin,
-    userId,
-  ): Promise<any> {
-    const date = new Date(dateFin);
-    date.setHours(23, 59, 59);
-    dateFin = date.toISOString();
-    // const agenceId = (await this.userService.findOne(userId)).employe.agence.id;
-
-    const clients = await await getManager()
-      .createQueryBuilder(Shipment, 'shipment')
-      .leftJoinAndSelect('shipment.createdBy', 'createdBy')
-      .leftJoinAndSelect('createdBy.client', 'client')
-      .leftJoinAndSelect('shipment.status', 'status')
-      .leftJoinAndSelect('shipment.commune', 'commune')
-      .leftJoinAndSelect('commune.wilaya', 'wilaya')
-      .leftJoin('status.user', 'user')
+  async getClientHaveCredit(userId) {
+    let soldeAgence: number;
+    let soldeAregulariser: number;
+    let tarifs: number;
+    let tarifRetour: number;
+    let prixCod: number;
+    let nbrColis: number;
+    let totalRamasser:number;
+    let listClientWithSolde = [];
+    const agenceId = (await this.userService.findOne(userId)).employe.agence.id;
+    const clients = await this.clientRepository
+      .createQueryBuilder('client')
+      .leftJoinAndSelect('client.user', 'user')
+      .leftJoinAndSelect('user.shipmentsCreated', 'shipment')
       .leftJoinAndSelect('shipment.service', 'service')
       .where(
         `(service.nom='E-Commerce Express Divers' or service.nom ='E-Commerce Economy Entreprise'
-        or service.nom='E-Commerce Express Entreprise'
-        or service.nom='E-Commerce Economy Divers' )  and client.caisseAgenceId=1 
-        and shipment.prixVente=0 and shipment.livraisonGratuite=true`,
+    or service.nom='E-Commerce Express Entreprise'
+    or service.nom='E-Commerce Economy Divers' )  and client.caisseAgenceId=${agenceId}`,
       )
       .andWhere(
-        `(status.libelle = '${StatusShipmentEnum.livre}' or  status.libelle = '${StatusShipmentEnum.ARetirer}' ) and shipment.facture IsNull`,
+        `shipment.lastStatus = '${StatusShipmentEnum.pretAPayer}' or shipment.lastStatus = '${StatusShipmentEnum.retirer}' `,
       )
-      .andWhere('status.createdAt >= :dateDebut', { dateDebut: `${dateDebut}` })
-      .andWhere('status.createdAt <= :dateFin', { dateFin: `${dateFin}` })
-      .select('client')
-      .distinctOn(['client.id'])
-      .getRawMany();
+      .getMany();
+
+
     if (clients) {
-      return clients;
+      for await (const client of clients) {
+        nbrColis = 0;
+        tarifs = 0;
+        tarifRetour = 0;
+        soldeAgence = 0;
+        totalRamasser=0;
+        for await (const shipment of client.user.shipmentsCreated) {
+          nbrColis = nbrColis + 1;
+          
+
+          if (shipment.lastStatus == StatusShipmentEnum.pretAPayer) {
+           
+            const tarifLivraison =
+              await this.shipmentService.calculTarifslivraison(
+                shipment.tracking,
+              );
+              if (shipment.livraisonGratuite == false){
+              totalRamasser=totalRamasser + shipment.prixVente + tarifLivraison
+              }else{
+                totalRamasser=totalRamasser+shipment.prixVente
+              }
+            if (shipment.prixEstimer > client.c_o_d_ApartirDe) {
+              prixCod = (shipment.prixEstimer * client.tauxCOD) / 100;
+            } else {
+              prixCod = 0;
+            }
+            tarifs = tarifs + tarifLivraison + prixCod;
+          } else if (shipment.lastStatus == StatusShipmentEnum.retirer) {
+            tarifRetour =tarifRetour+ client.tarifRetour;
+          }
+          
+
+          
+          console.log(nbrColis,'tarifs',tarifs,'cod',prixCod,'retour',tarifRetour,'soldeagence',soldeAgence)
+        }
+        soldeAgence = tarifs + tarifRetour;
+        console.log("🚀 ~ file: clients.service.ts ~ line 680 ~ ClientsService ~ forawait ~ soldeAgence", soldeAgence)
+
+        if (soldeAgence > totalRamasser) {
+          soldeAregulariser = soldeAgence - totalRamasser;
+          listClientWithSolde.push({
+            client,
+            soldeAgence: soldeAgence,
+            soldeAregulariser: soldeAregulariser,
+            nbrColis: nbrColis,
+            totalRamasser:totalRamasser
+          });
+        }
+      }
+      return listClientWithSolde;
     } else {
       throw new EntityNotFoundError(Client, `n'existe pas`);
     }
   }
+ 
 
 
-  async getTarifOfclient(wilayaDepartId,codeTarifId){
-    let tarifClient=[];
-    const listwilaya= await this.wilayaService.findAllWilaya()
-    let i=0;
+
+
+
+  async getTarifOfclient(wilayaDepartId, codeTarifId) {
+    let tarifClient = [];
+    const listwilaya = await this.wilayaService.findAllWilaya();
+    let i = 0;
     for await (const wilaya of listwilaya) {
-      i=i+1;
-      console.log("🚀 ~ file: clients.service.ts ~ line 598 ~ ClientsService ~ forawait ~ i", i)
-      const zone=await this.zoneService.findZoneByRotation(wilayaDepartId,wilaya.id);
-      console.log("🚀 ~ file: clients.service.ts ~ line 595 ~ ClientsService ~ getTarifOfclient ~ zone", zone);
-      const tarif=await this.codeTarifZone.findCodeTarifZoneWithoutPoids(zone.zone_id,codeTarifId)
-      console.log("🚀 ~ file: clients.service.ts ~ line 596 ~ ClientsService ~ getTarifOfclient ~ tarif", tarif)
-      const tarifClientInfo={
-      destination:wilaya.nomLatin,
-      zone:zone.zone_id,
-      tarifLivraison:tarif.tarifDomicile,
-      tarifStopDesk:tarif.tarifStopDesk
-      }
-      tarifClient.push(tarifClientInfo)
-    }
-    return tarifClient
+      i = i + 1;
 
+      const zone = await this.zoneService.findZoneByRotation(
+        wilayaDepartId,
+        wilaya.id,
+      );     
+      const tarif = await this.codeTarifZone.findCodeTarifZoneWithoutPoids(
+        zone.zone_id,
+        codeTarifId,
+      );
+      const tarifClientInfo = {
+        destination: wilaya.nomLatin,
+        zone: zone.zone_id,
+        tarifLivraison: tarif.tarifDomicile,
+        tarifStopDesk: tarif.tarifStopDesk,
+        tarifSurpoids:tarif.tarifPoidsParKg
+      };
+      tarifClient.push(tarifClientInfo);
+    }
+    return tarifClient;
+  }
+
+  async getTarifOfclientForClassic(wilayaDepartId, codeTarifId) {
+    let tarifClient = [];
+    let listZone=[];
+    const listwilaya = await this.wilayaService.findAllWilaya();
+    let i = 0;
+    for await (const wilaya of listwilaya) {
+      i = i + 1;
+
+      const zone = await this.zoneService.findZoneByRotation(
+        wilayaDepartId,
+        wilaya.id,
+      );  
+      if (!listZone.includes(zone.zone_id)) {
+        const tarif = await this.codeTarifZone.findCodeTarifZoneWithoutPoids(
+          zone.zone_id,
+          codeTarifId,
+        );
+        const tarifClientInfo = {
+          zone: zone.zone_id,
+          tarifLivraison: tarif.tarifDomicile,
+          tarifSurpoids:tarif.tarifPoidsParKg
+        };
+        tarifClient.push(tarifClientInfo);
+        listZone.push(zone.zone_id);
+      }   
+    }
+
+    return tarifClient;
   }
 
 }

@@ -9,7 +9,7 @@ export class CreateWilayaDto {
     minimum: 2,
     maximum: 2,
     required: true,
-    example: '16'
+    example: '16',
   })
   @IsString()
   @MinLength(1)
@@ -26,7 +26,7 @@ export class CreateWilayaDto {
   })
   @IsString()
   @MinLength(3)
-  @MaxLength(30) 
+  @MaxLength(30)
   nomLatin: string;
 
   @ApiProperty({
@@ -34,13 +34,12 @@ export class CreateWilayaDto {
     type: String,
     minimum: 3,
     maximum: 30,
-    example: 'الجزائر'
+    example: 'الجزائر',
   })
   @IsString()
   @MinLength(3)
   @MaxLength(30)
   nomArabe: string;
-
 
   @ApiProperty({
     description: " id de l'agence de retour de la wilaya",
@@ -49,5 +48,13 @@ export class CreateWilayaDto {
     required: true,
   })
   @IsNumber()
-  agenceRetourId: number
+  agenceRetourId: number;
+  @ApiProperty({
+    description: ' Durrée de la reception de la récolte',
+    type: Number,
+    example: 1,
+    required: true,
+  })
+  @IsNumber()
+  dureeReceptionRecolte: number;
 }

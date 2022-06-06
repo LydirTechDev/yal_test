@@ -27,14 +27,14 @@
                 <div class="table-responsive mt-4">
                     <table id="basic-datatable" class="table table-centered dt-responsive nowrap 
                         no-footer dtr-inline table-bordered">
-    
+
                         <tbody *ngIf="!isLoading; else spiner">
                             <tr *ngFor="let colis of colisData; let i=index ">
                                 <div class="media align-items-lg-center bg-white flex-column mx-auto 
                                                                 col-12 col-md-8 flex-lg-row p-3 my-1 shadow"
                                     style="border: solid 1px #cd0000; border-radius: 5px;">
                                     <div class="col-12 col-sm-6 media-body order-1 order-md-1">
-                                        <h5 class="mt-0 font-weight-bold mb-2">{{colis.tracking}}
+                                        <h5 class="mt-0 font-weight-bold mb-2">{{colis.tracking}} ({{colis.status[colis.status.length-1].comment}})
                                         </h5>
                                         <p class="font-italic text-muted mb-0 small">{{colis.designationProduit}}.
                                         </p>
@@ -45,7 +45,7 @@
                                             <ul class="list-inline small">
                                                 <li class="list-inline-item m-0">
                                                     <i class="fa fa-user mr-1"></i>
-                                                    {{colis.nom}} {{colis.prenom}} 
+                                                    {{colis.nom}} {{colis.prenom}}
                                                 </li>
                                             </ul>
                                         </div>
@@ -59,7 +59,7 @@
                                             </li>
                                             <li>
                                                 <p style="font-size:13px; color: black;">
-                                                   le {{colis.status[0].createdAt | date:'dd-MM-YYYY HH:mm:ss'}}
+                                                    le {{colis.status[0].createdAt | date:'dd-MM-YYYY HH:mm:ss'}}
                                                 </p>
                                             </li>
                                         </ul>

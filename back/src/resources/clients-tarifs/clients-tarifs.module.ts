@@ -33,6 +33,24 @@ import { ZonesService } from '../zones/zones.service';
 import { PoidsService } from '../poids/poids.service';
 import { Zone } from '../zones/entities/zone.entity';
 import { Poid } from '../poids/entities/poid.entity';
+import { Shipment } from '../shipments/entities/shipment.entity';
+import { ShipmentsService } from '../shipments/shipments.service';
+import { StatusService } from '../status/status.service';
+import { Status } from '../status/entities/status.entity';
+import { Coursier } from '../coursier/entities/coursier.entity';
+import { CoursierService } from '../coursier/coursier.service';
+import { PmtCoursierService } from '../pmt-coursier/pmt-coursier.service';
+import { PmtCoursier } from '../pmt-coursier/entities/pmt-coursier.entity';
+import { Facture } from '../facture/entities/facture.entity';
+import { FactureService } from '../facture/facture.service';
+import { RotationsService } from '../rotations/rotations.service';
+import { Rotation } from '../rotations/entities/rotation.entity';
+import { ServiceClient } from '../service-client/entities/service-client.entity';
+import { ServiceClientService } from '../service-client/service-client.service';
+import { ExpiditeurPublicService } from '../expiditeur-public/expiditeur-public.service';
+import { ExpiditeurPublic } from '../expiditeur-public/entities/expiditeur-public.entity';
+import { Recolte } from '../recoltes/entities/recolte.entity';
+import { RecoltesService } from '../recoltes/recoltes.service';
 
 @Module({
   imports: [
@@ -52,6 +70,15 @@ import { Poid } from '../poids/entities/poid.entity';
       CodeTarifsZone,
       Zone,
       Poid,
+      Shipment,
+      Status,
+      Coursier,
+      PmtCoursier,
+      Facture,
+      Rotation,
+      ServiceClient,
+      ExpiditeurPublic,
+      Recolte
     ]),
   ],
   controllers: [ClientsTarifsController],
@@ -73,6 +100,15 @@ import { Poid } from '../poids/entities/poid.entity';
     CodeTarifsZonesService,
     ZonesService,
     PoidsService,
+    ShipmentsService,
+    StatusService,
+    CoursierService,
+    PmtCoursierService,
+    FactureService,
+    RotationsService,
+    ServiceClientService,
+    ExpiditeurPublicService,
+    RecoltesService
   ],
 })
 export class ClientsTarifsModule {}

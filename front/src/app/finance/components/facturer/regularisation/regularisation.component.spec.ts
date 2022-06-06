@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { FacturerZeroComponent } from './facturer-zero.component';
+import { RegularisationComponent } from './regularisation.component';
 
-describe('FacturerZeroComponent', () => {
-  let component: FacturerZeroComponent;
-  let fixture: ComponentFixture<FacturerZeroComponent>;
+describe('RegularisationComponent', () => {
+  let component: RegularisationComponent;
+  let fixture: ComponentFixture<RegularisationComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ FacturerZeroComponent ]
+      declarations: [ RegularisationComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(FacturerZeroComponent);
+    fixture = TestBed.createComponent(RegularisationComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

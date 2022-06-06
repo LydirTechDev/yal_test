@@ -47,12 +47,12 @@ export class DetailClientComponent implements OnInit {
   listCommuneDepart = [];
   clients: any;
   breadCrumbItems: Array<{}>;
-  touched:boolean=false;
-  isDureePaiement= false;
-  isJourneePayment=false
-  listDureePaiement = ['Fret', 'classique divers','Classique Entreprise']
+  touched: boolean = false;
+  isDureePaiement = false;
+  isJourneePayment = false
+  listDureePaiement = ['Fret', 'Classique Divers', 'Classique Entreprise']
   listJourPayment = ['E-Commerce Express Divers', 'E-Commerce Economy Entreprise',
-   'E-Commerce Express Entreprise', 'E-Commerce Economy Divers']
+    'E-Commerce Express Entreprise', 'E-Commerce Economy Divers']
   selectedServiceDureePaiement = []
   selectedServiceJourneePayment = [];
   journeeSemaine: any[] = [
@@ -140,6 +140,7 @@ export class DetailClientComponent implements OnInit {
     nbTentative: [, Validators.compose([Validators.required])],
     poidsBase: [, Validators.compose([Validators.required])],
     tauxCOD: [, Validators.compose([Validators.required])],
+    c_o_d_ApartirDe: [, Validators.compose([Validators.required])],
     moyenPayement: [, Validators.compose([Validators.required])],
     jourPayement: [],
     delaiPaiement: [],
@@ -152,7 +153,7 @@ export class DetailClientComponent implements OnInit {
   });
 
   ngOnInit(): void {
-   
+
 
     this.breadCrumbItems = [
       { label: 'Gestion des clients' },
@@ -172,39 +173,40 @@ export class DetailClientComponent implements OnInit {
           this.clients.user.isActive = 'Inactif';
         }
 
-      this.clientForm.patchValue({
-        email: this.clients.user.email,
-        isActive: this.clients.user.isActive,
-        raisonSociale: this.clients.raisonSociale,
-        nomCommercial: this.clients.nomCommercial,
-        nomGerant: this.clients.nomGerant,
-        prenomGerant: this.clients.prenomGerant,
-        adresse: this.clients.adresse,
-        telephone: this.clients.telephone,
-        wilayaResidenceId: this.clients.communeResidence.wilaya.id,
-        communeResidenceId: this.clients.communeResidence.id,
-        nrc: this.clients.nrc,
-        nif: this.clients.nif,
-        nis: this.clients.nis,
-        nbEnvoiMin: this.clients.nbEnvoiMin,
-        nbEnvoiMax: this.clients.nbEnvoiMax,
-        nbTentative: this.clients.nbTentative,
-        poidsBase: this.clients.poidsBase,
-        tauxCOD: this.clients.tauxCOD,
-        moyenPayement: this.clients.moyenPayement,
-        jourPayement: this.clients.jourPayement,
-        delaiPaiement: this.clients.delaiPaiement,
-        tarifRetour: this.clients.tarifRetour,
-        wilayaDepartId: this.clients.communeDepart.wilaya.id,
-        communeDepartId: this.clients.communeDepart.id,
-        agenceRetourId: this.clients.agenceRetour.id,
-        caisseAgenceId: this.clients.caisseAgence.id
-      });
+        this.clientForm.patchValue({
+          email: this.clients.user.email,
+          isActive: this.clients.user.isActive,
+          raisonSociale: this.clients.raisonSociale,
+          nomCommercial: this.clients.nomCommercial,
+          nomGerant: this.clients.nomGerant,
+          prenomGerant: this.clients.prenomGerant,
+          adresse: this.clients.adresse,
+          telephone: this.clients.telephone,
+          wilayaResidenceId: this.clients.communeResidence.wilaya.id,
+          communeResidenceId: this.clients.communeResidence.id,
+          nrc: this.clients.nrc,
+          nif: this.clients.nif,
+          nis: this.clients.nis,
+          nbEnvoiMin: this.clients.nbEnvoiMin,
+          nbEnvoiMax: this.clients.nbEnvoiMax,
+          nbTentative: this.clients.nbTentative,
+          poidsBase: this.clients.poidsBase,
+          tauxCOD: this.clients.tauxCOD,
+          c_o_d_ApartirDe: this.clients.c_o_d_ApartirDe,
+          moyenPayement: this.clients.moyenPayement,
+          jourPayement: this.clients.jourPayement,
+          delaiPaiement: this.clients.delaiPaiement,
+          tarifRetour: this.clients.tarifRetour,
+          wilayaDepartId: this.clients.communeDepart.wilaya.id,
+          communeDepartId: this.clients.communeDepart.id,
+          agenceRetourId: this.clients.agenceRetour.id,
+          caisseAgenceId: this.clients.caisseAgence.id
+        });
 
 
-      this.getAgenceByWilayaId();
-      this.getCommuneDepartByWilayaId();
-      this.getCommuneResidenceByWilayaId();
+        this.getAgenceByWilayaId();
+        this.getCommuneDepartByWilayaId();
+        this.getCommuneResidenceByWilayaId();
         let i = 0;
         for (const tarif of client.clientsTarifs) {
           if (this.listDureePaiement.includes(tarif.codeTarif.service.nom)) {
@@ -228,8 +230,8 @@ export class DetailClientComponent implements OnInit {
 
           (this.clientForm.get('typeTarif') as FormArray).push(
             new FormGroup({
-              serviceId: new FormControl(tarif.codeTarif.service.id,Validators.required),
-              codeTarifId: new FormControl(tarif.codeTarif.id,Validators.required),
+              serviceId: new FormControl(tarif.codeTarif.service.id, Validators.required),
+              codeTarifId: new FormControl(tarif.codeTarif.id, Validators.required),
             })
 
           );
@@ -259,33 +261,34 @@ export class DetailClientComponent implements OnInit {
 
   getAllservice() {
     this.clientService.getAllService().then((response) => {
-      for  (const i of response) {
-        this.listServiceBeforePatch.push(i) 
+      for (const i of response) {
+        this.listServiceBeforePatch.push(i)
         this.listService.push(i);
       }
-     
+
       console.log("🚀 ~ file: detail-client.component.ts ~ line 258 ~ DetailClientComponent ~ this.clientService.getAllService ~ response", response)
       console.log(this.listService)
       console.log(this.listServiceBeforePatch)
     });
   }
 
-  getAgenceByWilayaId(){
+  getAgenceByWilayaId() {
     this.clientService
-    .getAgencesByWilayaId(this.clientForm.get('wilayaDepartId').value)
-    .subscribe(
-      (response) => {
-        this.listAgence = response;
-      },
-    );
+      .getAgencesByWilayaId(this.clientForm.get('wilayaDepartId').value)
+      .subscribe(
+        (response) => {
+          this.listAgence = response;
+        },
+      );
   }
 
   getCommuneResidenceByWilayaId() {
     this.clientService.getCommunsByWilayaId(this.clientForm.get('wilayaResidenceId').value)
       .subscribe(
-        (communeResidence) =>{ (this.listCommuneResidence = communeResidence);
+        (communeResidence) => {
+          (this.listCommuneResidence = communeResidence);
         }
-        );
+      );
 
   }
 
@@ -300,8 +303,8 @@ export class DetailClientComponent implements OnInit {
   }
   newTypeTarif(): FormGroup {
     return this.formBuilder.group({
-      serviceId: [,Validators.required],
-      codeTarifId: [,Validators.required],
+      serviceId: [, Validators.required],
+      codeTarifId: [, Validators.required],
     });
   }
 
@@ -327,14 +330,14 @@ export class DetailClientComponent implements OnInit {
     if (this.listDureePaiement.includes(service.nom)) {
       const index = this.selectedServiceDureePaiement.indexOf(service);
       this.selectedServiceDureePaiement.splice(index, 1);
-    } 
+    }
     if (this.listJourPayment.includes(service.nom)) {
       const index = this.selectedServiceJourneePayment.indexOf(service);
-      this.selectedServiceJourneePayment.splice(index,1)
-    } 
+      this.selectedServiceJourneePayment.splice(index, 1)
+    }
 
     this.typeTarif.removeAt(i);
-    this.touched=true;
+    this.touched = true;
     if (this.selectedServiceDureePaiement.length > 0) {
       this.isDureePaiement = true
       this.clientForm.get('delaiPaiement').setValidators([Validators.required])
@@ -349,7 +352,7 @@ export class DetailClientComponent implements OnInit {
       this.isJourneePayment = true
       this.clientForm.get('jourPayement').setValidators([Validators.required])
       this.clientForm.get('jourPayement').updateValueAndValidity()
-    
+
     }
     else {
       this.isJourneePayment = false
@@ -362,15 +365,15 @@ export class DetailClientComponent implements OnInit {
   onChangeService(i: number) {
     let id = (this.typeTarif.at(i) as FormGroup).get('serviceId').value;
     let service = this.listService.find((service) => service.id == id);
-    if ( this.listDureePaiement.includes(service.nom)) {
+    if (this.listDureePaiement.includes(service.nom)) {
       this.selectedServiceDureePaiement.push(service)
 
       console.log(service.nom)
       this.isDureePaiement = true;
       this.clientForm.get('delaiPaiement').setValidators([Validators.required])
       this.clientForm.get('delaiPaiement').updateValueAndValidity()
-    } 
-    
+    }
+
     if (this.listJourPayment.includes(service.nom)) {
       this.selectedServiceJourneePayment.push(service)
       this.isJourneePayment = true;
@@ -378,7 +381,7 @@ export class DetailClientComponent implements OnInit {
       this.clientForm.get('jourPayement').updateValueAndValidity()
     }
 
-    
+
     const index = this.listService.indexOf(service);
     this.listService.splice(index, 1);
     this.clientService
@@ -415,7 +418,7 @@ export class DetailClientComponent implements OnInit {
         },
 
         (error) => {
-          this.listCommuneResidence=[];
+          this.listCommuneResidence = [];
           this.clientForm.get('communeResidenceId').setValue(null);
         }
       );
@@ -431,7 +434,7 @@ export class DetailClientComponent implements OnInit {
         },
 
         (error) => {
-          this.listCommuneDepart=[];
+          this.listCommuneDepart = [];
           this.clientForm.get('communeDepartId').setValue(null);
         }
       );
@@ -444,7 +447,7 @@ export class DetailClientComponent implements OnInit {
           this.clientForm.get('caisseAgenceId').setValue(null);
         },
         (error) => {
-          this.listAgence=[];
+          this.listAgence = [];
           this.clientForm.get('agenceRetourId').setValue(null);
           this.clientForm.get('caisseAgenceId').setValue(null);
         }
@@ -469,7 +472,7 @@ export class DetailClientComponent implements OnInit {
   }
 
 
-  updateClient(){
+  updateClient() {
     this.clientForm.value['tarifRetour'] = +this.clientForm.value['tarifRetour']
     this.clientForm.value['tauxCOD'] = +this.clientForm.value['tauxCOD']
     this.clientForm.value['poidsBase'] = +this.clientForm.value['poidsBase']
@@ -477,12 +480,12 @@ export class DetailClientComponent implements OnInit {
     this.clientForm.value['nbEnvoiMin'] = +this.clientForm.value['nbEnvoiMin']
     this.clientForm.value['nbEnvoiMax'] = +this.clientForm.value['nbEnvoiMax']
 
-    return this.clientService.updateClient(this.route.params.id,this.clientForm.value).subscribe(
-      (response)=>{
+    return this.clientService.updateClient(this.route.params.id, this.clientForm.value).subscribe(
+      (response) => {
         this.sweetalertService.modificationSucces('client modifié avec succés');
         this.router.navigateByUrl(`admin/client`)
       },
-      (error)=>{
+      (error) => {
         this.sweetalertService.modificationFailure(error.message)
       }
     )

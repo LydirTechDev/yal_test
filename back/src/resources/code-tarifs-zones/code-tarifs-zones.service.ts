@@ -29,10 +29,26 @@ export class CodeTarifsZonesService {
     );
     return await this.codeTarifZonesRepository.save(newCodeTarifZone);
   }
+  async findOneByParam(codeTarif, zone, poids) {
+    return await this.codeTarifZonesRepository.findOne({
+      relations: ['codeTarif', 'zone', 'poids'],
+      where: {
+        codeTarif: {
+          id: codeTarif.id,
+        },
+        zone: {
+          id: zone.id,
+        },
+        poids: {
+          id: poids.id,
+        },
+      },
+    });
+  }
   async createTarifsByFile(createCodeTarifsZoneDto) {
+    console.log("🚀 ~ file: code-tarifs-zones.service.ts ~ line 48 ~ CodeTarifsZonesService ~ createTarifsByFile ~ createCodeTarifsZoneDto", createCodeTarifsZoneDto)
     for await (const tarif of createCodeTarifsZoneDto) {
       const zone = await this.zonesService.findOne(parseInt(tarif.zoneId));
-
       const poids = await this.poidsService.findPoidsPlage(
         tarif.poidsMin,
         tarif.poidsMax,
@@ -40,22 +56,38 @@ export class CodeTarifsZonesService {
       const codeTarif = await this.codeTarifService.findCodeTarifsByNom(
         tarif.codeTarif,
       );
-      
-      if (typeof(tarif.tarifStopDesk).IsString) {
-        tarif.tarifStopDesk = null
+      const checkExist = await this.findOneByParam(codeTarif, zone, poids);
+      console.log(
+        '🚀 ~ file: code-tarifs-zones.service.ts ~ line 75 ~ CodeTarifsZonesService ~ forawait ~ checkExist',
+        checkExist,
+      );
+      if (checkExist) {
+        const newTarifs = {
+          codeTarif: codeTarif,
+          zone: zone,
+          poids: poids,
+          tarifStopDesk: tarif.tarifStopDesk ? tarif.tarifStopDesk : null,
+          tarifDomicile: tarif.tarifDomicile,
+          tarifPoidsParKg: tarif.tarifsPoidsKg,
+        };
+        this.codeTarifZonesRepository.save(newTarifs);
+      } else if (zone && poids && codeTarif) {
+        await this.create({
+          codeTarif: codeTarif,
+          zone: zone,
+          poids: poids,
+          tarifStopDesk: tarif.tarifStopDesk ? tarif.tarifStopDesk : null,
+          tarifDomicile: tarif.tarifDomicile,
+          tarifPoidsParKg: tarif.tarifsPoidsKg,
+        });
+      } else {
+        throw new EntityNotFoundError(
+          CodeTarifsZone,
+          'Verifier les parametres',
+        );
       }
-
-      await this.create({
-        codeTarif: codeTarif,
-        zone: zone,
-        poids: poids,
-        tarifStopDesk: tarif.tarifStopDesk,
-        tarifDomicile: tarif.tarifDomicile,
-        tarifPoidsParKg: tarif.tarifsPoidsKg,
-      });
     }
   }
-
   // zoneId: '6',
   // poidsMin: 101,
   // poidsMax: 150,

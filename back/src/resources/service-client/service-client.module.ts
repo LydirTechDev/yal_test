@@ -49,6 +49,8 @@ import { ExpiditeurPublicService } from '../expiditeur-public/expiditeur-public.
 import { ExpiditeurPublic } from '../expiditeur-public/entities/expiditeur-public.entity';
 import { FactureService } from '../facture/facture.service';
 import { Facture } from '../facture/entities/facture.entity';
+import { Recolte } from '../recoltes/entities/recolte.entity';
+import { RecoltesService } from '../recoltes/recoltes.service';
 
 @Module({
   imports: [
@@ -75,6 +77,7 @@ import { Facture } from '../facture/entities/facture.entity';
       CodeTarif,
       ExpiditeurPublic,
       Facture,
+      Recolte
     ]),
   ],
   controllers: [ServiceClientController],
@@ -104,6 +107,7 @@ import { Facture } from '../facture/entities/facture.entity';
     CodeTarifService,
     ExpiditeurPublicService,
     FactureService,
+    RecoltesService
   ],
   exports: [ServiceClientService],
 })

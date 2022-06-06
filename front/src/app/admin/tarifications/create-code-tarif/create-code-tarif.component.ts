@@ -57,7 +57,7 @@ export class CreateCodeTarifComponent implements OnInit {
     ]),
   });
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 
   get poidTarif() {
     return this.form.get('poidTarif') as FormArray;

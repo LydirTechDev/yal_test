@@ -14,7 +14,7 @@ import { ICoursier } from './i-coursier';
 export class AffecterAuCoursierComponent implements OnInit {
   formCoursierSelected: FormGroup;
   formdata: FormGroup;
-
+  statistique: any = {};
   count: number = 0;
 
   coursiers: any[] = [];
@@ -91,6 +91,7 @@ export class AffecterAuCoursierComponent implements OnInit {
         .subscribe((resp) => {
           if (resp) {
             this.sweetAlertService.sipmleAlert('success', 'Validé avec succes', '', 'center', false);
+            this.getStatistiqueShipmentCoursier();
             this.selected = [];
             this.count = this.selected.length;
             // this.router.navigateByUrl(
@@ -127,10 +128,18 @@ export class AffecterAuCoursierComponent implements OnInit {
       (response) => {
         console.log(
           '🚀 ~ file: affecter-au-coursier.component.ts ~ line 55 ~ AffecterAuCoursierComponent ~ _getShipmentsPresLivraison ~ response',
-          response
+          response.length
         );
-        this.listeShipmentsPresLivraison = response;
-        this.nbrShipmentPresLivraison = response.length
+        if (response.length == 0) {
+          this.sweetAlertService.sipmleAlert(
+            'info',
+            'Oops! Pas de colis à affecter',
+            ''
+          );
+        } else {
+          this.listeShipmentsPresLivraison = response;
+          this.nbrShipmentPresLivraison = response.length
+        }
       },
       (error) => {
         console.log(
@@ -139,5 +148,13 @@ export class AffecterAuCoursierComponent implements OnInit {
         );
       }
     );
+  }
+  getStatistiqueShipmentCoursier() {
+    return this.shipmentsOpsService
+      .getStatistiqueShipmentOfCoursierSelected(this.formCoursierSelected.value['coursierSelected'])
+      .subscribe((resp) => {
+        this.statistique = resp;
+        console.log("🚀 ~ file: affecter-au-coursier.component.ts ~ line 148 ~ AffecterAuCoursierComponent ~ .subscribe ~ resp", resp)
+      });
   }
 }

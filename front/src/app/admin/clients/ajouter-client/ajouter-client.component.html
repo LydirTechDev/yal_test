@@ -120,7 +120,7 @@
         <div class="form-group row mb-3 text-right">
           <label class="col-md-4 col-form-label"> Wilaya de résidence*: </label>
           <div class="col-sm-8 text-left">
-            <ng-select formControlName="wilayaResidenceId" placeholder=" Selectionner la wilaya"
+            <ng-select appendTo="body" formControlName="wilayaResidenceId" placeholder=" Selectionner la wilaya"
               (change)=" onChangWilayaResidence()">
               <ng-option *ngFor="let wilaya of listWilaya" [value]="wilaya.id">
                 {{ wilaya.codeWilaya }} {{ wilaya.nomLatin }}
@@ -136,7 +136,7 @@
         <div class="form-group row mb-3 text-right">
           <label class="col-md-4 col-form-label"> Commune de résidence*: </label>
           <div class="col-sm-8 text-left">
-            <ng-select formControlName="communeResidenceId" placeholder="Selectionner la commune">
+            <ng-select appendTo="body" formControlName="communeResidenceId" placeholder="Selectionner la commune">
               <ng-option *ngFor="let commune of listCommuneResidence" [value]="commune.id">
                 {{ commune.codePostal }} {{ commune.nomLatin }}
               </ng-option>
@@ -209,7 +209,8 @@
         <div class="form-group row mb-3">
           <label class="col-md-4 col-form-label text-right" for="isActive">Etat d'utilisateur*:</label>
           <div class="col-md-8">
-            <ng-select name="isActive" id="isActive" formControlName="isActive" placeholder="Etat d'utilisateur">
+            <ng-select appendTo="body" name="isActive" id="isActive" formControlName="isActive"
+              placeholder="Etat d'utilisateur">
               <ng-option value="true">Actif</ng-option>
               <ng-option value="false">Inactif</ng-option>
             </ng-select>
@@ -224,7 +225,7 @@
 
       <ul class="list-inline wizard mb-0 pg-2 mt-2 col-12">
         <li class="next list-inline-item float-right">
-          <button class="btn btn-primary" ngClass="disable" awNextStep [disabled]="!validateFirstStep()">
+          <button class="btn btn-primary" ngClass="disable" awNextStep [disabled]="validateFirstStep()">
             Suivant<i class="ri-arrow-right-line align-middle ms-2"></i>
           </button>
         </li>
@@ -243,29 +244,31 @@
       <div class="col-6 border-right border-secondary pt-3 mb-2">
 
         <!-- nbEnvoiMin -->
-        
+
         <div class="form-group row mb-3">
           <label class="col-md-4 col-form-label text-right" for="nbEnvoiMin">Nombre d'envoi min*:</label>
           <div class="col-md-8">
-            <ng-select name="nbEnvoiMin" formControlName="nbEnvoiMin" placeholder="Nombre d'envoi min*:" [clearable]="false">
+            <ng-select appendTo="body" name="nbEnvoiMin" formControlName="nbEnvoiMin" placeholder="Nombre d'envoi min*:"
+              [clearable]="false">
               <ng-option value="0">0</ng-option>
               <ng-option value="10">10</ng-option>
               <ng-option value="20">20</ng-option>
               <ng-option value="50">50</ng-option>
               <ng-option value="100">100</ng-option>
               <ng-option value="200">200</ng-option>
-        
+
             </ng-select>
             <span *ngIf="clientForm.controls['nbEnvoiMin'].invalid && clientForm.controls['nbEnvoiMin'].touched"
               class="invalid-feedback-custom  error">Nombre d'envoi max requis</span>
           </div>
         </div>
-        
+
         <!-- nbEnvoiMax -->
         <div class="form-group row mb-3">
           <label class="col-md-4 col-form-label text-right" for="nbEnvoiMax">Nombre d'envoi max*:</label>
           <div class="col-md-8">
-            <ng-select name="nbEnvoiMax" formControlName="nbEnvoiMax" placeholder="Nombre d'envoi max*:" [clearable]="false">
+            <ng-select appendTo="body" name="nbEnvoiMax" formControlName="nbEnvoiMax" placeholder="Nombre d'envoi max*:"
+              [clearable]="false">
               <ng-option value="50">50</ng-option>
               <ng-option value="100">100</ng-option>
               <ng-option value="200">200</ng-option>
@@ -274,19 +277,20 @@
               <ng-option value="500">500</ng-option>
               <ng-option value="600">600</ng-option>
               <ng-option value="1000">1000</ng-option>
-        
+
             </ng-select>
             <span *ngIf="clientForm.controls['nbEnvoiMax'].invalid && clientForm.controls['nbEnvoiMax'].touched"
               class="invalid-feedback-custom  error">Nombre d'envoi max requis</span>
           </div>
         </div>
-        
+
         <!-- nbTentative -->
-        
+
         <div class="form-group row mb-3">
           <label class="col-md-4 col-form-label text-right" for="nbTentative">Nombre tentative*:</label>
           <div class="col-md-8">
-            <ng-select name="nbTentative" formControlName="nbTentative" placeholder="Nombre de tentative" [clearable]="false">
+            <ng-select appendTo="body" name="nbTentative" formControlName="nbTentative"
+              placeholder="Nombre de tentative" [clearable]="false">
               <ng-option value="0">3</ng-option>
               <ng-option value="5">5</ng-option>
               <ng-option value="10">6</ng-option>
@@ -295,13 +299,14 @@
               class="invalid-feedback-custom  error">Nombre tentative requis</span>
           </div>
         </div>
-        
-        
-        
+
+
+
         <div class="form-group row mb-3">
           <label class="col-md-4 col-form-label text-right" for="poidsBase">Poids de base*:</label>
           <div class="col-md-8">
-            <ng-select name="poidsBase" formControlName="poidsBase" placeholder="poids de base" [clearable]="false">
+            <ng-select appendTo="body" name="poidsBase" formControlName="poidsBase" placeholder="poids de base"
+              [clearable]="false">
               <ng-option value="0">0</ng-option>
               <ng-option value="5">5</ng-option>
               <ng-option value="10">10</ng-option>
@@ -313,12 +318,13 @@
               class="invalid-feedback-custom  error">Poids base requis</span>
           </div>
         </div>
-        
+
         <!-- tauxCOD -->
         <div class="form-group row mb-3">
           <label class="col-md-4 col-form-label text-right" for="tauxCOD">Taux COD*:</label>
           <div class="col-md-8">
-            <ng-select name="tauxCOD" formControlName="tauxCOD" placeholder="Taux COD" [clearable]="false">
+            <ng-select appendTo="body" name="tauxCOD" formControlName="tauxCOD" placeholder="Taux COD"
+              [clearable]="false">
               <ng-option value="0.25">0.25</ng-option>
               <ng-option value="0.5">0.5</ng-option>
               <ng-option value="0.75">0.75</ng-option>
@@ -330,24 +336,26 @@
               class="invalid-feedback-custom  error">Taux COD requis</span>
           </div>
         </div>
-        
-        
-        
-        <!-- tarifs retour -->
+
+        <!-- apartir de -->
         <div class="form-group row mb-3">
-          <label class="col-md-4 col-form-label text-right" for="tarifRetour">Tarif retour*:</label>
+          <label class="col-md-4 col-form-label text-right" for="c_o_d_ApartirDe">COD apartir de*:</label>
           <div class="col-md-8">
-            <ng-select name="tarifRetour" id="tarifRetour" formControlName="tarifRetour" placeholder="Tarif retour"
-              [clearable]="false">
-              <ng-option value="350">350</ng-option>
-              <ng-option value="250">250</ng-option>
-              <ng-option value="0">0</ng-option>
+            <ng-select appendTo="body" name="c_o_d_ApartirDe" formControlName="c_o_d_ApartirDe"
+              placeholder="COD apartir de" [clearable]="false">
+              <ng-option value="1000">1000</ng-option>
+              <ng-option value="5000">5000</ng-option>
+              <ng-option value="10000">10000</ng-option>
+              <ng-option value="20000">20000</ng-option>
+              <ng-option value="50000">50000</ng-option>
             </ng-select>
-            <span *ngIf="clientForm.controls['tarifRetour'].invalid && clientForm.controls['tarifRetour'].touched"
-              class="invalid-feedback-custom  error">Tarif retour requis</span>
-        
+            <span
+              *ngIf="clientForm.controls['c_o_d_ApartirDe'].invalid && clientForm.controls['c_o_d_ApartirDe'].touched"
+              class="invalid-feedback-custom  error">Taux COD requis</span>
           </div>
         </div>
+
+
 
       </div>
 
@@ -356,7 +364,7 @@
         <div class="form-group row mb-3">
           <label class="col-md-4 col-form-label text-right" for="moyenPayement">Moyen paiement*:</label>
           <div class="col-md-8">
-            <ng-select name="moyenPayement" id="moyenPayement" formControlName="moyenPayement"
+            <ng-select appendTo="body" name="moyenPayement" id="moyenPayement" formControlName="moyenPayement"
               placeholder="Moyen paiement">
               <ng-option value="cheque">Cheque</ng-option>
               <ng-option value="virement">Virement</ng-option>
@@ -377,7 +385,7 @@
         <div class="form-group row mb-3 text-right">
           <label class="col-md-4 col-form-label"> Wilaya de départ*: </label>
           <div class="col-sm-8 text-left">
-            <ng-select formControlName="wilayaDepartId" placeholder=" Selectionner la wilaya"
+            <ng-select appendTo="body" formControlName="wilayaDepartId" placeholder=" Selectionner la wilaya"
               (change)=" onChangWilayaDepart()">
               <ng-option *ngFor="let wilaya of listWilaya" [value]="wilaya.id">
                 {{ wilaya.codeWilaya }} {{ wilaya.nomLatin }}
@@ -392,7 +400,7 @@
         <div class="form-group row mb-3 text-right">
           <label class="col-md-4 col-form-label"> Commune de départ*: </label>
           <div class="col-sm-8 text-left">
-            <ng-select formControlName="communeDepartId" placeholder="Selectionner la commune">
+            <ng-select appendTo="body" formControlName="communeDepartId" placeholder="Selectionner la commune">
               <ng-option *ngFor="let commune of listCommuneDepart" [value]="commune.id">
                 {{ commune.codePostal }} {{ commune.nomLatin }}
               </ng-option>
@@ -407,13 +415,28 @@
         <div class="form-group row mb-3 text-right">
           <label class="col-md-4 col-form-label"> agence de retour*: </label>
           <div class="col-sm-8 text-left">
-            <ng-select formControlName="caisseAgenceId" placeholder="Selectionner la agence">
+            <ng-select appendTo="body" formControlName="agenceRetourId" placeholder="Selectionner la agence">
               <ng-option *ngFor="let agence of listAgence" [value]="agence.id">
                 {{ agence.nom}}
               </ng-option>
             </ng-select>
-            <span *ngIf="clientForm.controls['caisseAgenceId'].invalid && clientForm.controls['caisseAgenceId'].touched"
+            <span *ngIf="clientForm.controls['agenceRetourId'].invalid && clientForm.controls['agenceRetourId'].touched"
               class="invalid-feedback-custom error">agence requise</span>
+          </div>
+        </div>
+        <!-- tarifs retour -->
+        <div class="form-group row mb-3">
+          <label class="col-md-4 col-form-label text-right" for="tarifRetour">Tarif retour*:</label>
+          <div class="col-md-8">
+            <ng-select appendTo="body" name="tarifRetour" id="tarifRetour" formControlName="tarifRetour"
+              placeholder="Tarif retour" [clearable]="false">
+              <ng-option value="350">350</ng-option>
+              <ng-option value="250">250</ng-option>
+              <ng-option value="0">0</ng-option>
+            </ng-select>
+            <span *ngIf="clientForm.controls['tarifRetour'].invalid && clientForm.controls['tarifRetour'].touched"
+              class="invalid-feedback-custom  error">Tarif retour requis</span>
+
           </div>
         </div>
 
@@ -421,7 +444,7 @@
         <div class="form-group row mb-3 text-right">
           <label class="col-md-4 col-form-label"> agence de paiement*: </label>
           <div class="col-sm-8 text-left">
-            <ng-select formControlName="agenceRetourId" placeholder="Selectionner la agence">
+            <ng-select appendTo="body" formControlName="agenceRetourId" placeholder="Selectionner la agence">
               <ng-option *ngFor="let agence of listAgence" [value]="agence.id">
                 {{ agence.nom}}
               </ng-option>
@@ -470,8 +493,8 @@
               <div class="form-group row mb-3 text-right">
                 <label class="col-4 col-form-label"> service*: </label>
                 <div class="col-7 text-left">
-                  <ng-select formControlName="serviceId" placeholder=" Selectionner le service"
-                    (change)="onChangeService(i)" [clearable] ="false">
+                  <ng-select appendTo="body" formControlName="serviceId" placeholder=" Selectionner le service"
+                    (change)="onChangeService(i)" [clearable]="false">
                     <ng-option *ngFor="let service of listService; let i=index" [value]="service.id">
                       {{ service.nom}}
                     </ng-option>
@@ -485,7 +508,7 @@
               <div class="form-group row mb-3 text-right">
                 <label class="col-3 col-form-label"> Tarif*: </label>
                 <div class="col-9 text-left">
-                  <ng-select formControlName="codeTarifId" placeholder=" Selectionner le tarif">
+                  <ng-select appendTo="body" formControlName="codeTarifId" placeholder=" Selectionner le tarif">
                     <ng-option *ngFor="let codeTarif of listCodeTarif[i]" [value]="codeTarif.id">
                       {{ codeTarif.nom}}
                     </ng-option>
@@ -509,31 +532,31 @@
       </div>
       <!--journe de Paiement-->
       <div class="col-6">
-              <div class="form-group row mb-3" *ngIf="isJourneePayment">
-                <label for="jourPayement" class="col-sm-4 col-form-label text-right">Journées de
-                  Paiement :</label>
-                <div class="col-sm-8 mt-1">
-                  <ng-select [items]="journeeSemaine" placeholder="Sélectionner les jours de paiement" [multiple]="true"
-                    formControlName="jourPayement" bindLabel="nom" bindValue="journee" clearAllText="Clear" labelForId="state"
-                    [closeOnSelect]="false"></ng-select>
-                  <span *ngIf="clientForm.controls['jourPayement'].invalid && clientForm.controls['jourPayement'].touched"
-                    class="invalid-feedback-custom error">jour de paiement requis</span>
-                </div>
-              </div>
+        <div class="form-group row mb-3" *ngIf="isJourneePayment">
+          <label for="jourPayement" class="col-sm-4 col-form-label text-right">Journées de
+            Paiement :</label>
+          <div class="col-sm-8 mt-1">
+            <ng-select appendTo="body" [items]="journeeSemaine" placeholder="Sélectionner les jours de paiement"
+              [multiple]="true" formControlName="jourPayement" bindLabel="nom" bindValue="journee" clearAllText="Clear"
+              labelForId="state" [closeOnSelect]="false"></ng-select>
+            <span *ngIf="clientForm.controls['jourPayement'].invalid && clientForm.controls['jourPayement'].touched"
+              class="invalid-feedback-custom error">jour de paiement requis</span>
+          </div>
+        </div>
       </div>
       <!--journe de Paiement-->
       <div class="col-6">
-              <div class="form-group row mb-3" *ngIf="isDureePaiement">
-                <label for="delaiPaiement" class="col-sm-4 col-form-label text-right">Delai de
-                  Paiement :</label>
-                <div class="col-sm-8 mt-1">
-                  <ng-select [items]="delaiPaiement" placeholder="Sélectionner le delai de paiement" [multiple]="false"
-                    formControlName="delaiPaiement" [clearable]="false" bindLabel="delai" bindValue="delai" clearAllText="Clear"
-                    labelForId="state" [closeOnSelect]="false"></ng-select>
-                  <span *ngIf="clientForm.controls['delaiPaiement'].invalid && clientForm.controls['delaiPaiement'].touched"
-                    class="invalid-feedback-custom error">jour de paiement requis</span>
-                </div>
-              </div>
+        <div class="form-group row mb-3" *ngIf="isDureePaiement">
+          <label for="delaiPaiement" class="col-sm-4 col-form-label text-right">Delai de
+            Paiement :</label>
+          <div class="col-sm-8 mt-1">
+            <ng-select appendTo="body" [items]="delaiPaiement" placeholder="Sélectionner le delai de paiement"
+              [multiple]="false" formControlName="delaiPaiement" [clearable]="false" bindLabel="delai" bindValue="delai"
+              clearAllText="Clear" labelForId="state" [closeOnSelect]="false"></ng-select>
+            <span *ngIf="clientForm.controls['delaiPaiement'].invalid && clientForm.controls['delaiPaiement'].touched"
+              class="invalid-feedback-custom error">jour de paiement requis</span>
+          </div>
+        </div>
       </div>
 
       <div class="col-12 d-flex justify-content-end mx-auto mt-5 ">

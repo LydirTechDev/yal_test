@@ -23,12 +23,17 @@ import { StatusShipmentEnum } from 'src/enums/status.shipment.enum';
 import { ClientsService } from 'src/resources/clients/clients.service';
 import { User } from 'src/resources/users/entities/user.entity';
 import { Recolte } from 'src/resources/recoltes/entities/recolte.entity';
+import { ShipmentsService } from 'src/resources/shipments/shipments.service';
+import { CodeTarifsZonesService } from 'src/resources/code-tarifs-zones/code-tarifs-zones.service';
 @Injectable()
 export class PdfService {
 
   constructor(
     @Inject(forwardRef(() => ClientsService))
-    private clientService:ClientsService
+    private clientService: ClientsService,
+    @Inject(forwardRef(() => ShipmentsService))
+    private shipmentService: ShipmentsService,
+    private codeTarifsZonesService: CodeTarifsZonesService,
   ) {}
 
   async  generateShipmentAgenceAccuser(shipmentInfo: Shipment, tarifLivraison: number){
@@ -1472,7 +1477,7 @@ export class PdfService {
     return pdfBytes;
   }
 
-  async templateConventionFretORClassic(client, service) {
+  async templateConventionFretORClassic(client, service, codeTarifId) {
     let conventionTemplatePath;
     let xFret;
     if (service == 'Classique Entreprise') {
@@ -1485,6 +1490,7 @@ export class PdfService {
     const dest = 'src/testpdf/convention.pdf';
     const pdfDoc = await PDFDocument.load(pdfTemplateBytes);
 
+    const bold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
     // Embed the Helvetica font
     const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
 
@@ -1661,32 +1667,568 @@ export class PdfService {
       size: 10,
     });
 
-
-// -----------------------last page----------------
+    // -----------------------last page----------------
     lastPage.drawText(service, {
       x: 230,
-      y: height - 94.5,
+      y: height - 94,
       size: 12,
-      color:rgb(1,0,0)
+      color: rgb(1, 0, 0),
     });
 
-    lastPage.drawText(client.nomGerant.toUpperCase() + ' ' + client.prenomGerant.toUpperCase(), {
-      x: 57,
-      y: height - 121.8,
-      size: 9,
-    });
+    lastPage.drawText(
+      client.nomGerant.toUpperCase() + ' ' + client.prenomGerant.toUpperCase(),
+      {
+        x: 57,
+        y: height - 108.5,
+        size: 9,
+      },
+    );
     lastPage.drawText(client.communeDepart.wilaya.nomLatin.toUpperCase(), {
       x: 60,
-      y: height - 139,
+      y: height - 126.5,
       size: 9,
     });
     // -----------------------end last page----------------
     //RETURN BUFFER
 
+    const tarifClient = await this.clientService.getTarifOfclient(
+      client.communeDepart.wilaya.id,
+      codeTarifId,
+    );
+    tarifClient.sort((a, b) => (a.zone > b.zone ? 1 : -1));
+
+
+    let i = 1;
+    let largeur = 0;
+    let longueur = 0;
+    lastPage.drawRectangle({
+      x: 25,
+      y: height - 160,
+      width: 450,
+      height: 15,
+      borderColor: rgb(0, 0, 0),
+      borderWidth: 0.6,
+      color: rgb(1, 0, 0),
+    });
+
+    lastPage.drawRectangle({
+      x: 25,
+      y: height - 280,
+      width: 360,
+      height: 120,
+      borderColor: rgb(0, 0, 0),
+      borderWidth: 0.6,
+      // color: rgb(0, 0, 0),
+    });
+    // wilaya 1----------------
+
+    lastPage.drawText('Wilaya', {
+      x: 30,
+      y: height - 155,
+      size: 7,
+      color: rgb(1, 1, 1),
+      font: bold,
+    });
+
+    lastPage.drawLine({
+      start: { x: 95, y: height - 145 },
+      end: { x: 95, y: height - 280 },
+      thickness: 0.7,
+      color: rgb(0, 0, 0),
+    });
+
+    // zonnne 1----------------
+
+    lastPage.drawText('zone', {
+      x: 96.5,
+      y: height - 155,
+      size: 7,
+      color: rgb(1, 1, 1),
+      font: bold,
+    });
+
+    lastPage.drawLine({
+      start: { x: 115, y: height - 145 },
+      end: { x: 115, y: height - 280 },
+      thickness: 0.7,
+      color: rgb(0, 0, 0),
+    });
+
+    // wilaya 2----------------
+
+    lastPage.drawText('Wilaya', {
+      x: 120,
+      y: height - 155,
+      size: 7,
+      color: rgb(1, 1, 1),
+      font: bold,
+    });
+
+    lastPage.drawLine({
+      start: { x: 185, y: height - 145 },
+      end: { x: 185, y: height - 280 },
+      thickness: 0.7,
+      color: rgb(0, 0, 0),
+    });
+
+    // zonnne 2----------------
+
+    lastPage.drawText('zone', {
+      x: 186.5,
+      y: height - 155,
+      size: 7,
+      color: rgb(1, 1, 1),
+      font: bold,
+    });
+
+    lastPage.drawLine({
+      start: { x: 205, y: height - 145 },
+      end: { x: 205, y: height - 280 },
+      thickness: 0.7,
+      color: rgb(0, 0, 0),
+    });
+
+    // wilaya 3----------------
+
+    lastPage.drawText('Wilaya', {
+      x: 210,
+      y: height - 155,
+      size: 7,
+      color: rgb(1, 1, 1),
+      font: bold,
+    });
+
+    lastPage.drawLine({
+      start: { x: 275, y: height - 145 },
+      end: { x: 275, y: height - 280 },
+      thickness: 0.7,
+      color: rgb(0, 0, 0),
+    });
+
+    // zonnne 3----------------
+
+    lastPage.drawText('zone', {
+      x: 276.5,
+      y: height - 155,
+      size: 7,
+      color: rgb(1, 1, 1),
+      font: bold,
+    });
+
+    lastPage.drawLine({
+      start: { x: 295, y: height - 145 },
+      end: { x: 295, y: height - 280 },
+      thickness: 0.7,
+      color: rgb(0, 0, 0),
+    });
+
+    // wilaya 4----------------
+
+    lastPage.drawText('Wilaya', {
+      x: 300,
+      y: height - 155,
+      size: 7,
+      color: rgb(1, 1, 1),
+      font: bold,
+    });
+
+    lastPage.drawLine({
+      start: { x: 365, y: height - 145 },
+      end: { x: 365, y: height - 280 },
+      thickness: 0.7,
+      color: rgb(0, 0, 0),
+    });
+
+    // zonnne 4----------------
+
+    lastPage.drawText('zone', {
+      x: 366.5,
+      y: height - 155,
+      size: 7,
+      color: rgb(1, 1, 1),
+      font: bold,
+    });
+    lastPage.drawLine({
+      start: { x: 385, y: height - 145 },
+      end: { x: 385, y: height - 160 },
+      thickness: 0.7,
+      color: rgb(0, 0, 0),
+    });
+
+    // wilaya 5----------------
+
+    lastPage.drawText('Wilaya', {
+      x: 390,
+      y: height - 155,
+      size: 7,
+      color: rgb(1, 1, 1),
+      font: bold,
+    });
+
+    lastPage.drawLine({
+      start: { x: 455, y: height - 145 },
+      end: { x: 455, y: height - 256 },
+      thickness: 0.7,
+      color: rgb(0, 0, 0),
+    });
+
+    // zonnne 5----------------
+    lastPage.drawText('zone', {
+      x: 456.5,
+      y: height - 155,
+      size: 7,
+      color: rgb(1, 1, 1),
+      font: bold,
+    });
+    lastPage.drawLine({
+      start: { x: 475, y: height - 145 },
+      end: { x: 475, y: height - 256 },
+      thickness: 0.7,
+      color: rgb(0, 0, 0),
+    });
+
+    for await (const tarif of tarifClient) {
+      if (i <= 10) {
+        lastPage.drawText(tarif.destination, {
+          x: 30 + largeur,
+          y: height - 169 - longueur,
+          size: 7,
+        });
+
+        lastPage.drawText(tarif.zone.toString(), {
+          x: 100 + largeur,
+          y: height - 169 - longueur,
+          size: 7,
+        });
+        lastPage.drawLine({
+          start: { x: 25 + largeur, y: height - 172 - longueur },
+          end: { x: 115 + largeur, y: height - 172 - longueur },
+          thickness: 0.6,
+          color: rgb(0, 0, 0),
+        });
+        i = i + 1;
+        longueur = longueur + 12;
+      } else {
+        i = 1;
+        largeur = largeur + 90;
+        longueur = 0;
+        lastPage.drawText(tarif.destination, {
+          x: 30 + largeur,
+          y: height - 169 - longueur,
+          size: 7,
+        });
+
+        lastPage.drawText(tarif.zone.toString(), {
+          x: 100 + largeur,
+          y: height - 169 - longueur,
+          size: 7,
+        });
+        lastPage.drawLine({
+          start: { x: 25 + largeur, y: height - 172 - longueur },
+          end: { x: 115 + largeur, y: height - 172 - longueur },
+          thickness: 0.6,
+          color: rgb(0, 0, 0),
+        });
+        longueur = longueur + 12;
+        i = i + 1;
+      }
+    }
+
+    const tarifParZone = await this.clientService.getTarifOfclientForClassic(
+      client.communeDepart.wilaya.id,
+      codeTarifId,
+    );
+    tarifParZone.sort((a, b) => (a.zone > b.zone ? 1 : -1));
+
+    lastPage.drawRectangle({
+      x: 75,
+      y: height - 315,
+      width: tarifParZone.length * 45,
+      height: 15,
+      borderColor: rgb(0, 0, 0),
+      borderWidth: 0.6,
+      color: rgb(1, 0, 0),
+    });
+
+    lastPage.drawRectangle({
+      x: 25,
+      y: height - 330,
+      width: 50 + tarifParZone.length * 45,
+      height: 15,
+      borderColor: rgb(0, 0, 0),
+      borderWidth: 0.6,
+      color: rgb(1, 0, 0),
+    });
+
+    lastPage.drawRectangle({
+      x: 25,
+      y: height - 738,
+      width: 50 + tarifParZone.length * 45,
+      height: 408,
+      borderColor: rgb(0, 0, 0),
+      borderWidth: 0.6,
+    });
+
+    // -------------------- debut ligne verticale
+    let ligneVertical = 0;
+    let li = 1;
+    let ligneLargeur = 0;
+
+    // poids(kg)
+
+    lastPage.drawText('Poids(Kg)', {
+      x: 30,
+      y: height - 325,
+      size: 7,
+      font: bold,
+      color: rgb(1, 1, 1),
+    });
+    lastPage.drawLine({
+      start: { x: 75 + ligneVertical, y: height - 315 },
+      end: { x: 75 + ligneVertical, y: height - 738 },
+      thickness: 0.6,
+      color: rgb(0, 0, 0),
+    });
+    for await (const tarif of tarifParZone) {
+      lastPage.drawText(`Zone ${tarif.zone}`, {
+        x: 80 + ligneLargeur,
+        y: height - 310,
+        size: 7,
+        font: bold,
+        color: rgb(1, 1, 1),
+      });
+      lastPage.drawText('Livraison', {
+        x: 80 + ligneLargeur,
+        y: height - 325,
+        size: 7,
+        font: bold,
+        color: rgb(1, 1, 1),
+      });
+      lastPage.drawLine({
+        start: { x: 120 + ligneVertical, y: height - 300 },
+        end: { x: 120 + ligneVertical, y: height - 738 },
+        thickness: 0.6,
+        color: rgb(0, 0, 0),
+      });
+      li = li + 1;
+      ligneLargeur = ligneLargeur + 45;
+      ligneVertical = ligneVertical + 45;
+    }
+
+    // --------------------fin ligne verticale
+
+    // ----------------debut contenu classique---------------------
+
+    let contenuLargeur = 0;
+    let lineContenuHeight = 0;
+    lastPage.drawText('0.5', {
+      x: 30,
+      y: height - 339,
+      size: 8,
+    });
+    lastPage.drawLine({
+      start: { x: 25, y: height - 342 },
+      end: { x: 75, y: height - 342 },
+      thickness: 0.6,
+      color: rgb(0, 0, 0),
+    });
+    for (let i = 0; i <= 33; i++) {
+      if (i <= 30) {
+        if (i > 0) {
+          lastPage.drawText(`${i}`, {
+            x: 30,
+            y: height - 339 - lineContenuHeight,
+            size: 8,
+          });
+          lastPage.drawLine({
+            start: { x: 25, y: height - 342 - lineContenuHeight },
+            end: { x: 75, y: height - 342 - lineContenuHeight },
+            thickness: 0.6,
+            color: rgb(0, 0, 0),
+          });
+        }
+
+        if (i <= 5) {
+          for await (const tarif of tarifParZone) {
+            lastPage.drawText(tarif.tarifLivraison.toFixed(2), {
+              x: 80 + contenuLargeur,
+              y: height - 339 - lineContenuHeight,
+              size: 8,
+            });
+
+            lastPage.drawLine({
+              start: {
+                x: 75 + contenuLargeur,
+                y: height - 342 - lineContenuHeight,
+              },
+              end: {
+                x: 120 + contenuLargeur,
+                y: height - 342 - lineContenuHeight,
+              },
+              thickness: 0.6,
+              color: rgb(0, 0, 0),
+            });
+
+            contenuLargeur = contenuLargeur + 45;
+          }
+        } else {
+          for await (const tarif of tarifParZone) {
+            lastPage.drawText(
+              (tarif.tarifLivraison + (i - 5) * tarif.tarifSurpoids).toFixed(2),
+              {
+                x: 80 + contenuLargeur,
+                y: height - 339 - lineContenuHeight,
+                size: 8,
+              },
+            );
+
+            lastPage.drawLine({
+              start: {
+                x: 75 + contenuLargeur,
+                y: height - 342 - lineContenuHeight,
+              },
+              end: {
+                x: 120 + contenuLargeur,
+                y: height - 342 - lineContenuHeight,
+              },
+              thickness: 0.6,
+              color: rgb(0, 0, 0),
+            });
+
+            contenuLargeur = contenuLargeur + 45;
+          }
+        }
+        contenuLargeur = 0;
+        lineContenuHeight = lineContenuHeight + 12;
+      } else if (i == 31) {
+        lastPage.drawText(`31 à 60`, {
+          x: 30,
+          y: height - 339 - lineContenuHeight,
+          size: 8,
+          font: bold,
+        });
+        lastPage.drawLine({
+          start: { x: 25, y: height - 342 - lineContenuHeight },
+          end: { x: 75, y: height - 342 - lineContenuHeight },
+          thickness: 0.6,
+          color: rgb(0, 0, 0),
+        });
+        for await (const tarif of tarifParZone) {
+          lastPage.drawText(
+            (tarif.tarifLivraison + (45 - 5) * tarif.tarifSurpoids).toFixed(2),
+            {
+              x: 80 + contenuLargeur,
+              y: height - 339 - lineContenuHeight,
+              size: 8,
+            },
+          );
+
+          lastPage.drawLine({
+            start: {
+              x: 75 + contenuLargeur,
+              y: height - 342 - lineContenuHeight,
+            },
+            end: {
+              x: 120 + contenuLargeur,
+              y: height - 342 - lineContenuHeight,
+            },
+            thickness: 0.6,
+            color: rgb(0, 0, 0),
+          });
+
+          contenuLargeur = contenuLargeur + 45;
+        }
+        contenuLargeur = 0;
+        lineContenuHeight = lineContenuHeight + 12;
+      } else if (i == 32) {
+        lastPage.drawText(`61 à 100`, {
+          x: 30,
+          y: height - 339 - lineContenuHeight,
+          size: 8,
+          font: bold,
+        });
+        lastPage.drawLine({
+          start: { x: 25, y: height - 342 - lineContenuHeight },
+          end: { x: 75, y: height - 342 - lineContenuHeight },
+          thickness: 0.6,
+          color: rgb(0, 0, 0),
+        });
+        for await (const tarif of tarifParZone) {
+          lastPage.drawText(
+            (tarif.tarifLivraison + (80 - 5) * tarif.tarifSurpoids).toFixed(2),
+            {
+              x: 80 + contenuLargeur,
+              y: height - 339 - lineContenuHeight,
+              size: 8,
+            },
+          );
+
+          lastPage.drawLine({
+            start: {
+              x: 75 + contenuLargeur,
+              y: height - 342 - lineContenuHeight,
+            },
+            end: {
+              x: 120 + contenuLargeur,
+              y: height - 342 - lineContenuHeight,
+            },
+            thickness: 0.6,
+            color: rgb(0, 0, 0),
+          });
+
+          contenuLargeur = contenuLargeur + 45;
+        }
+        contenuLargeur = 0;
+        lineContenuHeight = lineContenuHeight + 12;
+      } else {
+        lastPage.drawText(`101 à 150`, {
+          x: 30,
+          y: height - 339 - lineContenuHeight,
+          size: 8,
+          font: bold,
+        });
+        lastPage.drawLine({
+          start: { x: 25, y: height - 342 - lineContenuHeight },
+          end: { x: 75, y: height - 342 - lineContenuHeight },
+          thickness: 0.6,
+          color: rgb(0, 0, 0),
+        });
+        for await (const tarif of tarifParZone) {
+          lastPage.drawText(
+            (tarif.tarifLivraison + (125 - 5) * tarif.tarifSurpoids).toFixed(2),
+            {
+              x: 80 + contenuLargeur,
+              y: height - 339 - lineContenuHeight,
+              size: 8,
+            },
+          );
+
+          lastPage.drawLine({
+            start: {
+              x: 75 + contenuLargeur,
+              y: height - 342 - lineContenuHeight,
+            },
+            end: {
+              x: 120 + contenuLargeur,
+              y: height - 342 - lineContenuHeight,
+            },
+            thickness: 0.6,
+            color: rgb(0, 0, 0),
+          });
+
+          contenuLargeur = contenuLargeur + 45;
+        }
+        contenuLargeur = 0;
+        lineContenuHeight = lineContenuHeight + 12;
+      }
+    }
+
+    // ----------------fin contenu classique---------------------
+
     return pdfDoc;
   }
 
-  async templateConventionExpressOREconomy(client, service,codeTarifId) {
+  async templateConventionExpressOREconomy(client, service, codeTarifId) {
     let conventionTemplatePath;
     if (
       service == 'E-Commerce Express Divers' ||
@@ -1879,10 +2421,15 @@ export class PdfService {
       size: 10,
     });
 
-    const tarifClient= await this.clientService.getTarifOfclient(client.communeDepart.wilaya.id,codeTarifId)
-    console.log("🚀 ~ file: pdf.service.ts ~ line 1845 ~ PdfService ~ templateConventionExpressOREconomy ~ tarifClient", tarifClient)
+    const tarifClient = await this.clientService.getTarifOfclient(
+      client.communeDepart.wilaya.id,
+      codeTarifId,
+    );
+    console.log("🚀 ~ file: pdf.service.ts ~ line 2389 ~ PdfService ~ templateConventionExpressOREconomy ~ tarifClient", tarifClient)
 
-    let hauteur=0;
+    tarifClient.sort((a, b) => (a.zone > b.zone ? 1 : -1));
+
+    let hauteur = 0;
     let rectangleStart = 165;
     let lineStart = 150;
 
@@ -1890,14 +2437,17 @@ export class PdfService {
       x: 230,
       y: height - 94.5,
       size: 12,
-      color:rgb(1,0,0)
+      color: rgb(1, 0, 0),
     });
 
-    lastPage.drawText(client.nomGerant.toUpperCase() + ' ' + client.prenomGerant.toUpperCase(), {
-      x: 57,
-      y: height - 121.8,
-      size: 9,
-    });
+    lastPage.drawText(
+      client.nomGerant.toUpperCase() + ' ' + client.prenomGerant.toUpperCase(),
+      {
+        x: 57,
+        y: height - 121.8,
+        size: 9,
+      },
+    );
     lastPage.drawText(client.communeDepart.wilaya.nomLatin.toUpperCase(), {
       x: 60,
       y: height - 139,
@@ -1941,13 +2491,13 @@ export class PdfService {
 
     // -------------tarifLivraison------------
     lastPage.drawLine({
-      start: { x: 188, y: height - lineStart },
-      end: { x: 188, y: height - rectangleStart },
+      start: { x: 188 - 20, y: height - lineStart },
+      end: { x: 188 - 20, y: height - rectangleStart },
       thickness: 0.7,
       color: rgb(0, 0, 0),
     });
     lastPage.drawText(`Tarif Livraison`, {
-      x: 191,
+      x: 191 - 20,
       y: height - rectangleStart + 5,
       size: 8.7,
       color: rgb(1, 1, 1),
@@ -1956,13 +2506,13 @@ export class PdfService {
 
     // ------------Tarif Stop Desk-------------
     lastPage.drawLine({
-      start: { x: 312, y: height - lineStart },
-      end: { x: 312, y: height - rectangleStart },
+      start: { x: 312 - 20, y: height - lineStart },
+      end: { x: 312 - 20, y: height - rectangleStart },
       thickness: 0.7,
       color: rgb(0, 0, 0),
     });
     lastPage.drawText(`Tarif Stop Desk`, {
-      x: 315,
+      x: 315 - 20,
       y: height - rectangleStart + 5,
       size: 8.7,
       color: rgb(1, 1, 1),
@@ -1971,28 +2521,52 @@ export class PdfService {
 
     // ------------Tarif Retour-------------
     lastPage.drawLine({
-      start: { x: 423, y: height - lineStart },
-      end: { x: 423, y: height - rectangleStart },
+      start: { x: 423 - 20, y: height - lineStart },
+      end: { x: 423 - 20, y: height - rectangleStart },
       thickness: 0.7,
       color: rgb(0, 0, 0),
     });
     lastPage.drawText(`Tarif Retour`, {
-      x: 426,
+      x: 426 - 20,
       y: height - rectangleStart + 5,
       size: 8.7,
       color: rgb(1, 1, 1),
       font: bold,
     });
 
-
+    // ------------Tarif surpoids-------------
+    lastPage.drawLine({
+      start: { x: 485 - 20, y: height - lineStart },
+      end: { x: 485 - 20, y: height - rectangleStart },
+      thickness: 0.7,
+      color: rgb(0, 0, 0),
+    });
+    lastPage.drawText(`Tarif Surpoids`, {
+      x: 487 - 20,
+      y: height - rectangleStart + 5,
+      size: 8.7,
+      color: rgb(1, 1, 1),
+      font: bold,
+    });
 
     //--------------------------------------------------- fin header----------------------
-   
-
 
     //--------------------------------------------------- debut contenu table----------------------
 
     for await (const tarif of tarifClient) {
+      const codeTarifZoneConv =
+        await this.codeTarifsZonesService.findCodeTarifZone(
+          tarif.zone,
+          codeTarifId,
+          2,
+        );
+      const surpoidsConventionne =
+        await this.shipmentService.calculeSurpoidsConvention(
+          client.poidsBase,
+          client.poidsBase,
+          codeTarifZoneConv.codeTarifZone_tarifPoidsParKg,
+        );
+
       rectangleStart = rectangleStart + 12;
       lineStart = lineStart + 12;
       lastPage.drawRectangle({
@@ -2005,7 +2579,7 @@ export class PdfService {
       });
 
       // ------------destination-----------
-  
+
       lastPage.drawText(tarif.destination, {
         x: 31,
         y: height - rectangleStart + 4,
@@ -2029,13 +2603,14 @@ export class PdfService {
 
       // ------------tarifLivraison----------
       lastPage.drawLine({
-        start: { x: 188, y: height - lineStart },
-        end: { x: 188, y: height - rectangleStart },
+        start: { x: 188 - 20, y: height - lineStart },
+        end: { x: 188 - 20, y: height - rectangleStart },
         thickness: 0.7,
         color: rgb(0, 0, 0),
       });
+
       lastPage.drawText(tarif.tarifLivraison.toFixed(2), {
-        x: 190,
+        x: 190 - 20,
         y: height - rectangleStart + 4,
         size: 8,
         font: normal,
@@ -2043,33 +2618,59 @@ export class PdfService {
 
       // -----------tarifStopDesk------------
       lastPage.drawLine({
-        start: { x: 312, y: height - lineStart },
-        end: { x: 312, y: height - rectangleStart },
+        start: { x: 312 - 20, y: height - lineStart },
+        end: { x: 312 - 20, y: height - rectangleStart },
         thickness: 0.7,
         color: rgb(0, 0, 0),
       });
-      lastPage.drawText(tarif.tarifStopDesk.toFixed(2), {
-        x: 315,
-        y: height - rectangleStart + 4,
-        size: 8,
-        font: normal,
-      });
+      const tarifStopDesk =
+        tarif.tarifStopDesk +
+        surpoidsConventionne -
+        (client.poidsBase * codeTarifZoneConv.codeTarifZone_tarifPoidsParKg) /
+          5;
+      if (client.poidsBase > 30) {
+        lastPage.drawText(tarifStopDesk.toFixed(2), {
+          x: 315 - 20,
+          y: height - rectangleStart + 4,
+          size: 8,
+          font: normal,
+        });
+      } else {
+        lastPage.drawText(tarif.tarifStopDesk.toFixed(2), {
+          x: 315 - 20,
+          y: height - rectangleStart + 4,
+          size: 8,
+          font: normal,
+        });
+      }
 
       // -----------tarifRetour----------
       lastPage.drawLine({
-        start: { x: 423, y: height - lineStart },
-        end: { x: 423, y: height - rectangleStart },
+        start: { x: 423 - 20, y: height - lineStart },
+        end: { x: 423 - 20, y: height - rectangleStart },
         thickness: 0.7,
         color: rgb(0, 0, 0),
       });
       lastPage.drawText(client.tarifRetour.toFixed(2), {
-        x: 425.5,
+        x: 425.5 - 20,
         y: height - rectangleStart + 4,
         size: 8,
         font: normal,
       });
 
-   
+      // ------------Tarif surpoids-------------
+      lastPage.drawLine({
+        start: { x: 485 - 20, y: height - lineStart },
+        end: { x: 485 - 20, y: height - rectangleStart },
+        thickness: 0.7,
+        color: rgb(0, 0, 0),
+      });
+      lastPage.drawText(tarif.tarifSurpoids.toFixed(2), {
+        x: 487 - 20,
+        y: height - rectangleStart + 4,
+        size: 8,
+        font: normal,
+      });
     }
     //--------------------------------------------------- fin contenu table----------------------
     //RETURN BUFFER
@@ -2122,6 +2723,7 @@ export class PdfService {
   }
   //
   async printConvention(client) {
+    console.log("🚀 ~ file: pdf.service.ts ~ line 2726 ~ PdfService ~ printConvention ~ client", client)
     let test = null;
     for await (const clt of client.clientsTarifs) {
       console.log(clt.codeTarif.service.nom);
@@ -2134,7 +2736,7 @@ export class PdfService {
         const serviceI = await this.templateConventionExpressOREconomy(
           client,
           clt.codeTarif.service.nom,
-          clt.codeTarifId
+          clt.codeTarifId,
         );
         const pdfBytes = await serviceI.save();
         if (test == null) {
@@ -2156,6 +2758,7 @@ export class PdfService {
         const serviceI = await this.templateConventionFretORClassic(
           client,
           clt.codeTarif.service.nom,
+          clt.codeTarifId,
         );
         const pdfBytes = await serviceI.save();
         if (test == null) {
@@ -2961,8 +3564,12 @@ export class PdfService {
   }
 
   async printPmt(client: Client, pmt: Pmt) {
-
-    const pmtTemplatePath = 'src/assets/pmt.pdf';
+    let pmtTemplatePath;
+    if (pmt.type == 'régularisation') {
+      pmtTemplatePath = 'src/assets/pmtRegularisation.pdf';
+    } else {
+      pmtTemplatePath = 'src/assets/pmt.pdf';
+    }
     const pdfTemplateBytes = fs.readFileSync(pmtTemplatePath);
     const pdfDoc = await PDFDocument.load(pdfTemplateBytes);
     const helveticaFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
@@ -3067,12 +3674,23 @@ export class PdfService {
       size: 12,
     });
 
-    firstPage.drawText(pmt.netClient.toString() + ' Da', {
-      x: 65,
-      y: height - 616,
-      size: 16,
-      font: helveticaFont,
-    });
+    if (pmt.type == 'régularisation') {
+      const montantApayer = pmt.netClient * -1;
+      firstPage.drawText(montantApayer.toString() + ' Da', {
+        x: 65,
+        y: height - 616,
+        size: 16,
+        font: helveticaFont,
+      });
+    } else {
+      firstPage.drawText(pmt.netClient.toString() + ' Da', {
+        x: 65,
+        y: height - 616,
+        size: 16,
+        font: helveticaFont,
+      });
+    }
+
     firstPage.drawText(pmt.client.nomGerant + '  ' + pmt.client.prenomGerant, {
       x: 169,
       y: height - 649,
@@ -3087,12 +3705,22 @@ export class PdfService {
       font: helveticaFont,
     });
 
-    firstPage.drawText(pmt.netClient.toString() + ' Da', {
-      x: 225,
-      y: height - 668,
-      size: 12,
-      font: helveticaFont,
-    });
+    if (pmt.type == 'régularisation') {
+      const montantApayer = pmt.netClient * -1;
+      firstPage.drawText(montantApayer.toString() + ' Da', {
+        x: 225,
+        y: height - 668,
+        size: 12,
+        font: helveticaFont,
+      });
+    } else {
+      firstPage.drawText(pmt.netClient.toString() + ' Da', {
+        x: 225,
+        y: height - 668,
+        size: 12,
+        font: helveticaFont,
+      });
+    }
 
     firstPage.drawText(pmt.nbShipmentLivrer.toString(), {
       x: 415,
@@ -5629,5 +6257,133 @@ export class PdfService {
   }
 
 
+  async printRecolteRegularisationOrFacture(
+    recolte,
+    pmtOrFactureTrackings,
+    userInfo,
+    montant,
+  ) {
+    const tracking = pmtOrFactureTrackings.join(' ');
+    const dateRecolte = await this.formatDate(recolte.createdAt);
+
+    const packageSlipTemplatePath = 'src/assets/recolteModelManifest.pdf';
+    const pdfTemplateBytes = fs.readFileSync(packageSlipTemplatePath);
+    const pdfDoc = await PDFDocument.load(pdfTemplateBytes);
+
+    const helveticaFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+
+    const pages = pdfDoc.getPages();
+    const firstPage = pages[0];
+    const { width, height } = firstPage.getSize();
+
+    firstPage.drawText(
+      userInfo.agence.nom.toUpperCase() +
+        '-' +
+        userInfo.agence.commune.nomLatin.toUpperCase() +
+        '/' +
+        userInfo.agence.commune.wilaya.nomLatin.toUpperCase(),
+      {
+        x: 30,
+        y: height - 65,
+        size: 10,
+      },
+    );
+
+    firstPage.drawText(
+      userInfo.nom.toUpperCase() +
+        ' ' +
+        userInfo.prenom.toUpperCase() +
+        ' ' +
+        userInfo.numTelephone,
+      {
+        x: 30,
+        y: height - 80,
+        size: 11,
+      },
+    );
+
+    firstPage.drawText('Le ' + dateRecolte, {
+      x: 30,
+      y: height - 95,
+      size: 11,
+    });
+
+    firstPage.drawText(recolte.typeRtc.toUpperCase(), {
+      x: 30,
+      y: height - 115,
+      size: 15,
+    });
+
+    if (recolte.typeRtc == 'régularisation') {
+      firstPage.drawText(
+        pmtOrFactureTrackings.length.toString() +
+          ' Pmts ( ' +
+          montant.toString() +
+          'DA )',
+        {
+          x: 205,
+          y: height - 200,
+          size: 23,
+          font: helveticaFont,
+        },
+      );
+    } else if (recolte.typeRtc == 'facture') {
+      firstPage.drawText(
+        pmtOrFactureTrackings.length.toString() +
+          ' Factures ( ' +
+          montant.toFixed(2) +
+          'DA )',
+        {
+          x: 205,
+          y: height - 200,
+          size: 23,
+          font: helveticaFont,
+        },
+      );
+    }
+
+    //CODE BARRE
+    const barcodeBuffer = await bwipjs.toBuffer({
+      bcid: 'code128', // Barcode type
+      text: recolte.tracking, // Text to encode
+      scale: 3, // 3x scaling factor
+      height: 16, // Bar height, in millimeters
+      paddingheight: 0,
+      includetext: true, // Show human-readable text
+      textxalign: 'center', // Always good to set this
+    });
+    console.log(userInfo.agence.nom);
+    console.log(userInfo.agence.commune.nomLatin);
+    console.log(userInfo.agence.commune.wilaya.nomLatin);
+    console.log(userInfo.nom);
+    console.log(userInfo.prenom);
+    console.log(userInfo.numTelephone);
+
+    const barcodeImage = await pdfDoc.embedPng(barcodeBuffer);
+    const barcodeDims = barcodeImage.scaleToFit(180, 110);
+
+    firstPage.drawImage(barcodeImage, {
+      x: 490 - barcodeDims.width / 2,
+      y: height - 70 - barcodeDims.height / 2,
+      width: barcodeDims.width,
+      height: barcodeDims.height,
+    });
+    const qrcodeBuffer = await QRCode.toBuffer(tracking);
+    const qrcodeImage = await pdfDoc.embedPng(qrcodeBuffer);
+    const qrcodeDims = qrcodeImage.scaleToFit(200, 200);
+
+    firstPage.drawImage(qrcodeImage, {
+      x: 290 - qrcodeDims.width / 2,
+      y: height - 320 - qrcodeDims.height / 2,
+      width: qrcodeDims.width,
+      height: qrcodeDims.height,
+    });
+
+    const pdfBytes = await pdfDoc.save();
+    console.log('5');
+
+    fs.writeFileSync('dest', pdfBytes);
+    return pdfBytes;
+  }
 
 }

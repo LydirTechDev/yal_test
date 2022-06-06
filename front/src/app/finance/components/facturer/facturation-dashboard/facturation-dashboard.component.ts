@@ -22,9 +22,7 @@ export class FacturationDashboardComponent implements OnInit {
   nombreTotalClassiquePayer: number;
   nombreTotalClassiqueNonPayer: number;
   nombreTotalEcommerce: number;
-  nombreTotalEcommerceZero: number;
-  nombreTotalEcommerceZeroPayer:number;
-  nombreTotalEcommerceZeroNonPayer:number;
+
 
 
   ngOnInit(): void {
@@ -34,17 +32,16 @@ export class FacturationDashboardComponent implements OnInit {
       this.sommeTotalClassiquePayer=response[0].sommeTotalClassiquePayer.sommeTotalClassiquePayer;
       this.sommeTotalClassiqueNonPayer=response[0].sommeTotalClassiqueNonPayer.sommeTotalClassiqueNonPayer;
       this.sommeTotalEcommerce = response[0].sommeTotalEcommerce.sommeTotalEcommerce;
+    /** 
       this.sommeTotalEcommerceZero = response[0].sommeTotalEcommerceZero.sommeTotalEcommerceZero;
       this.sommeTotalEcommerceZeroPayer = response[0].sommeTotalEcommerceZeroPayer.sommeTotalEcommerceZeroPayer;
       this.sommeTotalEcommerceZeroNonPayer = response[0].sommeTotalEcommerceZeroNonPayer.sommeTotalEcommerceZeroNonPayer;
+      */
       this.nombreTotal=response[0].nombreTotal.nombreTotal;
       this.nombreTotalClassique=response[0].nombreTotalClassique.nombreTotalClassique;
       this.nombreTotalClassiquePayer=response[0].nombreTotalClassiquePayer.nombreTotalClassiquePayer;
       this.nombreTotalClassiqueNonPayer=response[0].nombreTotalClassiqueNonPayer.nombreTotalClassiqueNonPayer;
       this.nombreTotalEcommerce = response[0].nombreTotalEcommerce.nombreTotalEcommerce;
-      this.nombreTotalEcommerceZero = response[0].nombreTotalEcommerceZero.nombreTotalEcommerceZero;
-      this.nombreTotalEcommerceZeroPayer = response[0].nombreTotalEcommerceZeroPayer.nombreTotalEcommerceZeroPayer;
-      this.nombreTotalEcommerceZeroNonPayer = response[0].nombreTotalEcommerceZeroNonPayer.nombreTotalEcommerceZeroNonPayer;
 
     });
   }

@@ -78,9 +78,14 @@ export class PmtController {
     );
   }
 
+  @Get('getPmtRegularisationNonRecolter')
+  getPmtRegularisationNonRecolter(@Req() req) {
+    return this.pmtService.getPmtRegularisationNonRecolterByUserId(req.user.id);
+  }
+
   @Get('payerClient/:id')
-  payerClient(@Req() req, @Param() clientId, @Res() res: Response) {
-    return this.pmtService.payerClient(req.user, clientId, res);
+  payerClient(@Req() req, @Param() clientId, @Res() res: Response,@Query('type')type) {
+    return this.pmtService.payerClient(req.user, clientId, res, type);
   }
 
   @Get('print-pmt/:pmtTraking')
@@ -99,6 +104,15 @@ export class PmtController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.pmtService.findOne(+id);
+  }
+
+ 
+ @Patch('recolterPmt')
+  async recolterPmt(@Req() req,@Res() res ) {
+    const buffer = await this.pmtService.recolterPmt(req.user.id);
+    const buf = Buffer.from(buffer);
+    res.send(buf);
+    return res;
   }
 
   //

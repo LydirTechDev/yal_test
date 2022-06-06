@@ -267,7 +267,10 @@ export class ShipmentsController {
   getShipmentsPresLivraison(@Request() req) {
     return this.shipmentsService.getShipmentsPresLivraison(req.user);
   }
-
+  @Get('getStatistiqueShipmentOfCoursierSelected/:id')
+  getStatistiqueShipmentOfCoursierSelected(@Param('id') id: number) {
+    return this.shipmentsService.getStatistiqueShipmentOfCoursierSelected(id);
+  }
   @Get('getStatistiqueShipmentCoursier')
   getStatistiqueShipmentCoursier(@Request() req) {
     return this.shipmentsService.getStatistiqueShipmentCoursier(req.user);
@@ -390,9 +393,8 @@ export class ShipmentsController {
         );
       } else {
         // searchTrackingPublic
-        return this.shipmentsService.searchTrackingByClient(
+        return this.shipmentsService.searchTrackingPublic(
           tracking.toLowerCase(),
-          req.user,
         );
       }
     }

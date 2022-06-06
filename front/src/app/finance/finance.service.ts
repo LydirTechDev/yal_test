@@ -92,7 +92,7 @@ export class FinanceService {
   }
 
   payerClient(clientId: number) {
-    return this.http.get(`${environment.apiV1}pmt/payerClient/${clientId}`, {
+    return this.http.get(`${environment.apiV1}pmt/payerClient/${clientId}?type=simple`, {
       responseType: 'blob',
     });
   }

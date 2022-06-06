@@ -9,12 +9,14 @@ import { DetailFactureEcommerceComponent } from './components/facturer/detail-fa
 import { FacturationDashboardComponent } from './components/facturer/facturation-dashboard/facturation-dashboard.component';
 import { FacturerClassiqueComponent } from './components/facturer/facturer-classique/facturer-classique.component';
 import { FacturerECommerceComponent } from './components/facturer/facturer-e-commerce/facturer-e-commerce.component';
-import { FacturerZeroComponent } from './components/facturer/facturer-zero/facturer-zero.component';
 import { ListFactureEcommerceComponent } from './components/facturer/list-facture-ecommerce/list-facture-ecommerce.component';
 import { ListFactureNonPayerComponent } from './components/facturer/list-facture-non-payer/list-facture-non-payer.component';
 import { ListFacturePayerComponent } from './components/facturer/list-facture-payer/list-facture-payer.component';
-import { ListFactureZeroNonPayerComponent } from './components/facturer/list-facture-zero-non-payer/list-facture-zero-non-payer.component';
-import { ListFactureZeroPayerComponent } from './components/facturer/list-facture-zero-payer/list-facture-zero-payer.component';
+import { ListRecolteFactureComponent } from './components/facturer/list-recolte-facture/list-recolte-facture.component';
+import { ListRecolteRegularisationComponent } from './components/facturer/list-recolte-regularisation/list-recolte-regularisation.component';
+import { RecolteFactureComponent } from './components/facturer/recolte-facture/recolte-facture.component';
+import { RecolteRegularisationComponent } from './components/facturer/recolte-regularisation/recolte-regularisation.component';
+import { RegularisationComponent } from './components/facturer/regularisation/regularisation.component';
 import { InfoPaiementsClientComponent } from './components/info-paiements-client/info-paiements-client.component';
 import { InfoRecolteComponent } from './components/info-recolte/info-recolte.component';
 import { LibererPaimentsComponent } from './components/liberer-paiments/liberer-paiments.component';
@@ -115,23 +117,6 @@ const routes: Routes = [
   },
 
   {
-    path: 'facturer-zero',
-    component: FacturerZeroComponent,
-    data: { title: "detail facture " },
-  },
-  {
-    path: 'list-facture-zero-non-payer',
-    component: ListFactureZeroNonPayerComponent,
-    data: { title: "gestion des facture non payées " },
-  },
-
-  {
-    path: 'list-facture-zero-payer',
-    component: ListFactureZeroPayerComponent,
-    data: { title: "gestion des facture non payées " },
-  },
-
-  {
     path: 'facture/detail-facture-ecommerce/:id',
     component: DetailFactureEcommerceComponent,
     data: { title: "detail facture " },
@@ -142,6 +127,39 @@ const routes: Routes = [
     component: FacturationDashboardComponent,
     data: { title: "detail facture " },
   },
+
+
+  {
+    path: 'facturation/regularisation',
+    component: RegularisationComponent,
+    data: { title: "régulariser " },
+  },
+
+  {
+    path: 'facturation/recolte-regularisation',
+    component: RecolteRegularisationComponent,
+    data: { title: "récolte-régularisation " },
+  },
+
+  {
+    path: 'facturation/list-recolte-regularisation',
+    component: ListRecolteRegularisationComponent,
+    data: { title: "récolte-régularisation " },
+  },
+
+  {
+    path: 'facturation/recolte-facture',
+    component: RecolteFactureComponent,
+    data: { title: "récolte-facture " },
+  },
+
+  {
+    path: 'facturation/list-recolte-facture',
+    component: ListRecolteFactureComponent,
+    data: { title: "récolte-régularisation " },
+  },
+
+
 ];
 
 @NgModule({
