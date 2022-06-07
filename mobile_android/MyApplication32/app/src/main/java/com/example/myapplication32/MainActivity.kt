@@ -1,10 +1,14 @@
 package com.example.myapplication32
 
+import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.example.myyalidinefreelance.models.auth.LoginRequest
 import com.example.myyalidinefreelance.models.auth.LoginResponse
 import com.example.myyalidinefreelance.services.ApiClient
@@ -15,9 +19,9 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class MainActivity : AppCompatActivity() {
+
     private lateinit var sessionManager: SessionManager
     private lateinit var apiClient: ApiClient
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         supportActionBar?.hide()
@@ -58,7 +62,6 @@ class MainActivity : AppCompatActivity() {
                                     goHome()
                                 }
                             }
-
                         }
                     })
             }

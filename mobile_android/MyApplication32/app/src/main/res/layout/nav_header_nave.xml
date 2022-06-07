@@ -32,3 +32,19 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 </LinearLayout>
+    <!--
+           <androidx.cardview.widget.CardView
+               android:id="@+id/card"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:clickable="true"
+               android:focusable="true"
+               tools:ignore="TouchTargetSizeCheck">
+
+               <TextView
+                   android:id="@+id/tracking"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:text="@string/tracking"
+                   android:textSize="18sp"
+                   android:textStyle="bold" />-->

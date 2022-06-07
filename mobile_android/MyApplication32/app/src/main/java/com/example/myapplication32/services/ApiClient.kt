@@ -33,7 +33,4 @@ class ApiClient {
             .addInterceptor(AuthInterceptor(context))
             .build()
     }
-    fun getApiService() {
-
-    }
 }

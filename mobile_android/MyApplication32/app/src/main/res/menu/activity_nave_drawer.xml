@@ -13,8 +13,13 @@
             android:icon="@drawable/ic_baseline_local_shipping_24"
             android:title="@string/menu_pickup" />
         <item
-            android:id="@+id/nav_shipment_list"
+            android:id="@+id/shipment_list"
             android:icon="@drawable/ic_baseline_check_box_24"
             android:title="@string/menu_shipment_list" />
+        <item
+            android:title="@string/recevoir_colis_txt"
+            android:icon="@drawable/ic_baseline_call_received_24"
+            android:id="@+id/receiveShipmentFragment"
+            />
     </group>
 </menu>

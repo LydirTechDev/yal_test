@@ -7,6 +7,7 @@
         <entry key="..\:/Users/idirc/AndroidStudioProjects/MyApplication32/app/src/main/res/drawable/ic_baseline_check_box_24.xml" value="0.383" />
         <entry key="..\:/Users/idirc/AndroidStudioProjects/MyApplication32/app/src/main/res/drawable/ic_baseline_email_24.xml" value="0.383" />
         <entry key="..\:/Users/idirc/AndroidStudioProjects/MyApplication32/app/src/main/res/drawable/ic_baseline_home_24.xml" value="0.383" />
+        <entry key="..\:/Users/idirc/AndroidStudioProjects/MyApplication32/app/src/main/res/drawable/ic_baseline_local_phone_24.xml" value="0.3875" />
         <entry key="..\:/Users/idirc/AndroidStudioProjects/MyApplication32/app/src/main/res/drawable/ic_baseline_local_shipping_24.xml" value="0.383" />
         <entry key="..\:/Users/idirc/AndroidStudioProjects/MyApplication32/app/src/main/res/drawable/ic_baseline_lock_24.xml" value="0.383" />
         <entry key="..\:/Users/idirc/AndroidStudioProjects/MyApplication32/app/src/main/res/drawable/ic_baseline_login_24.xml" value="0.383" />
@@ -14,17 +15,35 @@
         <entry key="..\:/Users/idirc/AndroidStudioProjects/MyApplication32/app/src/main/res/drawable/ic_menu_camera.xml" value="0.2095" />
         <entry key="..\:/Users/idirc/AndroidStudioProjects/MyApplication32/app/src/main/res/drawable/ic_menu_gallery.xml" value="0.2095" />
         <entry key="..\:/Users/idirc/AndroidStudioProjects/MyApplication32/app/src/main/res/drawable/ic_menu_slideshow.xml" value="0.2095" />
+        <entry key="..\:/Users/idirc/AndroidStudioProjects/MyApplication32/app/src/main/res/drawable/ic_round_add_alert_24.xml" value="0.3875" />
+        <entry key="..\:/Users/idirc/AndroidStudioProjects/MyApplication32/app/src/main/res/drawable/ic_sharp_add_alert_yellow.xml" value="0.3875" />
         <entry key="..\:/Users/idirc/AndroidStudioProjects/MyApplication32/app/src/main/res/drawable/outline_qr_code_scanner_24.xml" value="0.2095" />
         <entry key="..\:/Users/idirc/AndroidStudioProjects/MyApplication32/app/src/main/res/drawable/side_nav_bar.xml" value="0.2095" />
-        <entry key="..\:/Users/idirc/AndroidStudioProjects/MyApplication32/app/src/main/res/layout/activity_main.xml" value="0.264" />
-        <entry key="..\:/Users/idirc/AndroidStudioProjects/MyApplication32/app/src/main/res/layout/activity_nave.xml" value="0.20208333333333334" />
-        <entry key="..\:/Users/idirc/AndroidStudioProjects/MyApplication32/app/src/main/res/layout/app_bar_nave.xml" value="0.20208333333333334" />
+        <entry key="..\:/Users/idirc/AndroidStudioProjects/MyApplication32/app/src/main/res/layout-v28/fragment_alert_shipment.xml" value="0.264" />
+        <entry key="..\:/Users/idirc/AndroidStudioProjects/MyApplication32/app/src/main/res/layout-v28/fragment_detail_shipment.xml" value="0.264" />
+        <entry key="..\:/Users/idirc/AndroidStudioProjects/MyApplication32/app/src/main/res/layout/activity_main.xml" value="0.25" />
+        <entry key="..\:/Users/idirc/AndroidStudioProjects/MyApplication32/app/src/main/res/layout/activity_nave.xml" value="0.1651376146788991" />
+        <entry key="..\:/Users/idirc/AndroidStudioProjects/MyApplication32/app/src/main/res/layout/app_bar_nave.xml" value="0.4" />
         <entry key="..\:/Users/idirc/AndroidStudioProjects/MyApplication32/app/src/main/res/layout/content_nave.xml" value="0.35190217391304346" />
+        <entry key="..\:/Users/idirc/AndroidStudioProjects/MyApplication32/app/src/main/res/layout/fragment_alert_list.xml" value="0.2884963768115942" />
+        <entry key="..\:/Users/idirc/AndroidStudioProjects/MyApplication32/app/src/main/res/layout/fragment_alert_shipment.xml" value="0.19306930693069307" />
+        <entry key="..\:/Users/idirc/AndroidStudioProjects/MyApplication32/app/src/main/res/layout/fragment_dashboard.xml" value="0.104" />
+        <entry key="..\:/Users/idirc/AndroidStudioProjects/MyApplication32/app/src/main/res/layout/fragment_detail_shipment.xml" value="0.264" />
+        <entry key="..\:/Users/idirc/AndroidStudioProjects/MyApplication32/app/src/main/res/layout/fragment_echec_list.xml" value="0.2884963768115942" />
+        <entry key="..\:/Users/idirc/AndroidStudioProjects/MyApplication32/app/src/main/res/layout/fragment_echec_shipment.xml" value="0.20208333333333334" />
         <entry key="..\:/Users/idirc/AndroidStudioProjects/MyApplication32/app/src/main/res/layout/fragment_gallery.xml" value="0.1" />
         <entry key="..\:/Users/idirc/AndroidStudioProjects/MyApplication32/app/src/main/res/layout/fragment_home.xml" value="0.1" />
+        <entry key="..\:/Users/idirc/AndroidStudioProjects/MyApplication32/app/src/main/res/layout/fragment_item.xml" value="0.20208333333333334" />
+        <entry key="..\:/Users/idirc/AndroidStudioProjects/MyApplication32/app/src/main/res/layout/fragment_item_list.xml" value="0.35778985507246375" />
+        <entry key="..\:/Users/idirc/AndroidStudioProjects/MyApplication32/app/src/main/res/layout/fragment_pickup.xml" value="0.2" />
+        <entry key="..\:/Users/idirc/AndroidStudioProjects/MyApplication32/app/src/main/res/layout/fragment_receive_shipment.xml" value="0.1" />
+        <entry key="..\:/Users/idirc/AndroidStudioProjects/MyApplication32/app/src/main/res/layout/fragment_shipment_list.xml" value="0.4" />
         <entry key="..\:/Users/idirc/AndroidStudioProjects/MyApplication32/app/src/main/res/layout/fragment_slideshow.xml" value="0.1" />
         <entry key="..\:/Users/idirc/AndroidStudioProjects/MyApplication32/app/src/main/res/layout/nav_header_nave.xml" value="0.536" />
+        <entry key="..\:/Users/idirc/AndroidStudioProjects/MyApplication32/app/src/main/res/layout/shipment_to_delivre_item.xml" value="0.264" />
+        <entry key="..\:/Users/idirc/AndroidStudioProjects/MyApplication32/app/src/main/res/layout/shipment_to_delivry_item.xml" value="0.1" />
         <entry key="..\:/Users/idirc/AndroidStudioProjects/MyApplication32/app/src/main/res/menu/activity_nave_drawer.xml" value="0.3875" />
+        <entry key="..\:/Users/idirc/AndroidStudioProjects/MyApplication32/app/src/main/res/menu/bottom_menu.xml" value="0.35833333333333334" />
         <entry key="..\:/Users/idirc/AndroidStudioProjects/MyApplication32/app/src/main/res/menu/nave.xml" value="0.3875" />
         <entry key="..\:/Users/idirc/AndroidStudioProjects/MyApplication32/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.181" />
         <entry key="..\:/Users/idirc/AndroidStudioProjects/MyApplication32/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.2095" />

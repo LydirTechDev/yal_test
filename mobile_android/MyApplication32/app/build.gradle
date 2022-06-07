@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id("androidx.navigation.safeargs.kotlin")
 }
 
 android {
@@ -45,6 +46,9 @@ dependencies {
     implementation 'androidx.navigation:navigation-fragment-ktx:2.4.2'
     implementation 'androidx.navigation:navigation-ui-ktx:2.4.2'
     implementation 'androidx.fragment:fragment-ktx:1.4.1'
+
+    // navigation
+    implementation("androidx.navigation:navigation-dynamic-features-fragment:2.4.2")
 // internet
     // INTERNET
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
@@ -53,6 +57,9 @@ dependencies {
     //scan
     implementation 'com.google.zxing:core:3.3.3'
     implementation 'com.journeyapps:zxing-android-embedded:4.3.0'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.recyclerview:recyclerview:1.2.1'
+
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'

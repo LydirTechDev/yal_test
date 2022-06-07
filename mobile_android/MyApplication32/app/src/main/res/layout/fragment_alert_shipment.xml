@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:context=".ui.detailShipment.AlertShipmentFragment">
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/titre_alertes"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/divider6"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginHorizontal="44dp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView3" />
+
+    <ScrollView
+        android:id="@+id/scrollView2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="9dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/divider6">
+
+        <RadioGroup
+            android:id="@+id/group_alert"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginHorizontal="40dp">
+
+            <RadioButton
+                android:id="@+id/tel_injoigniable"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/telephone_injoignable_txt" />
+
+            <RadioButton
+                android:id="@+id/client_nerepond_pa"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/client_ne_repond_pas_txt" />
+
+            <RadioButton
+                android:id="@+id/faux_numero"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/faux_numero_txt" />
+
+            <RadioButton
+                android:id="@+id/commune_erroner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/commune_erroner_txt" />
+
+            <RadioButton
+                android:id="@+id/client_no_show"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/client_no_show_txt" />
+
+            <RadioButton
+                android:id="@+id/client_absent_reporter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/client_absent_reporter_txt" />
+
+        </RadioGroup>
+
+
+    </ScrollView>
+
+    <Button
+        android:id="@+id/id_btn_validate_alert"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:text="@string/btn_valider_txt"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/scrollView2" />
+
+    <Button
+        android:id="@+id/idi_btn_close_alert"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        style="?android:attr/buttonBarButtonStyle"
+        android:text="@string/btn_fermer_txt"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/scrollView2" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

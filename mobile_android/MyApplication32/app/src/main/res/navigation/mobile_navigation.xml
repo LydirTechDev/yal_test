@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/nav_dashboard"
         android:name="com.example.myapplication32.ui.dashboard.DashboardFragment"
-        android:label="@string/menu_pickup"
+        android:label="@string/menu_dashboard"
         tools:layout="@layout/fragment_dashboard" />
 
     <fragment
@@ -18,8 +18,32 @@
         tools:layout="@layout/fragment_pickup" />
 
     <fragment
-        android:id="@+id/nav_shipment_list"
+        android:id="@+id/shipment_list"
         android:name="com.example.myapplication32.ui.shipmentList.ShipmentListFragment"
         android:label="@string/menu_shipment_list"
-        tools:layout="@layout/fragment_shipment_list" />
+        tools:layout="@layout/fragment_shipment_list" >
+        <action
+            android:id="@+id/action_shipment_list_to_detailShipment"
+            app:destination="@id/detailShipment" />
+        <argument
+            android:name="currentTracking"
+            app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/detailShipment"
+        android:name="com.example.myapplication32.ui.detailShipment.DetailShipment"
+        android:label="fragment_detail_shipment"
+        tools:layout="@layout/fragment_detail_shipment" >
+        <argument
+            android:name="currentShipmentTracking"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_detailShipment_to_shipment_list"
+            app:destination="@id/shipment_list" />
+    </fragment>
+    <fragment
+        android:id="@+id/receiveShipmentFragment"
+        android:name="com.example.myapplication32.ui.ReceiveShipmentFragment"
+        android:label="fragment_receive_shipment"
+        tools:layout="@layout/fragment_receive_shipment" />
 </navigation>

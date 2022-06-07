@@ -2,9 +2,9 @@
   <app-pagetitle [breadcrumbItems]="breadCrumbItems"></app-pagetitle>
   <div class="row mb-3 ml-1" style="margin-top: -24px">
     <a href="javascript:void(0);" class="btn btn-outline-danger" (click)="openModal(content)">
-      <i class="fas fa-plus-circle">
+      <em class="fas fa-plus-circle">
         <span class="mt-1 font-weight-normal pl-1">Ajouter une Agence</span>
-      </i>
+      </em>
     </a>
   </div>
   <!-- <div class="custom-file col-3 mt-2 mr-auto">
@@ -66,7 +66,7 @@
                 <tr *ngIf="agenceData.length <= 0">
                   <th colspan="7" class="text-center">
                     <div class="text-center">
-                      <p class="m-0 p-0"><i class="ri-error-warning-line customIcone"> </i> Pas
+                      <p class="m-0 p-0"><em class="ri-error-warning-line customIcone"> </em> Pas
                         de d'agences ! </p>
                     </div>
                   </th>
@@ -285,7 +285,7 @@
 
           <ul class="list-inline wizard mb-0 pg-2 mt-2">
             <li class="next list-inline-item float-right">
-              <button class="btn btn-primary " awNextStep [disabled]="!validateFirstStep">Suivant <i class="ml-1 fa fa-arrow-right" aria-hidden="true"></i></button>
+              <button class="btn btn-primary " awNextStep [disabled]="!validateFirstStep">Suivant <em class="ml-1 fa fa-arrow-right" aria-hidden="true"></em></button>
             </li>
           </ul>
         </aw-wizard-step>
@@ -366,12 +366,12 @@
           <div class="row d-flex justify-content-end">
             <ul class="list-inline wizard mb-0 mt-3">
               <li class="previous list-inline-item">
-                <button class="btn btn-primary" awPreviousStep> <i class="mr-1 fa fa-arrow-left" aria-hidden="true"></i>Previous</button>
+                <button class="btn btn-primary" awPreviousStep> <em class="mr-1 fa fa-arrow-left" aria-hidden="true"></em>Previous</button>
               </li>
             </ul>
             <ul class="list-inline wizard mb-0 pg-2 mt-3">
               <li class="next list-inline-item float-right">
-                <button class="btn btn-primary " awNextStep [disabled]="!validateSecondStep">Suivant <i class="ml-1 fa fa-arrow-right" aria-hidden="true"></i></button>
+                <button class="btn btn-primary " awNextStep [disabled]="!validateSecondStep">Suivant <em class="ml-1 fa fa-arrow-right" aria-hidden="true"></em></button>
               </li>
             </ul>
           </div>
@@ -436,12 +436,12 @@
             </div>
 
             <ng-template #nonLivrable>
-              <label class="mr-2">Commune No Livrable <i class="fas fa-ban text-danger"></i></label>
+              <label class="mr-2">Commune No Livrable <em class="fas fa-ban text-danger"></em></label>
             </ng-template>
           </div>
           <ul class="list-inline wizard mb-0">
             <li class="previous list-inline-item">
-              <button class="btn btn-primary" awPreviousStep><i class="mr-1 fa fa-arrow-left" aria-hidden="true"></i>Previous</button>
+              <button class="btn btn-primary" awPreviousStep><em class="mr-1 fa fa-arrow-left" aria-hidden="true"></em>Previous</button>
             </li>
           </ul>
           <div class="text-center">
