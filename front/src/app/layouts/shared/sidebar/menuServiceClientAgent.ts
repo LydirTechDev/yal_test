@@ -14,7 +14,7 @@ export const MENUSEVICECLIENT: MenuItem[] = [
   },
   {
     id: 3,
-    label: 'Nouveaux envois',
+    label: 'Colis',
     icon: 'fas fa-box-open',
     subItems: [
       {
@@ -35,6 +35,12 @@ export const MENUSEVICECLIENT: MenuItem[] = [
         link: '/service-client/soumission',
         parentId: 3,
       },
+      // {
+      //   id: 6,
+      //   label: 'Liste des colis',
+      //   link: '/service-client/liste-shipments',
+      //   parentId: 3,
+      // },
     ],
   },
   {
@@ -46,6 +52,12 @@ export const MENUSEVICECLIENT: MenuItem[] = [
         id: 8,
         label: 'Créer récolte',
         link: '/service-client/cree-recolte',
+        parentId: 7,
+      },
+      {
+        id: 8,
+        label: 'Liste récolte',
+        link: '/service-client/liste-recolte',
         parentId: 7,
       },
       // {

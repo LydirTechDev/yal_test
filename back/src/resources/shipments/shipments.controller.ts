@@ -134,6 +134,26 @@ export class ShipmentsController {
     );
   }
 
+  @ApiQuery({ name: 'page', type: Number, required: false })
+  @ApiQuery({ name: 'limit', type: Number, required: false })
+  @ApiQuery({ name: 'searchShipmentsTerm', type: String, required: false })
+  @Get('paginateAllShipments-Cs')
+  findPaginateShipmentsCs(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit,
+    @Query('searchShipmentsTerm') searchShipmentsTerm: string,
+    @Request() req
+  ): Promise<Pagination<Shipment>> {
+    return this.shipmentsService.findPaginateAllShipmentsCs(
+      req.user,
+      {
+        page,
+        limit,
+      },
+      searchShipmentsTerm,
+    );
+  }
+
   @Get('download')
   download(@Res() res, @Query('term') term: string) {
     return this.shipmentsService.export(res, term);

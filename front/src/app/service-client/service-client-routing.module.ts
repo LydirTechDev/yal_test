@@ -5,6 +5,8 @@ import { CreateClassiqueShipmentComponent } from './create-classique-shipment/cr
 import { CreateRecolteCsComponent } from './create-recolte-desk/create-recolte-cs.component';
 import { CreateSoumissionShipmentComponent } from './create-soumission-shipment/create-soumission-shipment.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { ListShipmentsComponent } from './list-shipments/list-shipments.component';
+import { ListeRecolteComponent } from './liste-recolte/liste-recolte.component';
 
 const routes: Routes = [
   {
@@ -27,6 +29,14 @@ const routes: Routes = [
     path: 'cree-recolte',
     component: CreateRecolteCsComponent,
   },
+  {
+    path: 'liste-recolte',
+    component: ListeRecolteComponent
+  },
+  {
+    path: 'liste-shipments',
+    component: ListShipmentsComponent
+  }
 ];
 
 @NgModule({

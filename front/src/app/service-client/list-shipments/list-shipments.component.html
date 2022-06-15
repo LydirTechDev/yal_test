@@ -1,0 +1,181 @@
+<!-- <app-pagetitle title="liste des colis" [breadcrumbItems]="breadCrumbItems"> </app-pagetitle> -->
+
+<div class="row col-12 mb-3 ml-1 d-flex justify-content-end mt-2" style="margin-top: -24px">
+
+
+  <button class="btn btn-outline-success" (click)="exportShipments(searchShipmentTerm)">
+    <i class="fas fa-file-excel">
+      <span class="mt-1 font-weight-normal pl-1">Exporter</span>
+    </i>
+  </button>
+
+
+</div>
+
+
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body">
+
+        <div class="row mb-md-2">
+          <!-- Search -->
+          <div class="col-sm-12 col-md-12">
+            <div id="tickets-table_filter" class="dataTables_filter text-md-right">
+              <label class="d-inline-flex align-items-center">Recherche:
+                <input type="text" name="searchTerm" class="form-control form-control-sm ml-2"
+                  aria-controls="tickets-table" [(ngModel)]="searchShipmentTerm"
+                  (ngModelChange)="searchTermUpdate(searchShipmentTerm)" /></label>
+            </div>
+          </div>
+          <!-- End search -->
+        </div>
+
+        <!-- Table -->
+        <div class="table-responsive">
+          <table id="basic-datatable"
+            class="table table-centered dt-responsive nowrap no-footer dtr-inline table-hover hover">
+            <thead>
+              <tr>
+                <th>N°</th>
+                <th>tracking</th>
+                <th>prénom</th>
+                <th>nom</th>
+                <th>dernier statut</th>
+                <th>Action</th>
+
+              </tr>
+            </thead>
+            <tbody *ngIf="!isLoading; else spiner">
+
+              <tr *ngFor="let shipment of shipmentData; let i=index " class="hover">
+                <td>
+                  <a class="text-dark font-weight-bold">
+                    {{ shipment.id }}
+                  </a>
+                </td>
+                <td>
+                  {{ shipment.tracking}}
+                </td>
+                <td>
+                  {{ shipment.nom }}
+                </td>
+                <td>
+                  {{ shipment.prenom }}
+                </td>
+                <td>
+                  {{shipment.lastStatus}}
+                </td>
+                <td class="py-0">
+                  <button mdbBtn color="mdb-color" class=" btn-sm btn " (click)="print(shipment.id)" mdbWavesEffect><i
+                      class="fas fa-print"></i></button>
+                  <button mdbBtn class=" btn-sm btn btn-primary" (click)="detailColis(shipment.tracking)" mdbWavesEffect><i
+                      class="fa fa-info-circle font-size-8" aria-hidden="true"></i></button>
+                </td>
+              </tr>
+              <tr *ngIf="shipmentData.length <= 0">
+                <th colspan="7" class="text-center">
+                  <div class="text-center">
+                    <p class="m-0 p-0"><i class="ri-error-warning-line customIcone"> </i> Pas
+                      de shipments ! </p>
+                  </div>
+                </th>
+              </tr>
+            </tbody>
+
+            <ng-template #spiner>
+              <tbody>
+                <tr>
+                  <th colspan="7" class="text-center">
+                    <div class="spinner-border text-primary m-1" role="status">
+                      <span class="sr-only">Loading...</span>
+                    </div>
+                    <span class="d-block">Chargement ...</span>
+                  </th>
+                </tr>
+              </tbody>
+            </ng-template>
+          </table>
+        </div>
+        <!-- End table -->
+
+        <div class="row justify-content-md-between align-items-md-center mt-2">
+          <div class="col-sm-12 col-md-5">
+            <div class="dataTables_info mb-2" id="tickets-table_info" role="status" aria-live="polite">
+              Total {{ metaData.totalItems }} shipments
+            </div>
+          </div>
+          <!-- Pagination -->
+          <div class="col-sm-12 col-md-5">
+            <nav aria-label="...">
+              <ul class="pagination justify-content-end">
+                <!-- <li class="page-item">
+                                        <button class="page-link info">
+                                            total utilistaeur : {{ metaData.totalItems }}
+                                        </button>
+                                    </li> -->
+                <li class="page-item">
+                  <button class="page-link" [disabled]="metaLinks.previous.length <= 0"
+                    (click)="funcPaginate(metaLinks.previous)">
+                    <span aria-hidden="true">&laquo;</span>
+                    <span class="sr-only">Previous</span>
+                  </button>
+                </li>
+                <li class="page-item">
+                  <button class="page-link" *ngIf="metaData.currentPage - 2 > 0"
+                    (click)="funcPaginate('', metaData.currentPage - 2)">
+                    {{ metaData.currentPage - 2
+                    }}<span class="sr-only"></span>
+                  </button>
+                </li>
+                <li class="page-item">
+                  <button class="page-link" *ngIf="metaData.currentPage - 1 > 0"
+                    (click)="funcPaginate('', metaData.currentPage - 1)">
+                    {{ metaData.currentPage - 1
+                    }}<span class="sr-only"></span>
+                  </button>
+                </li>
+                <li class="page-item active">
+                  <button class="page-link" (click)="funcPaginate('', metaData.currentPage)">
+                    {{ metaData.currentPage
+                    }}<span class="sr-only">(current)</span>
+                  </button>
+                </li>
+                <li class="page-item">
+                  <button class="page-link" (click)="funcPaginate('', metaData.currentPage + 1)"
+                    *ngIf="metaData.currentPage + 1 <= metaData.totalPages">
+                    {{ metaData.currentPage + 1
+                    }}<span class="sr-only"></span>
+                  </button>
+                </li>
+                <li class="page-item">
+                  <button class="page-link" (click)="funcPaginate('', metaData.currentPage + 2)"
+                    *ngIf="metaData.currentPage + 2 < metaData.totalPages">
+                    {{ metaData.currentPage + 2
+                    }}<span class="sr-only"></span>
+                  </button>
+                </li>
+                <li class="page-item">
+                  <button class="page-link" *ngIf="
+                    metaLinks.next.length != 0 &&
+                    metaData.currentPage + 2 <= metaData.totalPages
+                  ">
+                    ...
+                  </button>
+                </li>
+                <li class="page-item">
+                  <button class="page-link" [disabled]="metaLinks.next.length <= 0"
+                    (click)="funcPaginate(metaLinks.next)">
+                    <span aria-hidden="true">&raquo;</span>
+                    <span class="sr-only">Next</span>
+                  </button>
+                </li>
+              </ul>
+            </nav>
+          </div>
+          <!-- End Pagination -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

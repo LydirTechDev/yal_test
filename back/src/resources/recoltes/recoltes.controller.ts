@@ -43,6 +43,24 @@ export class RecoltesController {
     );
   }
 
+  
+  @Get('paginateRecolteOfUserCs')
+  getPaginateRecolteOfUserCs(
+    @Request() req,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit,
+    @Query('searchRecolteTerm') searchRecolteTerm: string,
+  ): Promise<Pagination<Recolte>> {
+    return this.recoltesService.getPaginateRecolteOfUserCs(
+      req.user,
+      {
+        page,
+        limit,
+      },
+      searchRecolteTerm,
+    );
+  }
+
   @Get('paginateAllRecolte')
   getPaginateAllRecolte(
     @Req() req,

@@ -12,6 +12,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { NgxMaskModule } from 'ngx-mask';
 import { CreateRecolteCsComponent } from './create-recolte-desk/create-recolte-cs.component';
+import { ListeRecolteComponent } from './liste-recolte/liste-recolte.component';
+import { ListShipmentsComponent } from './list-shipments/list-shipments.component';
 
 
 @NgModule({
@@ -21,6 +23,8 @@ import { CreateRecolteCsComponent } from './create-recolte-desk/create-recolte-c
     CreateCahierDeChargeShipmentComponent,
     CreateSoumissionShipmentComponent,
     CreateRecolteCsComponent,
+    ListeRecolteComponent,
+    ListShipmentsComponent,
   ],
   imports: [
     CommonModule,

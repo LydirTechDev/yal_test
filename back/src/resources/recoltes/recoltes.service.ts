@@ -72,6 +72,34 @@ export class RecoltesService {
     });
   }
 
+  async getPaginateRecolteOfUserCs(
+    user,
+    options: IPaginationOptions,
+    searchRecolteTerm?: string,
+  ): Promise<Pagination<Recolte>> {
+    let recolte;
+    if (searchRecolteTerm && Number(searchRecolteTerm) != NaN) {
+      recolte = this.recolteRepository
+        .createQueryBuilder('recolte')
+        .leftJoinAndSelect('recolte.shipmentCs', 'shipmentCs')
+        .leftJoinAndSelect('recolte.createdBy', 'creatBy')
+        .where(`(recolte.tracking  ILike '%${searchRecolteTerm}%' or
+           coursierdet.nom  ILike '%${searchRecolteTerm}%' or
+            coursierdet.prenom  ILike '%${searchRecolteTerm}%') and creatBy.id = ${user.id} and recolte.receivedById is null`);
+    } else {
+      recolte = this.recolteRepository
+        .createQueryBuilder('recolte')
+        .leftJoinAndSelect('recolte.shipmentCs', 'shipmentCs')
+        .leftJoinAndSelect('recolte.createdBy', 'creatBy')
+        .where(`creatBy.id = ${user.id} and recolte.receivedById is null`);
+    }
+    return paginate<Recolte>(recolte, {
+      page: options.page,
+      limit: options.limit,
+      route: 'http://localhost:3000/recoltes/paginateRecolteOfUser',
+    });
+  }
+
   async getPaginateAllRecolte(
     options: IPaginationOptions,
     searchRecolteTerm?: string,

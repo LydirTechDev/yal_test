@@ -3391,18 +3391,53 @@ export class ShipmentsService {
       route: 'http://localhost:3000/shipments/paginateShipments',
     });
   }
+  async findPaginateAllShipmentsCs(
+    requestedUser: User,
+    options: IPaginationOptions,
+    searchShipmentTerm: string,
+  ): Promise<Pagination<Shipment>> {
+    let listShipments;
+    if (searchShipmentTerm && Number(searchShipmentTerm) != NaN) {
+      listShipments = this.shipmentRepository
+        .createQueryBuilder('shipment')
+        .leftJoin('shipment.status', 'status')
+        .leftJoin('status.user', 'user')
+        .leftJoinAndSelect('shipment.createdBy', 'createdBy')
+        .leftJoin('shipment.expiditeurPublic', 'expiditeurPublic')
+        .distinctOn(['shipment.id'])
+        .where(` createdBy.id = ${requestedUser.id} and expiditeurPublic.id is not null and( 
+        shipment.tracking ilike  '%${searchShipmentTerm}%' or
+        CAST(shipment.lastStatus as text) ilike '%${searchShipmentTerm}%' or
+        expiditeurPublic.nomExp ilike '%${searchShipmentTerm}%' or
+        expiditeurPublic.prenomExp ilike '%${searchShipmentTerm}%' or
+        expiditeurPublic.telephoneExp ilike '%${searchShipmentTerm}%' )
+        `);
+    } else {
+      this.logger.error(requestedUser)
+      listShipments = this.shipmentRepository
+        .createQueryBuilder('shipment')
+        .leftJoinAndSelect('shipment.createdBy', 'createdBy')
+        .leftJoinAndSelect('shipment.expiditeurPublic', 'expiditeurPublic')
+        .where(`createdBy.id = ${requestedUser.id} and expiditeurPublic.id is not null`)
+    }
+    return await paginate<any>(listShipments, {
+      page: options.page,
+      limit: options.limit,
+      route: 'http://localhost:3000/shipments/paginateShipmentsCs',
+    });
+  }
   async getShipmentsToExportBySearch(term: string) {
     return await this.shipmentRepository
       .createQueryBuilder('shipment')
       .leftJoin('shipment.status', 'status')
+      .leftJoin('shipment.createdBy', 'createdBy')
       .leftJoin('status.user', 'user')
       .leftJoin('user.client', 'client')
       .select('shipment')
       .addSelect('client')
       .distinctOn(['shipment.id'])
       .where(
-        `
-        shipment.tracking ilike '%${term}%' or
+        `shipment.tracking ilike '%${term}%' or
         CAST(shipment.lastStatus as text) ilike '%${term}%' or
         client.nomGerant ilike '%${term}%' or
         client.prenomGerant ilike '%${term}%' or
